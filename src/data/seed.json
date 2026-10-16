@@ -1,0 +1,1339 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-10-16",
+    "notes": "Seed data for the ReactJS Quiz Platform assignment. Copy into browser storage on first load; 'Reset data' restores this file. Note: attempt a11 is in progress so resume can be tested, but its time limit will already have expired when loaded, so candidates should handle that case."
+  },
+  "countries": [
+    {
+      "code": "IN",
+      "name": "India"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom"
+    }
+  ],
+  "users": [
+    {
+      "id": "u1",
+      "name": "Aarav Menon",
+      "country": "IN",
+      "role": "user"
+    },
+    {
+      "id": "u2",
+      "name": "Fatima Al Mansoori",
+      "country": "AE",
+      "role": "user"
+    },
+    {
+      "id": "u3",
+      "name": "Oliver Smith",
+      "country": "GB",
+      "role": "user"
+    },
+    {
+      "id": "u4",
+      "name": "Diya Nair",
+      "country": "IN",
+      "role": "user"
+    },
+    {
+      "id": "u5",
+      "name": "Admin User",
+      "country": "IN",
+      "role": "admin"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "q1",
+      "title": "JavaScript Basics",
+      "description": "Core language concepts every frontend developer should know.",
+      "countries": ["IN", "AE", "GB"],
+      "timeLimitSeconds": 300,
+      "perQuestionSeconds": null,
+      "retakesAllowed": true,
+      "questions": [
+        {
+          "id": "q1-1",
+          "text": "Which keyword declares a block-scoped variable that cannot be reassigned?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q1-1-o1",
+              "text": "var"
+            },
+            {
+              "id": "q1-1-o2",
+              "text": "let"
+            },
+            {
+              "id": "q1-1-o3",
+              "text": "const"
+            },
+            {
+              "id": "q1-1-o4",
+              "text": "static"
+            }
+          ],
+          "correctOptionIds": ["q1-1-o3"]
+        },
+        {
+          "id": "q1-2",
+          "text": "What does typeof null return?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q1-2-o1",
+              "text": "\"null\""
+            },
+            {
+              "id": "q1-2-o2",
+              "text": "\"object\""
+            },
+            {
+              "id": "q1-2-o3",
+              "text": "\"undefined\""
+            },
+            {
+              "id": "q1-2-o4",
+              "text": "\"number\""
+            }
+          ],
+          "correctOptionIds": ["q1-2-o2"]
+        },
+        {
+          "id": "q1-3",
+          "text": "Which of these are primitive types in JavaScript?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q1-3-o1",
+              "text": "string"
+            },
+            {
+              "id": "q1-3-o2",
+              "text": "object"
+            },
+            {
+              "id": "q1-3-o3",
+              "text": "boolean"
+            },
+            {
+              "id": "q1-3-o4",
+              "text": "symbol"
+            }
+          ],
+          "correctOptionIds": ["q1-3-o1", "q1-3-o3", "q1-3-o4"]
+        },
+        {
+          "id": "q1-4",
+          "text": "What is the result of 0.1 + 0.2 === 0.3?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q1-4-o1",
+              "text": "true"
+            },
+            {
+              "id": "q1-4-o2",
+              "text": "false"
+            },
+            {
+              "id": "q1-4-o3",
+              "text": "TypeError"
+            },
+            {
+              "id": "q1-4-o4",
+              "text": "NaN"
+            }
+          ],
+          "correctOptionIds": ["q1-4-o2"]
+        },
+        {
+          "id": "q1-5",
+          "text": "Which array methods return a new array?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q1-5-o1",
+              "text": "map"
+            },
+            {
+              "id": "q1-5-o2",
+              "text": "forEach"
+            },
+            {
+              "id": "q1-5-o3",
+              "text": "filter"
+            },
+            {
+              "id": "q1-5-o4",
+              "text": "push"
+            }
+          ],
+          "correctOptionIds": ["q1-5-o1", "q1-5-o3"]
+        },
+        {
+          "id": "q1-6",
+          "text": "What does the === operator compare?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q1-6-o1",
+              "text": "Value only"
+            },
+            {
+              "id": "q1-6-o2",
+              "text": "Type only"
+            },
+            {
+              "id": "q1-6-o3",
+              "text": "Value and type"
+            },
+            {
+              "id": "q1-6-o4",
+              "text": "Reference only"
+            }
+          ],
+          "correctOptionIds": ["q1-6-o3"]
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "title": "React Fundamentals",
+      "description": "Hooks, rendering and component basics.",
+      "countries": ["IN", "GB"],
+      "timeLimitSeconds": null,
+      "perQuestionSeconds": 30,
+      "retakesAllowed": false,
+      "questions": [
+        {
+          "id": "q2-1",
+          "text": "Which hook runs side effects after render?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q2-1-o1",
+              "text": "useState"
+            },
+            {
+              "id": "q2-1-o2",
+              "text": "useEffect"
+            },
+            {
+              "id": "q2-1-o3",
+              "text": "useMemo"
+            },
+            {
+              "id": "q2-1-o4",
+              "text": "useRef"
+            }
+          ],
+          "correctOptionIds": ["q2-1-o2"]
+        },
+        {
+          "id": "q2-2",
+          "text": "Which of these trigger a re-render?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q2-2-o1",
+              "text": "Calling a state setter with a new value"
+            },
+            {
+              "id": "q2-2-o2",
+              "text": "Changing a ref's .current"
+            },
+            {
+              "id": "q2-2-o3",
+              "text": "Parent component re-rendering"
+            },
+            {
+              "id": "q2-2-o4",
+              "text": "Changing a module-level variable"
+            }
+          ],
+          "correctOptionIds": ["q2-2-o1", "q2-2-o3"]
+        },
+        {
+          "id": "q2-3",
+          "text": "What is the purpose of the key prop in lists?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q2-3-o1",
+              "text": "Styling list items"
+            },
+            {
+              "id": "q2-3-o2",
+              "text": "Helping React identify items between renders"
+            },
+            {
+              "id": "q2-3-o3",
+              "text": "Making items focusable"
+            },
+            {
+              "id": "q2-3-o4",
+              "text": "Sorting the list"
+            }
+          ],
+          "correctOptionIds": ["q2-3-o2"]
+        },
+        {
+          "id": "q2-4",
+          "text": "Which hook memoises a computed value?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q2-4-o1",
+              "text": "useCallback"
+            },
+            {
+              "id": "q2-4-o2",
+              "text": "useMemo"
+            },
+            {
+              "id": "q2-4-o3",
+              "text": "useReducer"
+            },
+            {
+              "id": "q2-4-o4",
+              "text": "useContext"
+            }
+          ],
+          "correctOptionIds": ["q2-4-o2"]
+        },
+        {
+          "id": "q2-5",
+          "text": "Which are valid rules of hooks?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q2-5-o1",
+              "text": "Call hooks at the top level"
+            },
+            {
+              "id": "q2-5-o2",
+              "text": "Call hooks inside loops"
+            },
+            {
+              "id": "q2-5-o3",
+              "text": "Call hooks only from React functions"
+            },
+            {
+              "id": "q2-5-o4",
+              "text": "Call hooks inside conditions"
+            }
+          ],
+          "correctOptionIds": ["q2-5-o1", "q2-5-o3"]
+        },
+        {
+          "id": "q2-6",
+          "text": "What does useRef return?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q2-6-o1",
+              "text": "A state tuple"
+            },
+            {
+              "id": "q2-6-o2",
+              "text": "A mutable object with a current property"
+            },
+            {
+              "id": "q2-6-o3",
+              "text": "A memoised callback"
+            },
+            {
+              "id": "q2-6-o4",
+              "text": "A context value"
+            }
+          ],
+          "correctOptionIds": ["q2-6-o2"]
+        },
+        {
+          "id": "q2-7",
+          "text": "Which React feature lets you share data without prop drilling?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q2-7-o1",
+              "text": "Portals"
+            },
+            {
+              "id": "q2-7-o2",
+              "text": "Context"
+            },
+            {
+              "id": "q2-7-o3",
+              "text": "Fragments"
+            },
+            {
+              "id": "q2-7-o4",
+              "text": "Suspense"
+            }
+          ],
+          "correctOptionIds": ["q2-7-o2"]
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "title": "World Geography",
+      "description": "Capitals, rivers and continents.",
+      "countries": ["IN", "AE", "GB"],
+      "timeLimitSeconds": 240,
+      "perQuestionSeconds": null,
+      "retakesAllowed": true,
+      "questions": [
+        {
+          "id": "q3-1",
+          "text": "What is the capital of Australia?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q3-1-o1",
+              "text": "Sydney"
+            },
+            {
+              "id": "q3-1-o2",
+              "text": "Melbourne"
+            },
+            {
+              "id": "q3-1-o3",
+              "text": "Canberra"
+            },
+            {
+              "id": "q3-1-o4",
+              "text": "Perth"
+            }
+          ],
+          "correctOptionIds": ["q3-1-o3"]
+        },
+        {
+          "id": "q3-2",
+          "text": "Which of these countries are in Africa?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q3-2-o1",
+              "text": "Kenya"
+            },
+            {
+              "id": "q3-2-o2",
+              "text": "Peru"
+            },
+            {
+              "id": "q3-2-o3",
+              "text": "Ghana"
+            },
+            {
+              "id": "q3-2-o4",
+              "text": "Nepal"
+            }
+          ],
+          "correctOptionIds": ["q3-2-o1", "q3-2-o3"]
+        },
+        {
+          "id": "q3-3",
+          "text": "Which is the longest river in the world (by most measures)?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q3-3-o1",
+              "text": "Amazon"
+            },
+            {
+              "id": "q3-3-o2",
+              "text": "Nile"
+            },
+            {
+              "id": "q3-3-o3",
+              "text": "Yangtze"
+            },
+            {
+              "id": "q3-3-o4",
+              "text": "Mississippi"
+            }
+          ],
+          "correctOptionIds": ["q3-3-o2"]
+        },
+        {
+          "id": "q3-4",
+          "text": "Which ocean is the largest?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q3-4-o1",
+              "text": "Atlantic"
+            },
+            {
+              "id": "q3-4-o2",
+              "text": "Indian"
+            },
+            {
+              "id": "q3-4-o3",
+              "text": "Arctic"
+            },
+            {
+              "id": "q3-4-o4",
+              "text": "Pacific"
+            }
+          ],
+          "correctOptionIds": ["q3-4-o4"]
+        },
+        {
+          "id": "q3-5",
+          "text": "Which of these cities are national capitals?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q3-5-o1",
+              "text": "Abu Dhabi"
+            },
+            {
+              "id": "q3-5-o2",
+              "text": "Mumbai"
+            },
+            {
+              "id": "q3-5-o3",
+              "text": "London"
+            },
+            {
+              "id": "q3-5-o4",
+              "text": "Dubai"
+            }
+          ],
+          "correctOptionIds": ["q3-5-o1", "q3-5-o3"]
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "title": "Kerala Culture and History",
+      "description": "Festivals, places and traditions of Kerala.",
+      "countries": ["IN"],
+      "timeLimitSeconds": 180,
+      "perQuestionSeconds": null,
+      "retakesAllowed": false,
+      "questions": [
+        {
+          "id": "q4-1",
+          "text": "Which festival is Kerala's harvest festival?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q4-1-o1",
+              "text": "Pongal"
+            },
+            {
+              "id": "q4-1-o2",
+              "text": "Onam"
+            },
+            {
+              "id": "q4-1-o3",
+              "text": "Bihu"
+            },
+            {
+              "id": "q4-1-o4",
+              "text": "Baisakhi"
+            }
+          ],
+          "correctOptionIds": ["q4-1-o2"]
+        },
+        {
+          "id": "q4-2",
+          "text": "What is the capital of Kerala?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q4-2-o1",
+              "text": "Kochi"
+            },
+            {
+              "id": "q4-2-o2",
+              "text": "Kozhikode"
+            },
+            {
+              "id": "q4-2-o3",
+              "text": "Thiruvananthapuram"
+            },
+            {
+              "id": "q4-2-o4",
+              "text": "Thrissur"
+            }
+          ],
+          "correctOptionIds": ["q4-2-o3"]
+        },
+        {
+          "id": "q4-3",
+          "text": "Which of these are classical art forms of Kerala?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q4-3-o1",
+              "text": "Kathakali"
+            },
+            {
+              "id": "q4-3-o2",
+              "text": "Bharatanatyam"
+            },
+            {
+              "id": "q4-3-o3",
+              "text": "Mohiniyattam"
+            },
+            {
+              "id": "q4-3-o4",
+              "text": "Kuchipudi"
+            }
+          ],
+          "correctOptionIds": ["q4-3-o1", "q4-3-o3"]
+        },
+        {
+          "id": "q4-4",
+          "text": "Which international airport serves Angamaly and Kochi?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q4-4-o1",
+              "text": "Cochin International Airport"
+            },
+            {
+              "id": "q4-4-o2",
+              "text": "Calicut International Airport"
+            },
+            {
+              "id": "q4-4-o3",
+              "text": "Kannur International Airport"
+            },
+            {
+              "id": "q4-4-o4",
+              "text": "Trivandrum International Airport"
+            }
+          ],
+          "correctOptionIds": ["q4-4-o1"]
+        },
+        {
+          "id": "q4-5",
+          "text": "Thrissur Pooram is primarily associated with which city?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q4-5-o1",
+              "text": "Kochi"
+            },
+            {
+              "id": "q4-5-o2",
+              "text": "Thrissur"
+            },
+            {
+              "id": "q4-5-o3",
+              "text": "Palakkad"
+            },
+            {
+              "id": "q4-5-o4",
+              "text": "Kollam"
+            }
+          ],
+          "correctOptionIds": ["q4-5-o2"]
+        }
+      ]
+    },
+    {
+      "id": "q5",
+      "title": "General Science",
+      "description": "Physics, chemistry and biology basics.",
+      "countries": ["AE", "GB"],
+      "timeLimitSeconds": 360,
+      "perQuestionSeconds": 45,
+      "retakesAllowed": true,
+      "questions": [
+        {
+          "id": "q5-1",
+          "text": "What is the chemical symbol for gold?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q5-1-o1",
+              "text": "Ag"
+            },
+            {
+              "id": "q5-1-o2",
+              "text": "Au"
+            },
+            {
+              "id": "q5-1-o3",
+              "text": "Gd"
+            },
+            {
+              "id": "q5-1-o4",
+              "text": "Go"
+            }
+          ],
+          "correctOptionIds": ["q5-1-o2"]
+        },
+        {
+          "id": "q5-2",
+          "text": "Which of these are noble gases?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q5-2-o1",
+              "text": "Helium"
+            },
+            {
+              "id": "q5-2-o2",
+              "text": "Nitrogen"
+            },
+            {
+              "id": "q5-2-o3",
+              "text": "Neon"
+            },
+            {
+              "id": "q5-2-o4",
+              "text": "Oxygen"
+            }
+          ],
+          "correctOptionIds": ["q5-2-o1", "q5-2-o3"]
+        },
+        {
+          "id": "q5-3",
+          "text": "What is the approximate speed of light in a vacuum?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q5-3-o1",
+              "text": "300,000 km/s"
+            },
+            {
+              "id": "q5-3-o2",
+              "text": "30,000 km/s"
+            },
+            {
+              "id": "q5-3-o3",
+              "text": "3,000 km/s"
+            },
+            {
+              "id": "q5-3-o4",
+              "text": "3,000,000 km/s"
+            }
+          ],
+          "correctOptionIds": ["q5-3-o1"]
+        },
+        {
+          "id": "q5-4",
+          "text": "Which organelle is known as the powerhouse of the cell?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q5-4-o1",
+              "text": "Nucleus"
+            },
+            {
+              "id": "q5-4-o2",
+              "text": "Ribosome"
+            },
+            {
+              "id": "q5-4-o3",
+              "text": "Mitochondrion"
+            },
+            {
+              "id": "q5-4-o4",
+              "text": "Golgi apparatus"
+            }
+          ],
+          "correctOptionIds": ["q5-4-o3"]
+        },
+        {
+          "id": "q5-5",
+          "text": "Which of these are mammals?",
+          "type": "multiple",
+          "options": [
+            {
+              "id": "q5-5-o1",
+              "text": "Dolphin"
+            },
+            {
+              "id": "q5-5-o2",
+              "text": "Shark"
+            },
+            {
+              "id": "q5-5-o3",
+              "text": "Bat"
+            },
+            {
+              "id": "q5-5-o4",
+              "text": "Penguin"
+            }
+          ],
+          "correctOptionIds": ["q5-5-o1", "q5-5-o3"]
+        },
+        {
+          "id": "q5-6",
+          "text": "What is H2O commonly called?",
+          "type": "single",
+          "options": [
+            {
+              "id": "q5-6-o1",
+              "text": "Hydrogen peroxide"
+            },
+            {
+              "id": "q5-6-o2",
+              "text": "Water"
+            },
+            {
+              "id": "q5-6-o3",
+              "text": "Salt"
+            },
+            {
+              "id": "q5-6-o4",
+              "text": "Ammonia"
+            }
+          ],
+          "correctOptionIds": ["q5-6-o2"]
+        }
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "id": "a1",
+      "quizId": "q1",
+      "userId": "u1",
+      "status": "completed",
+      "startedAt": "2026-10-01T10:00:00Z",
+      "currentQuestionIndex": 6,
+      "answers": [
+        {
+          "questionId": "q1-1",
+          "selectedOptionIds": ["q1-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-01T10:00:24Z"
+        },
+        {
+          "questionId": "q1-2",
+          "selectedOptionIds": ["q1-2-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-01T10:00:48Z"
+        },
+        {
+          "questionId": "q1-3",
+          "selectedOptionIds": ["q1-3-o1", "q1-3-o3", "q1-3-o4"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-01T10:01:12Z"
+        },
+        {
+          "questionId": "q1-4",
+          "selectedOptionIds": ["q1-4-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-01T10:01:36Z"
+        },
+        {
+          "questionId": "q1-5",
+          "selectedOptionIds": ["q1-5-o2"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-01T10:02:00Z"
+        },
+        {
+          "questionId": "q1-6",
+          "selectedOptionIds": ["q1-6-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-01T10:02:24Z"
+        }
+      ],
+      "completedAt": "2026-10-01T10:02:22Z",
+      "score": 5,
+      "totalQuestions": 6,
+      "percentage": 83.3,
+      "timeTakenSeconds": 142
+    },
+    {
+      "id": "a2",
+      "quizId": "q1",
+      "userId": "u2",
+      "status": "completed",
+      "startedAt": "2026-10-02T10:00:00Z",
+      "currentQuestionIndex": 6,
+      "answers": [
+        {
+          "questionId": "q1-1",
+          "selectedOptionIds": ["q1-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-02T10:00:28Z"
+        },
+        {
+          "questionId": "q1-2",
+          "selectedOptionIds": ["q1-2-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-02T10:00:56Z"
+        },
+        {
+          "questionId": "q1-3",
+          "selectedOptionIds": ["q1-3-o1", "q1-3-o3", "q1-3-o4"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-02T10:01:24Z"
+        },
+        {
+          "questionId": "q1-4",
+          "selectedOptionIds": ["q1-4-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-02T10:01:52Z"
+        },
+        {
+          "questionId": "q1-5",
+          "selectedOptionIds": ["q1-5-o1", "q1-5-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-02T10:02:20Z"
+        },
+        {
+          "questionId": "q1-6",
+          "selectedOptionIds": ["q1-6-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-02T10:02:48Z"
+        }
+      ],
+      "completedAt": "2026-10-02T10:02:48Z",
+      "score": 6,
+      "totalQuestions": 6,
+      "percentage": 100.0,
+      "timeTakenSeconds": 168
+    },
+    {
+      "id": "a3",
+      "quizId": "q1",
+      "userId": "u3",
+      "status": "completed",
+      "startedAt": "2026-10-03T10:00:00Z",
+      "currentQuestionIndex": 6,
+      "answers": [
+        {
+          "questionId": "q1-1",
+          "selectedOptionIds": ["q1-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T10:00:34Z"
+        },
+        {
+          "questionId": "q1-2",
+          "selectedOptionIds": ["q1-2-o1"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-03T10:01:08Z"
+        },
+        {
+          "questionId": "q1-3",
+          "selectedOptionIds": ["q1-3-o1", "q1-3-o3", "q1-3-o4"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T10:01:42Z"
+        },
+        {
+          "questionId": "q1-4",
+          "selectedOptionIds": ["q1-4-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T10:02:16Z"
+        },
+        {
+          "questionId": "q1-5",
+          "selectedOptionIds": ["q1-5-o1", "q1-5-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T10:02:50Z"
+        },
+        {
+          "questionId": "q1-6",
+          "selectedOptionIds": ["q1-6-o1"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-03T10:03:24Z"
+        }
+      ],
+      "completedAt": "2026-10-03T10:03:21Z",
+      "score": 4,
+      "totalQuestions": 6,
+      "percentage": 66.7,
+      "timeTakenSeconds": 201
+    },
+    {
+      "id": "a4",
+      "quizId": "q1",
+      "userId": "u4",
+      "status": "completed",
+      "startedAt": "2026-10-03T13:00:00Z",
+      "currentQuestionIndex": 6,
+      "answers": [
+        {
+          "questionId": "q1-1",
+          "selectedOptionIds": ["q1-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T13:00:20Z"
+        },
+        {
+          "questionId": "q1-2",
+          "selectedOptionIds": ["q1-2-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T13:00:40Z"
+        },
+        {
+          "questionId": "q1-3",
+          "selectedOptionIds": ["q1-3-o1", "q1-3-o3", "q1-3-o4"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T13:01:00Z"
+        },
+        {
+          "questionId": "q1-4",
+          "selectedOptionIds": ["q1-4-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T13:01:20Z"
+        },
+        {
+          "questionId": "q1-5",
+          "selectedOptionIds": ["q1-5-o2"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-03T13:01:40Z"
+        },
+        {
+          "questionId": "q1-6",
+          "selectedOptionIds": ["q1-6-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-03T13:02:00Z"
+        }
+      ],
+      "completedAt": "2026-10-03T13:01:59Z",
+      "score": 5,
+      "totalQuestions": 6,
+      "percentage": 83.3,
+      "timeTakenSeconds": 119
+    },
+    {
+      "id": "a5",
+      "quizId": "q2",
+      "userId": "u1",
+      "status": "completed",
+      "startedAt": "2026-10-04T10:00:00Z",
+      "currentQuestionIndex": 7,
+      "answers": [
+        {
+          "questionId": "q2-1",
+          "selectedOptionIds": ["q2-1-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T10:00:25Z"
+        },
+        {
+          "questionId": "q2-2",
+          "selectedOptionIds": ["q2-2-o1", "q2-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T10:00:50Z"
+        },
+        {
+          "questionId": "q2-3",
+          "selectedOptionIds": ["q2-3-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T10:01:15Z"
+        },
+        {
+          "questionId": "q2-4",
+          "selectedOptionIds": ["q2-4-o1"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-04T10:01:40Z"
+        },
+        {
+          "questionId": "q2-5",
+          "selectedOptionIds": ["q2-5-o1", "q2-5-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T10:02:05Z"
+        },
+        {
+          "questionId": "q2-6",
+          "selectedOptionIds": ["q2-6-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T10:02:30Z"
+        },
+        {
+          "questionId": "q2-7",
+          "selectedOptionIds": ["q2-7-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T10:02:55Z"
+        }
+      ],
+      "completedAt": "2026-10-04T10:02:54Z",
+      "score": 6,
+      "totalQuestions": 7,
+      "percentage": 85.7,
+      "timeTakenSeconds": 174
+    },
+    {
+      "id": "a6",
+      "quizId": "q2",
+      "userId": "u3",
+      "status": "completed",
+      "startedAt": "2026-10-04T12:00:00Z",
+      "currentQuestionIndex": 7,
+      "answers": [
+        {
+          "questionId": "q2-1",
+          "selectedOptionIds": ["q2-1-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:00:27Z"
+        },
+        {
+          "questionId": "q2-2",
+          "selectedOptionIds": ["q2-2-o1", "q2-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:00:54Z"
+        },
+        {
+          "questionId": "q2-3",
+          "selectedOptionIds": ["q2-3-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:01:21Z"
+        },
+        {
+          "questionId": "q2-4",
+          "selectedOptionIds": ["q2-4-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:01:48Z"
+        },
+        {
+          "questionId": "q2-5",
+          "selectedOptionIds": ["q2-5-o1", "q2-5-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:02:15Z"
+        },
+        {
+          "questionId": "q2-6",
+          "selectedOptionIds": ["q2-6-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:02:42Z"
+        },
+        {
+          "questionId": "q2-7",
+          "selectedOptionIds": ["q2-7-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-04T12:03:09Z"
+        }
+      ],
+      "completedAt": "2026-10-04T12:03:08Z",
+      "score": 7,
+      "totalQuestions": 7,
+      "percentage": 100.0,
+      "timeTakenSeconds": 188
+    },
+    {
+      "id": "a7",
+      "quizId": "q3",
+      "userId": "u2",
+      "status": "completed",
+      "startedAt": "2026-10-05T10:00:00Z",
+      "currentQuestionIndex": 5,
+      "answers": [
+        {
+          "questionId": "q3-1",
+          "selectedOptionIds": ["q3-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T10:00:19Z"
+        },
+        {
+          "questionId": "q3-2",
+          "selectedOptionIds": ["q3-2-o1", "q3-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T10:00:38Z"
+        },
+        {
+          "questionId": "q3-3",
+          "selectedOptionIds": ["q3-3-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T10:00:57Z"
+        },
+        {
+          "questionId": "q3-4",
+          "selectedOptionIds": ["q3-4-o4"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T10:01:16Z"
+        },
+        {
+          "questionId": "q3-5",
+          "selectedOptionIds": ["q3-5-o2"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-05T10:01:35Z"
+        }
+      ],
+      "completedAt": "2026-10-05T10:01:36Z",
+      "score": 4,
+      "totalQuestions": 5,
+      "percentage": 80.0,
+      "timeTakenSeconds": 96
+    },
+    {
+      "id": "a8",
+      "quizId": "q3",
+      "userId": "u3",
+      "status": "completed",
+      "startedAt": "2026-10-05T15:00:00Z",
+      "currentQuestionIndex": 5,
+      "answers": [
+        {
+          "questionId": "q3-1",
+          "selectedOptionIds": ["q3-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T15:00:26Z"
+        },
+        {
+          "questionId": "q3-2",
+          "selectedOptionIds": ["q3-2-o1", "q3-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T15:00:52Z"
+        },
+        {
+          "questionId": "q3-3",
+          "selectedOptionIds": ["q3-3-o1"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-05T15:01:18Z"
+        },
+        {
+          "questionId": "q3-4",
+          "selectedOptionIds": ["q3-4-o4"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T15:01:44Z"
+        },
+        {
+          "questionId": "q3-5",
+          "selectedOptionIds": ["q3-5-o1", "q3-5-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-05T15:02:10Z"
+        }
+      ],
+      "completedAt": "2026-10-05T15:02:10Z",
+      "score": 4,
+      "totalQuestions": 5,
+      "percentage": 80.0,
+      "timeTakenSeconds": 130
+    },
+    {
+      "id": "a9",
+      "quizId": "q4",
+      "userId": "u4",
+      "status": "completed",
+      "startedAt": "2026-10-06T10:00:00Z",
+      "currentQuestionIndex": 5,
+      "answers": [
+        {
+          "questionId": "q4-1",
+          "selectedOptionIds": ["q4-1-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-06T10:00:18Z"
+        },
+        {
+          "questionId": "q4-2",
+          "selectedOptionIds": ["q4-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-06T10:00:36Z"
+        },
+        {
+          "questionId": "q4-3",
+          "selectedOptionIds": ["q4-3-o1", "q4-3-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-06T10:00:54Z"
+        },
+        {
+          "questionId": "q4-4",
+          "selectedOptionIds": ["q4-4-o1"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-06T10:01:12Z"
+        },
+        {
+          "questionId": "q4-5",
+          "selectedOptionIds": ["q4-5-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-06T10:01:30Z"
+        }
+      ],
+      "completedAt": "2026-10-06T10:01:28Z",
+      "score": 5,
+      "totalQuestions": 5,
+      "percentage": 100.0,
+      "timeTakenSeconds": 88
+    },
+    {
+      "id": "a10",
+      "quizId": "q5",
+      "userId": "u2",
+      "status": "completed",
+      "startedAt": "2026-10-07T10:00:00Z",
+      "currentQuestionIndex": 6,
+      "answers": [
+        {
+          "questionId": "q5-1",
+          "selectedOptionIds": ["q5-1-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-07T10:00:35Z"
+        },
+        {
+          "questionId": "q5-2",
+          "selectedOptionIds": ["q5-2-o1", "q5-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-07T10:01:10Z"
+        },
+        {
+          "questionId": "q5-3",
+          "selectedOptionIds": ["q5-3-o1"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-07T10:01:45Z"
+        },
+        {
+          "questionId": "q5-4",
+          "selectedOptionIds": ["q5-4-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-07T10:02:20Z"
+        },
+        {
+          "questionId": "q5-5",
+          "selectedOptionIds": ["q5-5-o2"],
+          "isCorrect": false,
+          "answeredAt": "2026-10-07T10:02:55Z"
+        },
+        {
+          "questionId": "q5-6",
+          "selectedOptionIds": ["q5-6-o2"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-07T10:03:30Z"
+        }
+      ],
+      "completedAt": "2026-10-07T10:03:30Z",
+      "score": 5,
+      "totalQuestions": 6,
+      "percentage": 83.3,
+      "timeTakenSeconds": 210
+    },
+    {
+      "id": "a11",
+      "quizId": "q3",
+      "userId": "u1",
+      "status": "in_progress",
+      "startedAt": "2026-10-16T09:00:00Z",
+      "currentQuestionIndex": 2,
+      "answers": [
+        {
+          "questionId": "q3-1",
+          "selectedOptionIds": ["q3-1-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-16T09:00:00Z"
+        },
+        {
+          "questionId": "q3-2",
+          "selectedOptionIds": ["q3-2-o1", "q3-2-o3"],
+          "isCorrect": true,
+          "answeredAt": "2026-10-16T09:00:00Z"
+        }
+      ],
+      "completedAt": null,
+      "score": null,
+      "totalQuestions": 5,
+      "percentage": null,
+      "timeTakenSeconds": null
+    }
+  ]
+}
