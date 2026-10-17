@@ -1,11 +1,8 @@
-import PageLayout from "./components/layouts/PageLayout";
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./routes/router";
 
 function App() {
-  return (
-    <PageLayout>
-      <h1>Kalidas Rajeev</h1>
-    </PageLayout>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
