@@ -1,4 +1,4 @@
-import { ChartColumn, Clock3, ListChecks, RotateCcw } from "lucide-react";
+import { ChartColumn, Clock3, RotateCcw } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,17 +41,17 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
     <Card
       role="article"
       aria-labelledby={`quiz-title-${quiz.id}`}
-      className="h-full min-w-0 gap-4 rounded-lg bg-muted py-5 shadow-none ring-0 [--card-spacing:--spacing(5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300"
+      className="h-full min-w-0 gap-5.5 rounded-lg bg-muted py-5 shadow-none ring-0 [--card-spacing:--spacing(5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300"
     >
       <CardHeader className="flex items-start justify-between gap-4 rounded-none">
         <div className="min-w-0 flex-1">
           <h2
             id={`quiz-title-${quiz.id}`}
-            className="text-lg leading-6 font-semibold tracking-normal wrap-anywhere"
+            className="text-[18px] leading-6 font-semibold tracking-normal wrap-anywhere"
           >
             {quiz.title}
           </h2>
-          <p className="mt-2 text-base leading-relaxed text-foreground wrap-anywhere">
+          <p className="mt-2 text-md leading-relaxed text-foreground wrap-anywhere">
             {quiz.description}
           </p>
         </div>
@@ -76,11 +76,11 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
           ]}
           aria-label={`${quiz.title}: ${quiz.status === "completed" ? "prior score" : "answer progress"}`}
           aria-valuetext={`${quiz.score !== null ? `Prior score: ${quiz.score} of ${totalQuestions}. ` : ""}${quiz.answeredQuestions} of ${totalQuestions} answered. ${resultSummary}.`}
-          className="size-16"
+          className="size-14"
         >
           <span
             aria-hidden="true"
-            className="relative flex flex-col items-center gap-1 text-base leading-none font-semibold text-foreground tabular-nums"
+            className="relative flex flex-col items-center gap-1 text-md leading-none font-semibold text-foreground tabular-nums"
           >
             <span>
               {quiz.score ?? quiz.answeredQuestions}/{totalQuestions}
@@ -90,10 +90,6 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <ListChecks className="size-4 shrink-0" aria-hidden="true" />
-            {totalQuestions} {totalQuestions === 1 ? "question" : "questions"}
-          </span>
           <span className="inline-flex items-center gap-1.5">
             <Clock3 className="size-4 shrink-0" aria-hidden="true" />
             {timeLimit}

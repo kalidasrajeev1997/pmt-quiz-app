@@ -12,6 +12,7 @@ import {
 import { Blocks } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import countryFlagMap from "@/helpers/countryFlagMap";
+import Sidebar from "@/components/layouts/Sidebar";
 
 function UserAvatar({ name }: { name: string }) {
   const initials = name
@@ -166,9 +167,12 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
       {/* main content */}
-      <ScrollArea className="min-h-0 flex-1">
-        <main>{children}</main>
-      </ScrollArea>
+      <div className="flex min-h-0 flex-1">
+        <Sidebar />
+        <ScrollArea className="min-h-0 min-w-0 flex-1">
+          <main>{children}</main>
+        </ScrollArea>
+      </div>
     </div>
   );
 };
