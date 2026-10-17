@@ -1,11 +1,4 @@
-import {
-  ArrowRight,
-  ChartColumn,
-  Clock3,
-  ListChecks,
-  Play,
-  RotateCcw,
-} from "lucide-react";
+import { ChartColumn, Clock3, ListChecks, RotateCcw } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,24 +10,8 @@ import {
 import { Progress } from "@/components/ui/progress";
 import countryFlagMap from "@/helpers/countryFlagMap";
 import type { QuizQueryResult } from "@/services/db/queries/quiz";
-
-const statusStyles = {
-  "not-started": {
-    label: "Not started",
-    color: "text-muted-foreground",
-    dot: "bg-muted-foreground",
-  },
-  "in-progress": {
-    label: "In progress",
-    color: "text-ring",
-    dot: "bg-primary",
-  },
-  completed: {
-    label: "Completed",
-    color: "text-green-700",
-    dot: "bg-green-100",
-  },
-};
+import { QuizButtonLabel } from "@/helpers/quizStatus";
+import { statusStyles } from "@/helpers/constants";
 
 function formatDuration(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -58,6 +35,7 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
       : quiz.perQuestionSeconds !== null
         ? `${formatDuration(quiz.perQuestionSeconds)} / ques`
         : "No time limit";
+  const statusOptions = QuizButtonLabel({ status: quiz.status });
 
   return (
     <Card
@@ -198,18 +176,8 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
                 />
               }
             >
-              {quiz.status === "completed" ? (
-                <RotateCcw aria-hidden="true" data-icon="inline-start" />
-              ) : quiz.status === "in-progress" ? (
-                <ArrowRight aria-hidden="true" data-icon="inline-start" />
-              ) : (
-                <Play aria-hidden="true" data-icon="inline-start" />
-              )}
-              {quiz.status === "completed"
-                ? "Retake quiz"
-                : quiz.status === "in-progress"
-                  ? "Continue quiz"
-                  : "Start quiz"}
+              {statusOptions.icon}
+              {statusOptions.label}
             </Button>
           )}
         </div>
