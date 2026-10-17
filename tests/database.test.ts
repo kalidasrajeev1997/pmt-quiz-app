@@ -171,6 +171,122 @@ test("quiz queries scope attempts to the user and filter countries before pagina
   assert.deepEqual(await getQuizzesQuery(1, 10, "u1", "US"), []);
 });
 
+test("quiz queries keep correct, incorrect, and unanswered questions separate", async (context): Promise<void> => {
+  const now = new Date("2026-10-17T10:00:00Z");
+  context.mock.timers.enable({ apis: ["Date"], now });
+  const database = await initializeDatabase();
+  const quiz = await database.get("quizzes", "q1");
+  const attempt = await database.get("attempts", "a11");
+  const completedAttempt = await database.get("attempts", "a1");
+  assert.ok(quiz);
+  assert.ok(attempt);
+  assert.ok(completedAttempt);
+  await database.clear("quizzes");
+  await database.clear("attempts");
+  const questions = quiz.questions.slice(0, 5);
+  const answers = [
+    {
+      ...attempt.answers[0],
+      questionId: questions[0].id,
+      isCorrect: false,
+      answeredAt: "2026-10-17T09:59:50Z",
+    },
+    {
+      ...attempt.answers[0],
+      questionId: questions[0].id,
+      isCorrect: true,
+      answeredAt: "2026-10-17T09:59:40Z",
+    },
+    { ...attempt.answers[0], questionId: questions[1].id, isCorrect: true },
+    {
+      ...attempt.answers[0],
+      questionId: questions[2].id,
+      selectedOptionIds: [],
+      isCorrect: false,
+    },
+    { ...attempt.answers[0], questionId: "unknown-question", isCorrect: true },
+  ];
+
+  for (const id of ["active", "expired", "finished", "untouched", "empty"]) {
+    await database.put("quizzes", {
+      ...quiz,
+      id,
+      questions: id === "empty" ? [] : questions,
+      timeLimitSeconds: 300,
+    });
+    if (id !== "untouched" && id !== "empty") {
+      await database.put("attempts", {
+        ...attempt,
+        id,
+        quizId: id,
+        userId: "u1",
+        totalQuestions: 5,
+        answers,
+        startedAt:
+          id === "expired" ? "2026-10-17T09:50:00Z" : "2026-10-17T09:59:00Z",
+      });
+    }
+  }
+  await database.put("attempts", {
+    ...completedAttempt,
+    id: "finished",
+    quizId: "finished",
+    userId: "u1",
+    totalQuestions: 5,
+    answers,
+    score: 1,
+    percentage: 20,
+  });
+  await database.put("attempts", {
+    ...completedAttempt,
+    id: "prior-retake",
+    quizId: "active",
+    userId: "u1",
+    startedAt: "2026-10-16T09:00:00Z",
+  });
+  await database.put("attempts", {
+    ...completedAttempt,
+    id: "other-user",
+    quizId: "untouched",
+    userId: "u2",
+  });
+
+  const quizzes = await getQuizzesQuery(1, 10, "u1", "IN");
+  for (const id of ["active", "expired", "finished"]) {
+    const result = quizzes.find((quiz) => quiz.id === id);
+    assert.ok(result);
+    assert.equal(result.answeredQuestions, 2);
+    assert.equal(result.correctQuestions, 1);
+    assert.equal(result.incorrectQuestions, 1);
+    assert.equal(result.unansweredQuestions, 3);
+    assert.equal(result.score, id === "active" ? null : 1);
+    assert.equal(result.scorePercentage, id === "active" ? null : 20);
+    assert.equal("answers" in result, false);
+    assert.ok(
+      result.questions.every((question) => !("correctOptionIds" in question)),
+    );
+  }
+  const untouched = quizzes.find((quiz) => quiz.id === "untouched");
+  assert.ok(untouched);
+  assert.equal(untouched.answeredQuestions, 0);
+  assert.equal(untouched.correctQuestions, 0);
+  assert.equal(untouched.incorrectQuestions, 0);
+  assert.equal(untouched.unansweredQuestions, 5);
+  assert.equal(untouched.score, null);
+  assert.equal(
+    quizzes.find((quiz) => quiz.id === "empty")?.unansweredQuestions,
+    0,
+  );
+  assert.deepEqual(
+    (await database.get("attempts", "finished"))?.answers,
+    answers,
+  );
+  assert.equal(
+    (await database.get("attempts", "expired"))?.status,
+    "in_progress",
+  );
+});
+
 test("quiz queries derive status from attempts and time limits before pagination", async (context): Promise<void> => {
   const now = new Date("2026-10-17T10:00:00Z");
   context.mock.timers.enable({ apis: ["Date"], now });
@@ -258,6 +374,16 @@ test("quiz queries derive status from attempts and time limits before pagination
         quizId: scenario.id,
         userId: "u1",
         totalQuestions: 5,
+        answers: [
+          { ...activeAttempt.answers[0], questionId: quiz.questions[0].id },
+          { ...activeAttempt.answers[0], questionId: quiz.questions[0].id },
+          { ...activeAttempt.answers[0], questionId: "unknown-question" },
+          {
+            ...activeAttempt.answers[0],
+            questionId: quiz.questions[1].id,
+            selectedOptionIds: [],
+          },
+        ],
         startedAt: new Date(
           now.getTime() - scenario.elapsed * 1000,
         ).toISOString(),
@@ -278,6 +404,17 @@ test("quiz queries derive status from attempts and time limits before pagination
     quizzes.map(({ id, status }) => ({ id, status })),
     cases.map(({ id, status }) => ({ id, status })),
   );
+  assert.deepEqual(
+    quizzes.map(({ answeredQuestions }) => answeredQuestions),
+    cases.map((scenario) =>
+      scenario.elapsed !== null
+        ? 1
+        : scenario.id === "q5"
+          ? quiz.questions.length
+          : 0,
+    ),
+  );
+  assert.ok(quizzes.every((quiz) => !("answers" in quiz)));
   for (const status of ["not-started", "in-progress", "completed"] as const) {
     assert.deepEqual(
       await getQuizzesQuery(1, 20, "u1", "IN", status),

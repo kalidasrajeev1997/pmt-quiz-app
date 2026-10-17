@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 import { useSelection } from "@/hooks/useSelection";
 import { getQuizzes } from "@/services/quiz.service";
+import QuizCard from "@/components/home/QuizCard";
 
 const PAGE_SIZE = 10;
 
@@ -63,9 +64,14 @@ const HomeContainer = () => {
         ) : quizzes?.length === 0 ? (
           <p>No quizzes found.</p>
         ) : (
-          <ul>
+          <ul
+            aria-label="Quizzes"
+            className="grid auto-rows-fr grid-cols-1 gap-4 py-3 md:grid-cols-2 xl:grid-cols-3"
+          >
             {quizzes?.map((quiz) => (
-              <li key={quiz.id}>{quiz.title}</li>
+              <li key={quiz.id} className="min-w-0">
+                <QuizCard quiz={quiz} />
+              </li>
             ))}
           </ul>
         )}

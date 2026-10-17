@@ -1,5 +1,5 @@
 import { initializeDatabase } from "../database";
-import type { Attempt, Country, Quiz, User } from "@/types/quiz";
+import type { Answer, Attempt, Country, Quiz, User } from "@/types/quiz";
 import { simulateDelay } from "../../../lib/utils";
 
 type QuizStatus = "not-started" | "in-progress" | "completed";
@@ -7,6 +7,12 @@ type QuizStatus = "not-started" | "in-progress" | "completed";
 export type QuizQueryResult = Omit<Quiz, "questions"> & {
   questions: Omit<Quiz["questions"][number], "correctOptionIds">[];
   status: QuizStatus;
+  answeredQuestions: number;
+  correctQuestions: number;
+  incorrectQuestions: number;
+  unansweredQuestions: number;
+  score: number | null;
+  scorePercentage: number | null;
 };
 
 export const getQuizzesQuery = async (
@@ -45,8 +51,11 @@ export const getQuizzesQuery = async (
   const matchingQuizzes = quizzes
     .filter((quiz) => quiz.countries.includes(country))
     .map((quiz) => {
-      const quizAttempts = attemptsByQuiz.get(quiz.id) ?? [];
-      const hasActiveAttempt = quizAttempts.some((attempt) => {
+      const quizAttempts = [...(attemptsByQuiz.get(quiz.id) ?? [])].sort(
+        (first, second) =>
+          Date.parse(second.startedAt) - Date.parse(first.startedAt),
+      );
+      const activeAttempt = quizAttempts.find((attempt) => {
         if (attempt.status === "completed") {
           return false;
         }
@@ -59,13 +68,56 @@ export const getQuizzesQuery = async (
         );
         return now < Date.parse(attempt.startedAt) + timeLimitSeconds * 1000;
       });
-      const quizStatus: QuizStatus = hasActiveAttempt
+      const quizStatus: QuizStatus = activeAttempt
         ? "in-progress"
         : quizAttempts.length > 0
           ? "completed"
           : "not-started";
 
-      return { ...quiz, status: quizStatus };
+      const latestAttempt = activeAttempt ?? quizAttempts[0];
+      const questionIds = new Set(
+        quiz.questions.map((question) => question.id),
+      );
+      const latestAnswers = new Map<Answer["questionId"], Answer>();
+      for (const answer of latestAttempt?.answers ?? []) {
+        if (!questionIds.has(answer.questionId)) {
+          continue;
+        }
+        const previousAnswer = latestAnswers.get(answer.questionId);
+        if (
+          !previousAnswer ||
+          Date.parse(answer.answeredAt) >= Date.parse(previousAnswer.answeredAt)
+        ) {
+          latestAnswers.set(answer.questionId, answer);
+        }
+      }
+      const answered = [...latestAnswers.values()].filter(
+        (answer) => answer.selectedOptionIds.length > 0,
+      );
+      const answeredQuestions = answered.length;
+      const correctQuestions = answered.filter(
+        (answer) => answer.isCorrect,
+      ).length;
+      const incorrectQuestions = answeredQuestions - correctQuestions;
+      const unansweredQuestions = quiz.questions.length - answeredQuestions;
+      const score = quizStatus === "completed" ? correctQuestions : null;
+      const scorePercentage =
+        score === null
+          ? null
+          : quiz.questions.length > 0
+            ? Math.round((score / quiz.questions.length) * 100)
+            : 0;
+
+      return {
+        ...quiz,
+        status: quizStatus,
+        answeredQuestions,
+        correctQuestions,
+        incorrectQuestions,
+        unansweredQuestions,
+        score,
+        scorePercentage,
+      };
     })
     .filter((quiz) => status === "all" || quiz.status === status);
 
