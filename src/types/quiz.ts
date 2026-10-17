@@ -82,3 +82,5 @@ export interface SeedData {
   quizzes: Quiz[];
   attempts: Attempt[];
 }
+
+export type TabStatus = "all" | "not-started" | "in-progress" | "completed";

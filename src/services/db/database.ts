@@ -1,8 +1,8 @@
 import { openDB } from "idb";
 import type { IDBPDatabase, StoreKey, StoreValue } from "idb";
-import seed from "../data/seed.json";
-import type { QuizDatabase, TableName } from "../types/database";
-import type { SeedData } from "../types/quiz";
+import seed from "../../data/seed.json";
+import type { QuizDatabase, TableName } from "../../types/database";
+import type { SeedData } from "../../types/quiz";
 
 export const DATABASE_NAME = "pmt-quiz-app";
 export const DATABASE_VERSION = 1;

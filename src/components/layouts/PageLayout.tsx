@@ -1,5 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSelection } from "@/hooks/use-selection";
+import { useSelection } from "@/hooks/useSelection";
 import {
   Select,
   SelectContent,
@@ -9,8 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Blocks, Globe } from "lucide-react";
+import { Blocks } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import countryFlagMap from "@/helpers/countryFlagMap";
 
 function UserAvatar({ name }: { name: string }) {
   const initials = name
@@ -45,8 +46,8 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       {/* header */}
-      <header className="shrink-0 border">
-        <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 p-2">
+      <header className="shrink-0 border-b">
+        <div className="flex min-h-13 flex-wrap items-center justify-between gap-2 p-2">
           <div className="flex items-center">
             <div className="bg-primary rounded p-1">
               <Blocks className="text-white" />
@@ -67,7 +68,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             >
               <SelectTrigger
                 aria-label="Selected user"
-                className="min-w-0 flex-1 sm:w-36"
+                className="w-46 min-w-0 shrink-0"
               >
                 <SelectValue
                   placeholder={isLoading ? "Loading users..." : "No users"}
@@ -112,9 +113,8 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             >
               <SelectTrigger
                 aria-label="Selected country"
-                className="min-w-0 flex-1 sm:w-52"
+                className="w-22 shrink-0"
               >
-                <Globe aria-hidden="true" />
                 <SelectValue
                   className="min-w-0 text-xs"
                   placeholder={
@@ -122,7 +122,18 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
                   }
                 >
                   {selectedCountry && (
-                    <span className="truncate">{selectedCountry.name}</span>
+                    <>
+                      <img
+                        src={
+                          countryFlagMap[
+                            selectedCountry.code as "IN" | "GB" | "AE"
+                          ]
+                        }
+                        alt={`${selectedCountry.name} flag`}
+                        className="w-4 h-4 mr-1"
+                      />
+                      <span className="truncate">{selectedCountry.code}</span>
+                    </>
                   )}
                 </SelectValue>
               </SelectTrigger>
@@ -135,7 +146,12 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
                       value={country.code}
                       className="text-xs"
                     >
-                      {country.name}
+                      <img
+                        src={countryFlagMap[country.code as "IN" | "GB" | "AE"]}
+                        alt={`${country.name} flag`}
+                        className="w-4 h-4 mr-1"
+                      />
+                      {country.code}
                     </SelectItem>
                   ))}
                 </SelectGroup>

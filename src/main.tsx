@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
-import { initializeDatabase } from "./services/database";
+import { initializeDatabase } from "./services/db/database.ts";
 
 async function bootstrap(): Promise<void> {
   const rootElement = document.getElementById("root");

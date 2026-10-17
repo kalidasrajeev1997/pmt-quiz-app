@@ -1,7 +1,8 @@
 import { type ReactNode, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SelectionContext } from "@/hooks/use-selection";
-import { getAllRecords } from "@/services/database";
+import { SelectionContext } from "@/hooks/useSelection";
+import { QUERY_KEYS } from "@/lib/queryKeys";
+import { getAllRecords } from "@/services/db/database";
 import type { Country, User } from "@/types/quiz";
 import {
   countryFilterService,
@@ -16,11 +17,11 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     getCountry(),
   );
   const usersQuery = useQuery({
-    queryKey: ["users"],
+    queryKey: QUERY_KEYS.USERS,
     queryFn: () => getAllRecords("users"),
   });
   const countriesQuery = useQuery({
-    queryKey: ["countries"],
+    queryKey: QUERY_KEYS.COUNTRIES,
     queryFn: () => getAllRecords("countries"),
   });
 
