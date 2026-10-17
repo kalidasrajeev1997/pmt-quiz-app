@@ -11,11 +11,9 @@ import {
 } from "@/services/filters.service";
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
-  const selectedUserFromStorage = getUser();
-  const selectedCountryFromStorage = getCountry();
-  const [user, setUser] = useState<User["id"] | null>(selectedUserFromStorage);
-  const [country, setCountry] = useState<Country["code"] | null>(
-    selectedCountryFromStorage,
+  const [user, setUser] = useState<User["id"] | null>(() => getUser());
+  const [country, setCountry] = useState<Country["code"] | null>(() =>
+    getCountry(),
   );
   const usersQuery = useQuery({
     queryKey: ["users"],
