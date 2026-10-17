@@ -16,16 +16,18 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
   const [country, setCountry] = useState<Country["code"] | null>(() =>
     getCountry(),
   );
-  const usersQuery = useQuery({
-    queryKey: QUERY_KEYS.USERS,
-    queryFn: () => getAllRecords("users"),
-  });
   const countriesQuery = useQuery({
     queryKey: QUERY_KEYS.COUNTRIES,
     queryFn: () => getAllRecords("countries"),
   });
+  const usersQuery = useQuery({
+    queryKey: QUERY_KEYS.USERS,
+    queryFn: () => getAllRecords("users"),
+    enabled: !!countriesQuery.data,
+  });
 
-  const users = usersQuery.data ?? [];
+  const users =
+    usersQuery.data?.filter((user) => user.country === country) ?? [];
   const countries = countriesQuery.data ?? [];
   const selectedUser =
     users.find((userIdx) => userIdx.id === user) ?? users[0] ?? null;

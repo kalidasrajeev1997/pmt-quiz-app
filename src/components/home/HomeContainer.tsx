@@ -5,6 +5,7 @@ import { QUERY_KEYS } from "@/lib/queryKeys";
 import { useSelection } from "@/hooks/useSelection";
 import { getQuizzes } from "@/services/quiz.service";
 import QuizCard from "@/components/home/QuizCard";
+import QuizCardSkeleton from "@/components/home/QuizCardSkeleton";
 
 const PAGE_SIZE = 10;
 
@@ -54,7 +55,22 @@ const HomeContainer = () => {
     <div className="p-3">
       <HomeTabs tab={tab} setTab={setTab}>
         {isLoading || quizzesLoading ? (
-          <p role="status">Loading quizzes...</p>
+          <>
+            <p role="status" className="sr-only">
+              Loading quizzes...
+            </p>
+            <ul
+              aria-label="Loading quizzes"
+              aria-busy="true"
+              className="grid auto-rows-fr grid-cols-1 gap-4 py-3 md:grid-cols-2 xl:grid-cols-3"
+            >
+              {Array.from({ length: 4 }, (_, index) => (
+                <li key={index} className="min-w-0">
+                  <QuizCardSkeleton />
+                </li>
+              ))}
+            </ul>
+          </>
         ) : error || quizzesError ? (
           <p role="alert">
             {error ?? `Error loading quizzes: ${quizzesError?.message}`}
