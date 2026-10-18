@@ -4,4 +4,6 @@ export const QUERY_KEYS = {
   QUIZZES: ["quizzes"],
   SESSION: ["session"],
   SESSION_ACTION: ["session-action"],
+  LEADERBOARD: ["leaderboard"],
+  LEADERBOARD_QUIZZES: ["leaderboard-quizzes"],
 };
