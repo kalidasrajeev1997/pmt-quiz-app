@@ -16,6 +16,7 @@ const Sidebar = () => (
         key={to}
         // "/leaderboard" is not registered in the router yet; drop the cast once it is.
         to={to as "/home"}
+        search={{ status: "all", page: 1 }}
         aria-label={label}
         className="flex items-center justify-center gap-2 rounded-md p-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:justify-start"
         activeProps={{

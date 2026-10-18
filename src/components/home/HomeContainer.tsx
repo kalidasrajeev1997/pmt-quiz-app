@@ -1,55 +1,26 @@
 import HomeTabs from "./HomeTabs";
-import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { QUERY_KEYS } from "@/lib/queryKeys";
-import { useSelection } from "@/hooks/useSelection";
-import { getQuizzes } from "@/services/quiz.service";
 import QuizCard from "@/components/home/QuizCard";
 import QuizCardSkeleton from "@/components/home/QuizCardSkeleton";
 import QuizPagination from "@/components/home/QuizPagination";
-import type { TabStatus } from "@/types/quiz";
-
-const PAGE_SIZE = 10;
+import { useQuizzes } from "@/hooks/useQuizzes";
 
 const HomeContainer = () => {
-  const { status: tab, page } = useSearch({ from: "/home" });
-  const navigate = useNavigate({ from: "/home" });
-  const { selectedUser, selectedCountry, isLoading, error } = useSelection();
-
-  const setTab = (status: TabStatus) =>
-    navigate({ search: { status, page: 1 } });
-
   const {
-    data,
-    isLoading: quizzesLoading,
+    quizzes,
+    totalPages,
+    tab,
+    page,
+    setTab,
+    isLoading,
     isFetching,
-    error: quizzesError,
-  } = useQuery({
-    enabled: !isLoading && !error && !!selectedUser && !!selectedCountry,
-    queryKey: [
-      ...QUERY_KEYS.QUIZZES,
-      selectedUser?.id ?? "",
-      selectedCountry?.code ?? "",
-      tab,
-      page,
-      PAGE_SIZE,
-    ],
-    queryFn: () =>
-      getQuizzes(
-        page,
-        PAGE_SIZE,
-        selectedUser?.id ?? "",
-        selectedCountry?.code ?? "",
-        tab,
-      ),
-  });
-  const quizzes = data?.quizzes;
-  const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
+    error,
+    hasSelection,
+  } = useQuizzes();
 
   return (
     <div className="p-3">
       <HomeTabs tab={tab} setTab={setTab}>
-        {isLoading || quizzesLoading ? (
+        {isLoading ? (
           <>
             <p role="status" className="sr-only">
               Loading quizzes...
@@ -66,11 +37,9 @@ const HomeContainer = () => {
               ))}
             </ul>
           </>
-        ) : error || quizzesError ? (
-          <p role="alert">
-            {error ?? `Error loading quizzes: ${quizzesError?.message}`}
-          </p>
-        ) : !selectedUser || !selectedCountry ? (
+        ) : error ? (
+          <p role="alert">{error}</p>
+        ) : !hasSelection ? (
           <p>No user or country available.</p>
         ) : quizzes?.length === 0 ? (
           <p>No quizzes found.</p>

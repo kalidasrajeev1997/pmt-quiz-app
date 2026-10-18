@@ -9,30 +9,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { usePagination } from "@/hooks/usePagination";
 
 interface QuizPaginationProps {
   page: number;
   totalPages: number;
   disabled?: boolean;
 }
-
-const getPageItems = (page: number, totalPages: number) => {
-  const pages = new Set(
-    [1, page - 1, page, page + 1, totalPages].filter(
-      (value) => value >= 1 && value <= totalPages,
-    ),
-  );
-  const items: (number | "ellipsis-start" | "ellipsis-end")[] = [];
-  let previous = 0;
-  for (const value of [...pages].sort((a, b) => a - b)) {
-    if (value - previous > 1) {
-      items.push(previous === 0 ? "ellipsis-start" : "ellipsis-end");
-    }
-    items.push(value);
-    previous = value;
-  }
-  return items;
-};
 
 const QuizPagination = ({
   page,
@@ -41,6 +24,10 @@ const QuizPagination = ({
 }: QuizPaginationProps) => {
   const router = useRouter();
   const navigate = useNavigate({ from: "/home" });
+
+  const { items, canPrevious, canNext, previousPage, nextPage } = usePagination(
+    { page, totalPages },
+  );
 
   if (totalPages <= 1) {
     return null;
@@ -62,6 +49,7 @@ const QuizPagination = ({
       }
     },
   });
+
   const disabledClass = "pointer-events-none opacity-50";
 
   return (
@@ -69,12 +57,12 @@ const QuizPagination = ({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            {...linkProps(page - 1)}
-            aria-disabled={page <= 1 || disabled}
-            className={page <= 1 || disabled ? disabledClass : undefined}
+            {...linkProps(previousPage)}
+            aria-disabled={!canPrevious || disabled}
+            className={!canPrevious || disabled ? disabledClass : undefined}
           />
         </PaginationItem>
-        {getPageItems(page, totalPages).map((item) =>
+        {items.map((item, index) =>
           typeof item === "number" ? (
             <PaginationItem key={item}>
               <PaginationLink
@@ -86,18 +74,16 @@ const QuizPagination = ({
               </PaginationLink>
             </PaginationItem>
           ) : (
-            <PaginationItem key={item}>
+            <PaginationItem key={`${item}-${index}`}>
               <PaginationEllipsis />
             </PaginationItem>
           ),
         )}
         <PaginationItem>
           <PaginationNext
-            {...linkProps(page + 1)}
-            aria-disabled={page >= totalPages || disabled}
-            className={
-              page >= totalPages || disabled ? disabledClass : undefined
-            }
+            {...linkProps(nextPage)}
+            aria-disabled={!canNext || disabled}
+            className={!canNext || disabled ? disabledClass : undefined}
           />
         </PaginationItem>
       </PaginationContent>

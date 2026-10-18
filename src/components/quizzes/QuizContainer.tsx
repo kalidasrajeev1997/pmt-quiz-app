@@ -1,23 +1,9 @@
-import { useLocation, useNavigate } from "@tanstack/react-router";
-import {
-  useIsMutating,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 import { ChartColumn, ClipboardList, ListChecks } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Stepper } from "@/components/ui/stepper";
-import { useSelection } from "@/hooks/useSelection";
-import { QUERY_KEYS } from "@/lib/queryKeys";
-import {
-  getQuiz,
-  saveDraft,
-  startOrResumeAttempt,
-  submitAnswer,
-} from "@/services/quiz.service";
+import { useQuizAttempt } from "@/hooks/useQuizAttempt";
 import type { QuizSession } from "@/types/quiz";
-import QuestionForm, { type AnswerAction } from "./questions/QuestionForm";
+import QuestionForm from "./questions/QuestionForm";
 import {
   QuizLoading,
   QuizSaveError,
@@ -27,7 +13,7 @@ import {
 import QuizHomeLink from "./QuizHomeLink";
 import QuizOverview from "./overview/QuizOverview";
 import QuizResults from "./result/QuizResults";
-import { quizStatuses, attemptSteps } from "@/helpers/constants";
+import { quizStatuses } from "@/helpers/constants";
 
 const steps = [
   { label: "Overview", icon: ClipboardList },
@@ -35,99 +21,36 @@ const steps = [
   { label: "Results", icon: ChartColumn },
 ];
 
-type Action = { type: "start"; retake: boolean } | AnswerAction;
-
 export default function QuizAttend({ quizId }: { quizId: string }) {
   const {
-    selectedUser,
-    isLoading: selectionLoading,
-    error: selectionError,
-  } = useSelection();
+    session,
+    currentStep,
+    showOverview,
+    isLoading,
+    isPending,
+    selectionLoading,
+    selectionError,
+    hasUser,
+    isSessionError,
+    sessionError,
+    saveFailed,
+    error,
+    startQuiz,
+    handleCommand,
+    retakeQuiz,
+    refetchSession,
+  } = useQuizAttempt(quizId);
 
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const hash = useLocation({ select: (location) => location.hash });
-  const userId = selectedUser?.id ?? "";
-  const mutationKey = [...QUERY_KEYS.SESSION_ACTION, quizId, userId];
-  const pendingActions = useIsMutating({ mutationKey });
-
-  const session = useQuery({
-    queryKey: [...QUERY_KEYS.SESSION, quizId, userId],
-    queryFn: async () => await getQuiz(quizId, userId),
-    enabled: !!userId,
-    retry: false,
-    refetchOnWindowFocus: "always",
-    refetchInterval: (query) => {
-      const attemptStatus = query.state.data?.attempt?.status;
-      return attemptStatus === "in_progress" && !query.state.error
-        ? 1000
-        : false;
-    },
-    refetchIntervalInBackground: true,
-  });
-
-  const mutation = useMutation({
-    mutationKey,
-    scope: { id: `session-${quizId}-${userId}` },
-    mutationFn: async (action: Action) => {
-      if (action.type === "start") {
-        await startOrResumeAttempt(quizId, userId);
-      } else if (action.type === "draft") {
-        await saveDraft(
-          action.attemptId,
-          action.questionId,
-          action.selectedOptionIds,
-        );
-      } else {
-        await submitAnswer(
-          action.attemptId,
-          action.questionId,
-          action.selectedOptionIds,
-        );
-      }
-      return await getQuiz(quizId, userId);
-    },
-    onSuccess: (data: QuizSession, action) => {
-      queryClient.setQueryData([...QUERY_KEYS.SESSION, quizId, userId], data);
-      if (action.type !== "draft")
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
-      if (action.type === "start")
-        navigate({
-          to: "/quiz/$id",
-          params: { id: quizId },
-          hash: "",
-          replace: true,
-        });
-    },
-  });
-
-  const data = session.data;
-  const attempt = data?.attempt;
-  const isAllowedRetake =
-    attempt?.status === quizStatuses.COMPLETED &&
-    hash === "retake" &&
-    data?.quiz.retakesAllowed === true;
-  const showOverview = !attempt || isAllowedRetake;
-
-  const currentStep = showOverview
-    ? attemptSteps.OVERVIEW
-    : attempt?.status === quizStatuses.COMPLETED
-      ? attemptSteps.COMPLETED
-      : attemptSteps.IN_PROGRESS;
-
-  const error = session.error ?? mutation.error;
-  const pending = pendingActions > 0;
-
-  function renderAttempt(session: QuizSession) {
-    const { quiz, attempt } = session;
+  function renderAttempt(activeSession: QuizSession) {
+    const { quiz, attempt } = activeSession;
 
     if (showOverview) {
       return (
         <QuizOverview
           quiz={quiz}
           retake={!!attempt}
-          pending={pending}
-          onStart={() => mutation.mutate({ type: "start", retake: !!attempt })}
+          pending={isPending}
+          onStart={() => startQuiz(!!attempt)}
         />
       );
     }
@@ -138,26 +61,16 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
           key={`${attempt.id}-${attempt.currentQuestionIndex}`}
           quiz={quiz}
           attempt={attempt}
-          pending={pending}
-          saveFailed={mutation.isError}
-          onCommand={(command) => mutation.mutate(command)}
+          pending={isPending}
+          saveFailed={saveFailed}
+          onCommand={handleCommand}
         />
       );
     }
 
     if (attempt?.status === quizStatuses.COMPLETED) {
       return (
-        <QuizResults
-          quiz={quiz}
-          attempt={attempt}
-          onRetake={() =>
-            navigate({
-              to: "/quiz/$id",
-              params: { id: quizId },
-              hash: "retake",
-            })
-          }
-        />
+        <QuizResults quiz={quiz} attempt={attempt} onRetake={retakeQuiz} />
       );
     }
 
@@ -165,29 +78,24 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
   }
 
   function renderContent() {
-    if (selectionLoading || (userId && session.isPending)) {
+    if (isLoading || selectionLoading) {
       return <QuizLoading />;
     }
 
-    if (selectionError || !userId) {
+    if (selectionError || !hasUser) {
       return <QuizSelectionRequired error={selectionError} />;
     }
 
-    if (session.isError) {
-      return (
-        <QuizUnavailable
-          error={session.error}
-          onRetry={() => session.refetch()}
-        />
-      );
+    if (isSessionError && sessionError) {
+      return <QuizUnavailable error={sessionError} onRetry={refetchSession} />;
     }
 
-    if (!data) return null;
+    if (!session) return null;
 
     return (
       <div className="min-h-full px-6 space-y-2 sm:space-y-9 pt-8 bg-[#efefef45]">
         <Stepper steps={steps} currentStep={currentStep} />
-        {renderAttempt(data)}
+        {renderAttempt(session)}
         {error && <QuizSaveError error={error} />}
       </div>
     );

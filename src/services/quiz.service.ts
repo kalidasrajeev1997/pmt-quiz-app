@@ -35,17 +35,25 @@ export const getQuizzes = async (
   return await getQuizzesQuery(page, pageSize, userId, country, status);
 };
 
-export const getQuiz = async (
+export const loadQuizSession = async (
   quizId: Quiz["id"],
   userId: User["id"],
   now = Date.now(),
 ): Promise<QuizSession> => {
-  await simulateDelay(1500);
   const { quiz, attempt } = await loadQuizSessionMutation(quizId, userId, now);
   return {
     quiz: toPublicQuiz(quiz),
     attempt: attempt ? toQuizAttempt(attempt) : null,
   };
+};
+
+export const getQuiz = async (
+  quizId: Quiz["id"],
+  userId: User["id"],
+  now = Date.now(),
+): Promise<QuizSession> => {
+  await simulateDelay(500);
+  return await loadQuizSession(quizId, userId, now);
 };
 
 export async function startOrResumeAttempt(

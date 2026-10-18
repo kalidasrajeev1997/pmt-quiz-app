@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Progress } from "@/components/ui/progress";
 import { getDeadlines } from "@/helpers/quizHelpers";
+import { useCountdown } from "@/hooks/useCountdown";
 import type { InProgressQuizAttempt, PublicQuiz } from "@/types/quiz";
 import QuestionActions from "./QuestionActions";
 import QuestionOptions from "./QuestionOptions";
@@ -39,17 +40,19 @@ export default function QuestionForm({
 }: QuestionFormProps) {
   const question = quiz.questions[attempt.currentQuestionIndex];
   const headingRef = useRef<HTMLParagraphElement>(null);
-  const [now, setNow] = useState(() => Date.now());
-  const form = useForm<AnswerValues>({
-    resolver: zodResolver(answerSchema),
-    defaultValues: { selectedOptionIds: attempt.draftOptionIds ?? [] },
-  });
   const deadlines = getDeadlines(quiz, attempt);
   const nearestDeadline = Math.min(
     deadlines.overall ?? Infinity,
     deadlines.question ?? Infinity,
   );
-  const expired = now >= nearestDeadline;
+  const { now, isExpired: expired } = useCountdown(
+    nearestDeadline === Infinity ? null : nearestDeadline,
+  );
+
+  const form = useForm<AnswerValues>({
+    resolver: zodResolver(answerSchema),
+    defaultValues: { selectedOptionIds: attempt.draftOptionIds ?? [] },
+  });
   const lastQuestion =
     attempt.currentQuestionIndex === quiz.questions.length - 1;
   const answerError = form.formState.errors.selectedOptionIds?.message;
@@ -57,17 +60,6 @@ export default function QuestionForm({
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
     headingRef.current?.scrollIntoView({ block: "nearest" });
-
-    const updateClock = () => setNow(Date.now());
-    const interval = window.setInterval(updateClock, 250);
-    document.addEventListener("visibilitychange", updateClock);
-    window.addEventListener("focus", updateClock);
-
-    return () => {
-      window.clearInterval(interval);
-      document.removeEventListener("visibilitychange", updateClock);
-      window.removeEventListener("focus", updateClock);
-    };
   }, []);
 
   function sendAnswerCommand(
