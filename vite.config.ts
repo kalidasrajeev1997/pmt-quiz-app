@@ -11,4 +11,29 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  esbuild: {
+    jsx: "automatic",
+  },
+  // @ts-expect-error vitest config
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    testTimeout: 20000,
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      exclude: [
+        "node_modules/**",
+        "dist/**",
+        "src/main.tsx",
+        "src/types/**",
+        "src/test/**",
+        "**/*.d.ts",
+        "tailwind.config.js",
+        "eslint.config.js",
+        "vite.config.ts",
+      ],
+    },
+  },
 });

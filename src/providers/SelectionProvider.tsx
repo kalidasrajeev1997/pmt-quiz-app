@@ -26,16 +26,19 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     enabled: !!countriesQuery.data,
   });
 
-  const users =
-    usersQuery.data?.filter((user) => user.country === country) ?? [];
   const countries = countriesQuery.data ?? [];
-  const selectedUser =
-    users.find((userIdx) => userIdx.id === user) ?? users[0] ?? null;
   const selectedCountry =
     countries.find((countryIdx) => countryIdx.code === country) ??
     countries[0] ??
     null;
-  const isLoading = usersQuery.isPending || countriesQuery.isPending;
+  const activeCountry = country ?? selectedCountry?.code;
+  const users =
+    usersQuery.data?.filter((user) => user.country === activeCountry) ?? [];
+  const selectedUser =
+    users.find((userIdx) => userIdx.id === user) ?? users[0] ?? null;
+  const isLoading =
+    countriesQuery.isLoading ||
+    (countriesQuery.isSuccess && usersQuery.isLoading);
   const error =
     usersQuery.isError || countriesQuery.isError
       ? "Users and countries could not be loaded"

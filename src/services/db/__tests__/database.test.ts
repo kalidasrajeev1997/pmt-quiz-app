@@ -1,8 +1,8 @@
 import "fake-indexeddb/auto";
 import assert from "node:assert/strict";
-import { afterEach, test } from "node:test";
+import { afterEach, test, vi } from "vitest";
 import { deleteDB } from "idb";
-import seed from "../src/data/seed.json";
+import seed from "@/data/seed.json";
 import {
   completeAttempt,
   getCurrentQuestion,
@@ -11,8 +11,9 @@ import {
   saveDraft,
   startOrResumeAttempt,
   submitAnswer,
-} from "../src/services/quiz.service";
-import { getQuizzesQuery } from "../src/services/db/queries/quiz";
+} from "@/services/quiz.service";
+import { getQuizzesQuery } from "@/services/db/queries/quiz";
+import type { CompletedAttempt, InProgressAttempt } from "@/types/quiz";
 import {
   closeDatabase,
   DATABASE_NAME,
@@ -21,9 +22,10 @@ import {
   getRecord,
   initializeDatabase,
   saveRecord,
-} from "../src/services/db/database";
+} from "@/services/db/database";
 
 afterEach(async (): Promise<void> => {
+  vi.useRealTimers();
   await closeDatabase();
   await deleteDB(DATABASE_NAME);
 });
@@ -508,13 +510,13 @@ test("quiz queries scope attempts to the user and filter countries before pagina
   });
 });
 
-test("quiz queries keep correct, incorrect, and unanswered questions separate", async (context): Promise<void> => {
+test("quiz queries keep correct, incorrect, and unanswered questions separate", async (): Promise<void> => {
   const now = new Date("2026-10-17T10:00:00Z");
-  context.mock.timers.enable({ apis: ["Date"], now });
+  vi.useFakeTimers({ toFake: ["Date"], now });
   const database = await initializeDatabase();
   const quiz = await database.get("quizzes", "q1");
-  const attempt = await database.get("attempts", "a11");
-  const completedAttempt = await database.get("attempts", "a1");
+  const attempt = (await database.get("attempts", "a11")) as InProgressAttempt;
+  const completedAttempt = (await database.get("attempts", "a1")) as CompletedAttempt;
   assert.ok(quiz);
   assert.ok(attempt);
   assert.ok(completedAttempt);
@@ -624,9 +626,9 @@ test("quiz queries keep correct, incorrect, and unanswered questions separate", 
   );
 });
 
-test("quiz queries derive status from attempts and time limits before pagination", async (context): Promise<void> => {
+test("quiz queries derive status from attempts and time limits before pagination", async (): Promise<void> => {
   const now = new Date("2026-10-17T10:00:00Z");
-  context.mock.timers.enable({ apis: ["Date"], now });
+  vi.useFakeTimers({ toFake: ["Date"], now });
   const database = await initializeDatabase();
   const quiz = await database.get("quizzes", "q1");
   const activeAttempt = await database.get("attempts", "a11");
