@@ -45,7 +45,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
   } = useSelection();
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-dvh flex-col overflow-hidden">
       {/* header */}
       <header className="shrink-0 border-b-0 md:border-b">
         <div className="flex min-h-13 items-center justify-between gap-2 px-3 py-2 md:p-2">
@@ -178,7 +178,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <Sidebar />
         <ScrollArea className="min-h-0 min-w-0 flex-1">
-          <main className="h-full min-w-0 pb-20 md:pb-0">{children}</main>
+          <main className="min-h-full min-w-0">{children}</main>
         </ScrollArea>
       </div>
     </div>

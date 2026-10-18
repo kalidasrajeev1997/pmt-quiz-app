@@ -25,8 +25,21 @@ describe("Sidebar", () => {
   it("renders navigation links for Quizzes and Leaderboard", () => {
     render(<Sidebar />);
 
-    expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Quizzes" })).toHaveAttribute("href", "/home");
-    expect(screen.getByRole("link", { name: "Leaderboard" })).toHaveAttribute("href", "/leaderboard");
+    expect(
+      screen.getByRole("navigation", { name: "Primary" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Primary" })).toHaveClass(
+      "shrink-0",
+      "pb-[max(0.25rem,env(safe-area-inset-bottom))]",
+      "md:overflow-y-auto",
+    );
+    expect(screen.getByRole("link", { name: "Quizzes" })).toHaveAttribute(
+      "href",
+      "/home",
+    );
+    expect(screen.getByRole("link", { name: "Leaderboard" })).toHaveAttribute(
+      "href",
+      "/leaderboard",
+    );
   });
 });

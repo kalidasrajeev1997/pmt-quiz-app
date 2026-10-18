@@ -4,7 +4,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import QuizAttend from "@/components/quizzes/QuizContainer";
 import * as quizAttemptHook from "@/hooks/useQuizAttempt";
 import type { UseQuizAttemptReturn } from "@/hooks/useQuizAttempt";
-import type { InProgressQuizAttempt, PublicQuiz, QuizResult, QuizSession } from "@/types/quiz";
+import type {
+  InProgressQuizAttempt,
+  PublicQuiz,
+  QuizResult,
+  QuizSession,
+} from "@/types/quiz";
 
 vi.mock("@tanstack/react-router", () => ({
   Link: ({
@@ -58,7 +63,9 @@ function makePublicQuiz(overrides: Partial<PublicQuiz> = {}): PublicQuiz {
   };
 }
 
-function makeInProgressAttempt(overrides: Partial<InProgressQuizAttempt> = {}): InProgressQuizAttempt {
+function makeInProgressAttempt(
+  overrides: Partial<InProgressQuizAttempt> = {},
+): InProgressQuizAttempt {
   return {
     id: "attempt-123",
     quizId: "quiz-attend-1",
@@ -97,8 +104,18 @@ function makeCompletedAttempt(overrides: Partial<QuizResult> = {}): QuizResult {
     unansweredQuestions: 0,
     draftOptionIds: [],
     answers: [
-      { questionId: "q1", selectedOptionIds: ["o1"], isCorrect: true, answeredAt: "..." },
-      { questionId: "q2", selectedOptionIds: ["m1", "m2"], isCorrect: true, answeredAt: "..." },
+      {
+        questionId: "q1",
+        selectedOptionIds: ["o1"],
+        isCorrect: true,
+        answeredAt: "...",
+      },
+      {
+        questionId: "q2",
+        selectedOptionIds: ["m1", "m2"],
+        isCorrect: true,
+        answeredAt: "...",
+      },
     ],
     ...overrides,
   };
@@ -133,8 +150,43 @@ describe("QuizAttend Flow Component Tests", () => {
       refetchSession: vi.fn(),
     };
 
-    vi.spyOn(quizAttemptHook, "useQuizAttempt").mockImplementation(() => defaultHookReturn);
+    vi.spyOn(quizAttemptHook, "useQuizAttempt").mockImplementation(
+      () => defaultHookReturn,
+    );
   });
+
+  it.each(["overview", "questions", "results"])(
+    "uses the shared page scroller for %s",
+    (step) => {
+      const quiz = makePublicQuiz();
+      const attempt =
+        step === "questions"
+          ? makeInProgressAttempt()
+          : step === "results"
+            ? makeCompletedAttempt()
+            : null;
+
+      defaultHookReturn = {
+        ...defaultHookReturn,
+        showOverview: step === "overview",
+        attempt,
+        session: { quiz, attempt },
+      };
+
+      const { container } = render(<QuizAttend quizId="quiz-attend-1" />);
+
+      expect(
+        container.querySelector('[data-slot="scroll-area-viewport"]'),
+      ).not.toBeInTheDocument();
+      expect(container.firstElementChild).not.toHaveClass(
+        "h-full",
+        "overflow-hidden",
+      );
+      expect(
+        screen.getByRole("button", { name: "Back to quizzes" }).parentElement,
+      ).toHaveClass("sticky", "top-0");
+    },
+  );
 
   describe("Answering Flow", () => {
     it("renders QuizOverview initially and calls startQuiz on button click", async () => {
@@ -168,7 +220,9 @@ describe("QuizAttend Flow Component Tests", () => {
 
       // Shows Question 1 of 2
       expect(screen.getByText("Question 1 of 2")).toBeInTheDocument();
-      expect(screen.getAllByText("What hook handles local component state?")).toHaveLength(2);
+      expect(
+        screen.getAllByText("What hook handles local component state?"),
+      ).toHaveLength(2);
 
       // Select option
       const optionA = screen.getByText("useState");
@@ -215,7 +269,9 @@ describe("QuizAttend Flow Component Tests", () => {
         expect(screen.getByText("100%")).toBeInTheDocument();
         expect(screen.getByText("2/2")).toBeInTheDocument();
       });
-      expect(screen.getByRole("button", { name: /retake quiz/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /retake quiz/i }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -263,7 +319,7 @@ describe("QuizAttend Flow Component Tests", () => {
       // Timeout Alert rendered
       expect(screen.getByText("Time limit reached")).toBeInTheDocument();
       expect(
-        screen.getByText("Your saved answers were submitted automatically.")
+        screen.getByText("Your saved answers were submitted automatically."),
       ).toBeInTheDocument();
     });
   });
@@ -290,12 +346,20 @@ describe("QuizAttend Flow Component Tests", () => {
       // Bypassed Overview directly to Question 2 of 2
       expect(screen.queryByText("Assessment Rules")).not.toBeInTheDocument();
       expect(screen.getByText("Question 2 of 2")).toBeInTheDocument();
-      expect(screen.getAllByText("Which hooks accept a dependency array?")).toHaveLength(2);
+      expect(
+        screen.getAllByText("Which hooks accept a dependency array?"),
+      ).toHaveLength(2);
 
       // Restored draft options are styled as selected (border-primary)
-      expect(screen.getByText("useEffect").closest("label")).toHaveClass("border-primary");
-      expect(screen.getByText("useMemo").closest("label")).toHaveClass("border-primary");
-      expect(screen.getByText("useRef").closest("label")).not.toHaveClass("border-primary");
+      expect(screen.getByText("useEffect").closest("label")).toHaveClass(
+        "border-primary",
+      );
+      expect(screen.getByText("useMemo").closest("label")).toHaveClass(
+        "border-primary",
+      );
+      expect(screen.getByText("useRef").closest("label")).not.toHaveClass(
+        "border-primary",
+      );
     });
 
     it("allows retaking when retakesAllowed is true and calls retakeQuiz", async () => {
@@ -333,7 +397,9 @@ describe("QuizAttend Flow Component Tests", () => {
 
       render(<QuizAttend quizId="quiz-attend-1" />);
 
-      expect(screen.queryByRole("button", { name: /retake quiz/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /retake quiz/i }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -381,7 +447,9 @@ describe("QuizAttend Flow Component Tests", () => {
       };
 
       render(<QuizAttend quizId="quiz-attend-1" />);
-      expect(screen.getByText("Progress could not be saved")).toBeInTheDocument();
+      expect(
+        screen.getByText("Progress could not be saved"),
+      ).toBeInTheDocument();
     });
   });
 });

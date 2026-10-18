@@ -61,6 +61,12 @@ describe("PageLayout", () => {
     expect(screen.getByText("AB")).toBeInTheDocument();
     expect(screen.getByText("IN")).toBeInTheDocument();
     expect(screen.getByText("Page Body Content")).toBeInTheDocument();
+    expect(screen.getByRole("banner").parentElement).toHaveClass("h-dvh");
+    expect(screen.getByRole("main")).toHaveClass("min-h-full");
+    expect(screen.getByRole("main")).not.toHaveClass("h-full", "pb-20");
+    expect(
+      document.querySelectorAll('[data-slot="scroll-area-viewport"]'),
+    ).toHaveLength(1);
   });
 
   it("calls selectUser when user option is selected", async () => {

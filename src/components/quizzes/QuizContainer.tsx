@@ -1,5 +1,4 @@
 import { ChartColumn, ClipboardList, ListChecks } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Stepper } from "@/components/ui/stepper";
 import { useQuizAttempt } from "@/hooks/useQuizAttempt";
 import type { QuizSession } from "@/types/quiz";
@@ -93,7 +92,7 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
     if (!session) return null;
 
     return (
-      <div className="min-h-full space-y-4 px-3 pt-4 bg-[#efefef45] sm:space-y-9 sm:px-6 sm:pt-8">
+      <div className="flex-1 space-y-4 px-3 pt-4 bg-[#efefef45] sm:space-y-9 sm:px-6 sm:pt-8">
         <Stepper steps={steps} currentStep={currentStep} />
         {renderAttempt(session)}
         {error && <QuizSaveError error={error} />}
@@ -102,11 +101,11 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden tracking-normal">
-      <div className="z-10 shrink-0 border-b bg-background">
+    <div className="flex min-h-full flex-col tracking-normal">
+      <div className="sticky top-0 z-10 shrink-0 border-b bg-background">
         <QuizHomeLink />
       </div>
-      <ScrollArea className="min-h-0 flex-1">{renderContent()}</ScrollArea>
+      {renderContent()}
     </div>
   );
 }

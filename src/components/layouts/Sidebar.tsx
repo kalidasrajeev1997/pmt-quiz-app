@@ -8,7 +8,7 @@ const items = [
 const Sidebar = () => (
   <nav
     aria-label="Primary"
-    className="order-last flex w-full shrink-0 flex-row items-center justify-around border-t bg-background px-3 py-1 md:order-first md:h-full md:w-48 md:flex-col md:items-stretch md:justify-start md:gap-1 md:border-r md:border-t-0 md:p-2"
+    className="order-last flex w-full shrink-0 flex-row items-center justify-around border-t bg-background px-3 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] md:order-first md:h-full md:w-48 md:flex-col md:items-stretch md:justify-start md:gap-1 md:overflow-y-auto md:border-r md:border-t-0 md:p-2"
   >
     {items.map(({ label, to, icon: Icon }) => (
       <Link
