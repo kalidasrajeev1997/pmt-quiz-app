@@ -156,7 +156,7 @@ describe("QuizAttend Flow Component Tests", () => {
   });
 
   it.each(["overview", "questions", "results"])(
-    "uses the shared page scroller for %s",
+    "keeps the home link outside the content scroller for %s",
     (step) => {
       const quiz = makePublicQuiz();
       const attempt =
@@ -175,18 +175,85 @@ describe("QuizAttend Flow Component Tests", () => {
 
       const { container } = render(<QuizAttend quizId="quiz-attend-1" />);
 
-      expect(
-        container.querySelector('[data-slot="scroll-area-viewport"]'),
-      ).not.toBeInTheDocument();
-      expect(container.firstElementChild).not.toHaveClass(
+      const viewport = container.querySelector(
+        '[data-slot="scroll-area-viewport"]',
+      );
+      const homeLink = screen.getByRole("button", { name: "Back to quizzes" });
+
+      expect(viewport).toBeInTheDocument();
+      expect(viewport).not.toContainElement(homeLink);
+      expect(viewport).toContainElement(screen.getByText("Overview"));
+      expect(container.firstElementChild).toHaveClass(
         "h-full",
+        "min-h-0",
         "overflow-hidden",
       );
-      expect(
-        screen.getByRole("button", { name: "Back to quizzes" }).parentElement,
-      ).toHaveClass("sticky", "top-0");
+      expect(homeLink.parentElement).toHaveClass("shrink-0");
     },
   );
+
+  it("resets scrolling between quiz screens, questions, and retakes", () => {
+    const { container, rerender } = render(
+      <QuizAttend quizId="quiz-attend-1" />,
+    );
+    const viewport = container.querySelector<HTMLDivElement>(
+      '[data-slot="scroll-area-viewport"]',
+    )!;
+    const attempts = [
+      makeInProgressAttempt(),
+      makeInProgressAttempt({ currentQuestionIndex: 1 }),
+      makeCompletedAttempt(),
+      null,
+      makeInProgressAttempt({ id: "retake-456" }),
+    ];
+
+    for (const attempt of attempts) {
+      viewport.scrollTop = 180;
+      viewport.scrollLeft = 25;
+      defaultHookReturn = {
+        ...defaultHookReturn,
+        showOverview: !attempt,
+        currentStep: attempt?.status === "completed" ? 2 : attempt ? 1 : 0,
+        attempt,
+        session: { quiz: makePublicQuiz(), attempt },
+      };
+      rerender(<QuizAttend quizId="quiz-attend-1" />);
+
+      expect(viewport.scrollTop).toBe(0);
+      expect(viewport.scrollLeft).toBe(0);
+      expect(viewport).toBeInTheDocument();
+    }
+  });
+
+  it("preserves scrolling when an answer draft or pending state changes", () => {
+    const quiz = makePublicQuiz();
+    const attempt = makeInProgressAttempt();
+    defaultHookReturn = {
+      ...defaultHookReturn,
+      showOverview: false,
+      currentStep: 1,
+      attempt,
+      session: { quiz, attempt },
+    };
+    const { container, rerender } = render(
+      <QuizAttend quizId="quiz-attend-1" />,
+    );
+    const viewport = container.querySelector<HTMLDivElement>(
+      '[data-slot="scroll-area-viewport"]',
+    )!;
+    viewport.scrollTop = 180;
+    const updatedAttempt = { ...attempt, draftOptionIds: ["o1"] };
+    defaultHookReturn = {
+      ...defaultHookReturn,
+      isPending: true,
+      attempt: updatedAttempt,
+      session: { quiz, attempt: updatedAttempt },
+    };
+
+    rerender(<QuizAttend quizId="quiz-attend-1" />);
+
+    expect(viewport.scrollTop).toBe(180);
+  });
 
   describe("Answering Flow", () => {
     it("renders QuizOverview initially and calls startQuiz on button click", async () => {

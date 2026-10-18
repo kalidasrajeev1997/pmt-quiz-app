@@ -73,6 +73,68 @@ body {
   margin: 0;
 }
 
+html {
+  background: var(--edge-top-background, var(--background));
+}
+
+body {
+  background: var(--edge-bottom-background, var(--background));
+}
+
+.page-layout {
+  --page-background: var(--background);
+  --page-top-background: var(--page-background);
+  --page-bottom-background: var(--page-background);
+  --edge-top-height: max(12px, env(safe-area-inset-top, 0px));
+  --edge-bottom-height: max(12px, env(safe-area-inset-bottom, 0px));
+
+  box-sizing: border-box;
+  padding: var(--edge-top-height) env(safe-area-inset-right, 0px)
+    var(--edge-bottom-height) env(safe-area-inset-left, 0px);
+  background: var(--visible-page-background, var(--page-background));
+}
+
+.page-layout > header {
+  background: var(--visible-top-background, var(--page-top-background));
+}
+
+.page-layout nav[aria-label="Primary"] {
+  background: var(--visible-bottom-background, var(--page-bottom-background));
+}
+
+.edge-top,
+.edge-bottom {
+  position: fixed;
+  inset-inline: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.edge-top {
+  top: 0;
+  height: max(12px, env(safe-area-inset-top, 0px));
+}
+
+.edge-bottom {
+  bottom: 0;
+  height: max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+.edge-top::after,
+.edge-bottom::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.edge-top::after {
+  background: var(--edge-top-background, var(--background));
+}
+
+.edge-bottom::after {
+  background: var(--edge-bottom-background, var(--background));
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: "Inter Variable", sans-serif;

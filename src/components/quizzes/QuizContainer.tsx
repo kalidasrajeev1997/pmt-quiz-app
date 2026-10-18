@@ -1,5 +1,6 @@
 import { ChartColumn, ClipboardList, ListChecks } from "lucide-react";
 import { Stepper } from "@/components/ui/stepper";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuizAttempt } from "@/hooks/useQuizAttempt";
 import type { QuizSession } from "@/types/quiz";
 import QuestionForm from "./questions/QuestionForm";
@@ -39,6 +40,13 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
     retakeQuiz,
     refetchSession,
   } = useQuizAttempt(quizId);
+
+  const scrollResetKey = [
+    quizId,
+    showOverview ? "overview" : currentStep,
+    session?.attempt?.id,
+    session?.attempt?.currentQuestionIndex,
+  ].join(":");
 
   function renderAttempt(activeSession: QuizSession) {
     const { quiz, attempt } = activeSession;
@@ -101,11 +109,13 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
   }
 
   return (
-    <div className="flex min-h-full flex-col tracking-normal">
-      <div className="sticky top-0 z-10 shrink-0 border-b bg-background">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden tracking-normal">
+      <div className="shrink-0 border-b bg-background">
         <QuizHomeLink />
       </div>
-      {renderContent()}
+      <ScrollArea resetKey={scrollResetKey} className="min-h-0 flex-1">
+        <div className="flex min-h-full flex-col pb-4">{renderContent()}</div>
+      </ScrollArea>
     </div>
   );
 }

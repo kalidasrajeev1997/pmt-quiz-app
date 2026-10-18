@@ -13,6 +13,9 @@ import { Blocks } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import countryFlagMap from "@/helpers/countryFlagMap";
 import Sidebar from "@/components/layouts/Sidebar";
+import { createPortal } from "react-dom";
+import { usePageEdges } from "@/hooks/usePageEdges";
+import { useLocation } from "@tanstack/react-router";
 
 function UserAvatar({ name }: { name: string }) {
   const initials = name
@@ -33,6 +36,9 @@ function UserAvatar({ name }: { name: string }) {
 }
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
+  const pageRef = usePageEdges();
+  const { pathname, href } = useLocation();
+  const isQuizScreen = pathname.startsWith("/quiz/");
   const {
     users,
     countries,
@@ -45,7 +51,17 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
   } = useSelection();
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div
+      ref={pageRef}
+      className="page-layout flex h-dvh flex-col overflow-hidden"
+    >
+      {createPortal(
+        <>
+          <div aria-hidden="true" className="edge-top" />
+          <div aria-hidden="true" className="edge-bottom" />
+        </>,
+        document.body,
+      )}
       {/* header */}
       <header className="shrink-0 border-b-0 md:border-b">
         <div className="flex min-h-13 items-center justify-between gap-2 px-3 py-2 md:p-2">
@@ -177,9 +193,15 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       {/* main content */}
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <Sidebar />
-        <ScrollArea className="min-h-0 min-w-0 flex-1">
-          <main className="min-h-full min-w-0">{children}</main>
-        </ScrollArea>
+        {isQuizScreen ? (
+          <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
+            {children}
+          </main>
+        ) : (
+          <ScrollArea resetKey={href} className="min-h-0 min-w-0 flex-1">
+            <main className="h-full min-h-full min-w-0">{children}</main>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );
