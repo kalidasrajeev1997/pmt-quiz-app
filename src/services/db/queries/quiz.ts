@@ -15,6 +15,9 @@ export type QuizQueryResult = Omit<Quiz, "questions"> & {
   unansweredQuestions: number;
   score: number | null;
   scorePercentage: number | null;
+  deadline?: number | null;
+  remainingSeconds?: number | null;
+  totalTimeSeconds?: number | null;
 };
 
 export type QuizPageResult = {
@@ -93,6 +96,27 @@ const getQuizProgress = (quiz: Quiz, attempts: Attempt[], now: number) => {
   const correctQuestions = answered.filter((answer) => answer.isCorrect).length;
   const score = status === "completed" ? correctQuestions : null;
 
+  const activeTimeLimitSeconds = activeAttempt
+    ? Math.min(
+        quiz.timeLimitSeconds ?? Infinity,
+        quiz.perQuestionSeconds === null
+          ? Infinity
+          : quiz.perQuestionSeconds * activeAttempt.totalQuestions,
+      )
+    : null;
+  const deadline =
+    activeAttempt &&
+    activeTimeLimitSeconds !== null &&
+    Number.isFinite(activeTimeLimitSeconds)
+      ? Date.parse(activeAttempt.startedAt) + activeTimeLimitSeconds * 1000
+      : null;
+  const remainingSeconds =
+    deadline !== null ? Math.max(0, Math.ceil((deadline - now) / 1000)) : null;
+  const totalTimeSeconds =
+    activeTimeLimitSeconds !== null && Number.isFinite(activeTimeLimitSeconds)
+      ? activeTimeLimitSeconds
+      : null;
+
   return {
     status,
     answeredQuestions,
@@ -106,6 +130,9 @@ const getQuizProgress = (quiz: Quiz, attempts: Attempt[], now: number) => {
         : quiz.questions.length > 0
           ? Math.round((score / quiz.questions.length) * 100)
           : 0,
+    deadline,
+    remainingSeconds,
+    totalTimeSeconds,
   };
 };
 

@@ -1,37 +1,19 @@
-import { ChartColumn, Clock3, RotateCcw } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Clock3, RotateCcw } from "lucide-react";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import countryFlagMap from "@/helpers/countryFlagMap";
+import { statusStyles } from "@/helpers/constants";
+import { formatDuration } from "@/helpers/quizFormatters";
 import type { QuizQueryResult } from "@/services/db/queries/quiz";
-import { QuizButtonLabel } from "@/helpers/quizStatus";
-import {
-  quizLinkHashes,
-  quizStatuses,
-  statusStyles,
-} from "@/helpers/constants";
-
-function formatDuration(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
-  return minutes > 0
-    ? `${minutes} min${remainder > 0 ? ` ${remainder} sec` : ""}`
-    : `${seconds} sec`;
-}
+import QuizCardActions from "@/components/home/QuizCardActions";
+import QuizCardProgress from "@/components/home/QuizCardProgress";
 
 const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
   const totalQuestions = quiz.questions.length;
-  const percentage =
-    totalQuestions > 0
-      ? Math.round((quiz.answeredQuestions / totalQuestions) * 100)
-      : 0;
-  const resultSummary = `${quiz.correctQuestions} correct, ${quiz.incorrectQuestions} incorrect, ${quiz.unansweredQuestions} unanswered`;
   const status = statusStyles[quiz.status];
   const timeLimit =
     quiz.timeLimitSeconds !== null
@@ -39,7 +21,6 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
       : quiz.perQuestionSeconds !== null
         ? `${formatDuration(quiz.perQuestionSeconds)} / ques`
         : "No time limit";
-  const statusOptions = QuizButtonLabel({ status: quiz.status });
 
   return (
     <Card
@@ -59,39 +40,9 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
             {quiz.description}
           </p>
         </div>
-        <Progress
-          variant="circular"
-          value={quiz.scorePercentage ?? percentage}
-          segments={[
-            {
-              value:
-                totalQuestions > 0
-                  ? (quiz.correctQuestions / totalQuestions) * 100
-                  : 0,
-              className: "stroke-green-700 dark:stroke-green-400",
-            },
-            {
-              value:
-                totalQuestions > 0
-                  ? (quiz.incorrectQuestions / totalQuestions) * 100
-                  : 0,
-              className: "stroke-red-600 dark:stroke-red-400",
-            },
-          ]}
-          aria-label={`${quiz.title}: ${quiz.status === "completed" ? "prior score" : "answer progress"}`}
-          aria-valuetext={`${quiz.score !== null ? `Prior score: ${quiz.score} of ${totalQuestions}. ` : ""}${quiz.answeredQuestions} of ${totalQuestions} answered. ${resultSummary}.`}
-          className="size-14"
-        >
-          <span
-            aria-hidden="true"
-            className="relative flex flex-col items-center gap-1 text-md leading-none font-semibold text-foreground tabular-nums"
-          >
-            <span>
-              {quiz.score ?? quiz.answeredQuestions}/{totalQuestions}
-            </span>
-          </span>
-        </Progress>
+        <QuizCardProgress quiz={quiz} />
       </CardHeader>
+
       <CardContent className="flex flex-col gap-3">
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
@@ -121,6 +72,7 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
           ))}
         </ul>
       </CardContent>
+
       <CardFooter className="mt-auto flex flex-col items-stretch gap-4 rounded-none border-0 bg-transparent pt-0 text-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-col gap-1 tabular-nums">
@@ -138,49 +90,7 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
             {status.label}
           </span>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {quiz.status === "completed" && (
-            <Button
-              variant="secondary"
-              nativeButton={false}
-              className="min-h-10 min-w-0 flex-1 rounded-md bg-background px-3"
-              render={
-                <Link
-                  to="/quiz/$id"
-                  params={{ id: quiz.id }}
-                  hash="results"
-                  aria-label={`View results for ${quiz.title}`}
-                />
-              }
-            >
-              <ChartColumn aria-hidden="true" data-icon="inline-start" />
-              View results
-            </Button>
-          )}
-          {(quiz.status !== quizStatuses.COMPLETED || quiz.retakesAllowed) && (
-            <Button
-              nativeButton={false}
-              className="min-h-10 min-w-0 flex-1 rounded-md px-3 text-white"
-              render={
-                <Link
-                  to="/quiz/$id"
-                  params={{ id: quiz.id }}
-                  hash={
-                    quiz.status === quizStatuses.COMPLETED
-                      ? quizLinkHashes.RETAKE
-                      : quiz.status === quizStatuses.IN_PROGRESS
-                        ? quizLinkHashes.CONTINUE
-                        : quizLinkHashes.START
-                  }
-                  aria-label={`${quiz.status === quizStatuses.COMPLETED ? "Retake quiz" : quiz.status === quizStatuses.IN_PROGRESS ? "Continue quiz" : "Start quiz"}: ${quiz.title}`}
-                />
-              }
-            >
-              {statusOptions.icon}
-              {statusOptions.label}
-            </Button>
-          )}
-        </div>
+        <QuizCardActions quiz={quiz} />
       </CardFooter>
     </Card>
   );
