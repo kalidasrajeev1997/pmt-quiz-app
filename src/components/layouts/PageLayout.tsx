@@ -24,8 +24,8 @@ function UserAvatar({ name }: { name: string }) {
     .toUpperCase();
 
   return (
-    <Avatar aria-hidden="true" className="size-5">
-      <AvatarFallback className="bg-primary text-[10px] font-semibold text-white!">
+    <Avatar aria-hidden="true" className="size-8 md:size-5">
+      <AvatarFallback className="bg-primary text-xs font-semibold text-white! md:text-[10px]">
         {initials}
       </AvatarFallback>
     </Avatar>
@@ -47,60 +47,17 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       {/* header */}
-      <header className="shrink-0 border-b">
-        <div className="flex min-h-13 flex-wrap items-center justify-between gap-2 p-2">
+      <header className="shrink-0 border-b-0 md:border-b">
+        <div className="flex min-h-13 items-center justify-between gap-2 px-3 py-2 md:p-2">
           <div className="flex items-center">
             <div className="bg-primary rounded p-1">
-              <Blocks className="text-white" />
+              <Blocks className="size-5 text-white md:size-6" />
             </div>
-            <span className="text-black ml-2 font-semibold">Quizly</span>
+            <span className="ml-2 font-semibold text-black max-md:sr-only">
+              Quizly
+            </span>
           </div>
-          <div className="flex w-full min-w-0 gap-2 sm:w-auto">
-            <Select
-              items={users.map((user) => ({
-                label: user.name,
-                value: user.id,
-              }))}
-              value={selectedUser?.id ?? null}
-              onValueChange={(value) => {
-                if (value !== null) selectUser(value);
-              }}
-              disabled={isLoading || users.length === 0 || !!error}
-            >
-              <SelectTrigger
-                aria-label="Selected user"
-                className="w-46 min-w-0 shrink-0"
-              >
-                <SelectValue
-                  placeholder={isLoading ? "Loading users..." : "No users"}
-                  className="text-xs"
-                >
-                  {selectedUser && (
-                    <>
-                      <UserAvatar name={selectedUser.name} />
-                      <span className="truncate">{selectedUser.name}</span>
-                    </>
-                  )}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Users</SelectLabel>
-                  {users.map((user) => (
-                    <SelectItem
-                      key={user.id}
-                      value={user.id}
-                      className="text-xs flex items-center gap-2 "
-                    >
-                      <UserAvatar name={user.name} />
-                      <span className="truncate pt-0.5 text-xs">
-                        {user.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-2">
             <Select
               items={countries.map((country) => ({
                 label: country.name,
@@ -114,10 +71,11 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             >
               <SelectTrigger
                 aria-label="Selected country"
-                className="w-22 shrink-0"
+                hideChevron="mobile"
+                className="size-8 shrink-0 rounded-full border-0 p-0 shadow-none hover:ring-2 hover:ring-primary/20 md:h-8 md:w-22 md:rounded-lg md:border md:border-input md:px-2.5 md:py-2 md:shadow-xs md:hover:ring-0"
               >
                 <SelectValue
-                  className="min-w-0 text-xs"
+                  className="size-8 items-center justify-center text-xs md:size-auto md:min-w-0 md:justify-start"
                   placeholder={
                     isLoading ? "Loading countries..." : "No countries"
                   }
@@ -131,28 +89,78 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
                           ]
                         }
                         alt={`${selectedCountry.name} flag`}
-                        className="w-4 h-4 mr-1"
+                        className="size-8 rounded-full border border-border/40 object-cover shadow-xs md:mr-1 md:h-4 md:w-4 md:rounded-none md:border-0 md:shadow-none md:object-contain"
                       />
-                      <span className="truncate">{selectedCountry.code}</span>
+                      <span className="truncate max-md:sr-only">
+                        {selectedCountry.code}
+                      </span>
                     </>
                   )}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent align="end" className="min-w-28">
                 <SelectGroup>
                   <SelectLabel>Countries</SelectLabel>
                   {countries.map((country) => (
                     <SelectItem
                       key={country.code}
                       value={country.code}
-                      className="text-xs"
+                      className="cursor-pointer py-1.5 text-xs"
                     >
                       <img
                         src={countryFlagMap[country.code as "IN" | "GB" | "AE"]}
-                        alt={`${country.name} flag`}
-                        className="w-4 h-4 mr-1"
+                        alt=""
+                        className="mr-1 h-4 w-4 shrink-0 rounded-xs"
                       />
                       {country.code}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select
+              items={users.map((user) => ({
+                label: user.name,
+                value: user.id,
+              }))}
+              value={selectedUser?.id ?? null}
+              onValueChange={(value) => {
+                if (value !== null) selectUser(value);
+              }}
+              disabled={isLoading || users.length === 0 || !!error}
+            >
+              <SelectTrigger
+                aria-label="Selected user"
+                hideChevron="mobile"
+                className="size-8 shrink-0 rounded-full border-0 p-0 shadow-none hover:ring-2 hover:ring-primary/20 md:h-8 md:w-46 md:rounded-lg md:border md:border-input md:px-2.5 md:py-2 md:shadow-xs md:hover:ring-0"
+              >
+                <SelectValue
+                  placeholder={isLoading ? "Loading users..." : "No users"}
+                  className="size-8 items-center justify-center text-xs md:size-auto md:min-w-0 md:justify-start"
+                >
+                  {selectedUser && (
+                    <>
+                      <UserAvatar name={selectedUser.name} />
+                      <span className="truncate max-md:sr-only">
+                        {selectedUser.name}
+                      </span>
+                    </>
+                  )}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent align="end" className="min-w-44">
+                <SelectGroup>
+                  <SelectLabel>Users</SelectLabel>
+                  {users.map((user) => (
+                    <SelectItem
+                      key={user.id}
+                      value={user.id}
+                      className="flex cursor-pointer items-center gap-2 py-1.5 text-xs"
+                    >
+                      <UserAvatar name={user.name} />
+                      <span className="truncate pt-2 text-xs font-medium md:pt-0.5">
+                        {user.name}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -161,16 +169,16 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
         {error && (
-          <p role="alert" className="px-2 pb-2 text-sm text-destructive">
+          <p role="alert" className="px-3 pb-2 text-sm text-destructive">
             {error}
           </p>
         )}
       </header>
       {/* main content */}
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <Sidebar />
         <ScrollArea className="min-h-0 min-w-0 flex-1">
-          <main className="h-full min-w-0">{children}</main>
+          <main className="h-full min-w-0 pb-20 md:pb-0">{children}</main>
         </ScrollArea>
       </div>
     </div>
