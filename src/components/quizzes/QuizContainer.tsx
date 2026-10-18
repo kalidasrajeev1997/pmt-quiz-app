@@ -6,6 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { ChartColumn, ClipboardList, ListChecks } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Stepper } from "@/components/ui/stepper";
 import { useSelection } from "@/hooks/useSelection";
 import { QUERY_KEYS } from "@/lib/queryKeys";
@@ -26,7 +27,7 @@ import {
 import QuizHomeLink from "./QuizHomeLink";
 import QuizOverview from "./overview/QuizOverview";
 import QuizResults from "./result/QuizResults";
-import { attemptSteps } from "@/helpers/constants";
+import { quizStatuses, attemptSteps } from "@/helpers/constants";
 
 const steps = [
   { label: "Overview", icon: ClipboardList },
@@ -103,16 +104,16 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
   const data = session.data;
   const attempt = data?.attempt;
   const isAllowedRetake =
-    attempt?.status === "completed" &&
+    attempt?.status === quizStatuses.COMPLETED &&
     hash === "retake" &&
     data?.quiz.retakesAllowed === true;
   const showOverview = !attempt || isAllowedRetake;
 
   const currentStep = showOverview
-    ? attemptSteps.Overview
-    : attempt?.status === "completed"
-      ? attemptSteps.Completed
-      : attemptSteps.InProgress;
+    ? attemptSteps.OVERVIEW
+    : attempt?.status === quizStatuses.COMPLETED
+      ? attemptSteps.COMPLETED
+      : attemptSteps.IN_PROGRESS;
 
   const error = session.error ?? mutation.error;
   const pending = pendingActions > 0;
@@ -131,7 +132,7 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
       );
     }
 
-    if (attempt?.status === "in_progress") {
+    if (attempt?.status === quizStatuses.IN_PROGRESS) {
       return (
         <QuestionForm
           key={`${attempt.id}-${attempt.currentQuestionIndex}`}
@@ -144,7 +145,7 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
       );
     }
 
-    if (attempt?.status === "completed") {
+    if (attempt?.status === quizStatuses.COMPLETED) {
       return (
         <QuizResults
           quiz={quiz}
@@ -193,13 +194,11 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
   }
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden tracking-normal">
-      <div className="sticky top-0 z-10 shrink-0 border-b bg-background">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden tracking-normal">
+      <div className="z-10 shrink-0 border-b bg-background">
         <QuizHomeLink />
       </div>
-      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
-        {renderContent()}
-      </div>
+      <ScrollArea className="min-h-0 flex-1">{renderContent()}</ScrollArea>
     </div>
   );
 }

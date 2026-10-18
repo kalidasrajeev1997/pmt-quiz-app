@@ -4,7 +4,7 @@ import type { QuizDatabase } from "../../../types/database";
 import type { Answer, Attempt, Country, Quiz, User } from "@/types/quiz";
 import { simulateDelay } from "../../../lib/utils";
 
-type QuizStatus = "not-started" | "in-progress" | "completed";
+type QuizStatus = "not-started" | "in_progress" | "completed";
 
 export type QuizQueryResult = Omit<Quiz, "questions"> & {
   questions: Omit<Quiz["questions"][number], "correctOptionIds">[];
@@ -64,7 +64,7 @@ const getQuizProgress = (quiz: Quiz, attempts: Attempt[], now: number) => {
   }
 
   const status: QuizStatus = activeAttempt
-    ? "in-progress"
+    ? "in_progress"
     : latestAttempt
       ? "completed"
       : "not-started";

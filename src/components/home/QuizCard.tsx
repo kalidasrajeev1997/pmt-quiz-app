@@ -11,7 +11,11 @@ import { Progress } from "@/components/ui/progress";
 import countryFlagMap from "@/helpers/countryFlagMap";
 import type { QuizQueryResult } from "@/services/db/queries/quiz";
 import { QuizButtonLabel } from "@/helpers/quizStatus";
-import { statusStyles } from "@/helpers/constants";
+import {
+  quizLinkHashes,
+  quizStatuses,
+  statusStyles,
+} from "@/helpers/constants";
 
 function formatDuration(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -153,7 +157,7 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
               View results
             </Button>
           )}
-          {(quiz.status !== "completed" || quiz.retakesAllowed) && (
+          {(quiz.status !== quizStatuses.COMPLETED || quiz.retakesAllowed) && (
             <Button
               nativeButton={false}
               className="min-h-10 min-w-0 flex-1 rounded-md px-3 text-white"
@@ -162,13 +166,13 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
                   to="/quiz/$id"
                   params={{ id: quiz.id }}
                   hash={
-                    quiz.status === "completed"
-                      ? "retake"
-                      : quiz.status === "in-progress"
-                        ? "continue"
-                        : "start"
+                    quiz.status === quizStatuses.COMPLETED
+                      ? quizLinkHashes.RETAKE
+                      : quiz.status === quizStatuses.IN_PROGRESS
+                        ? quizLinkHashes.CONTINUE
+                        : quizLinkHashes.START
                   }
-                  aria-label={`${quiz.status === "completed" ? "Retake quiz" : quiz.status === "in-progress" ? "Continue quiz" : "Start quiz"}: ${quiz.title}`}
+                  aria-label={`${quiz.status === quizStatuses.COMPLETED ? "Retake quiz" : quiz.status === quizStatuses.IN_PROGRESS ? "Continue quiz" : "Start quiz"}: ${quiz.title}`}
                 />
               }
             >

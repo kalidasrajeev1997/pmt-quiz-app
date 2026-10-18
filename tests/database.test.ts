@@ -492,7 +492,7 @@ test("quiz queries scope attempts to the user and filter countries before pagina
       }),
     ),
     [
-      { id: "q2", status: "in-progress" },
+      { id: "q2", status: "in_progress" },
       { id: "q3", status: "not-started" },
     ],
   );
@@ -647,7 +647,7 @@ test("quiz queries derive status from attempts and time limits before pagination
     },
     {
       id: "q2",
-      status: "in-progress",
+      status: "in_progress",
       elapsed: 59,
       total: 60,
       perQuestion: null,
@@ -675,7 +675,7 @@ test("quiz queries derive status from attempts and time limits before pagination
     },
     {
       id: "q6",
-      status: "in-progress",
+      status: "in_progress",
       elapsed: 10000,
       total: null,
       perQuestion: null,
@@ -689,7 +689,7 @@ test("quiz queries derive status from attempts and time limits before pagination
     },
     {
       id: "q8",
-      status: "in-progress",
+      status: "in_progress",
       elapsed: 49,
       total: null,
       perQuestion: 10,
@@ -753,7 +753,7 @@ test("quiz queries derive status from attempts and time limits before pagination
     ),
   );
   assert.ok(quizzes.every((quiz) => !("answers" in quiz)));
-  for (const status of ["not-started", "in-progress", "completed"] as const) {
+  for (const status of ["not-started", "in_progress", "completed"] as const) {
     const matchingQuizzes = quizzes.filter((quiz) => quiz.status === status);
     assert.deepEqual(await getQuizzesQuery(1, 20, "u1", "IN", status), {
       quizzes: matchingQuizzes,

@@ -19,7 +19,7 @@ const HomeTabs = ({ tab, setTab, children }: HomeTabsProps) => {
         <TabsTrigger value="not-started" className="text-xs">
           Not Started
         </TabsTrigger>
-        <TabsTrigger value="in-progress" className="text-xs">
+        <TabsTrigger value="in_progress" className="text-xs">
           In Progress
         </TabsTrigger>
         <TabsTrigger value="completed" className="text-xs">

@@ -1,5 +1,6 @@
-import { ArrowRight, Check, CircleAlert, LoaderCircle } from "lucide-react";
+import { ArrowRight, Check, CircleAlert, LoaderIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { saveLabels, submitLabels } from "@/helpers/constants";
 
 interface QuestionActionsProps {
   pending: boolean;
@@ -16,17 +17,20 @@ export default function QuestionActions({
   isSubmitting,
   lastQuestion,
 }: QuestionActionsProps) {
-  const SaveIcon = pending ? LoaderCircle : saveFailed ? CircleAlert : Check;
+  const SaveIcon = pending ? LoaderIcon : saveFailed ? CircleAlert : Check;
+
   const saveLabel = pending
-    ? "Saving..."
+    ? saveLabels.PENDING
     : saveFailed
-      ? "Not saved"
-      : "Progress saved";
+      ? saveLabels.FAILED
+      : saveLabels.SUCCESS;
+
   const submitLabel = expired
-    ? "Time expired..."
+    ? submitLabels.TIME_EXPIRED
     : lastQuestion
-      ? "Finish quiz"
-      : "Submit answer";
+      ? submitLabels.FINISH_QUIZ
+      : submitLabels.SUBMIT_ANSWER;
+
   const SubmitIcon = lastQuestion ? Check : ArrowRight;
 
   return (
@@ -45,7 +49,7 @@ export default function QuestionActions({
         type="submit"
         size="lg"
         disabled={pending || expired || isSubmitting}
-        className="min-h-11 rounded-md px-5"
+        className="min-h-10 rounded-md px-4 text-background"
       >
         {submitLabel}
         <SubmitIcon aria-hidden="true" />

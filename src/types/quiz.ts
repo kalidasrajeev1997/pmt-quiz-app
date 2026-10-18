@@ -86,7 +86,7 @@ export interface SeedData {
   attempts: Attempt[];
 }
 
-export type TabStatus = "all" | "not-started" | "in-progress" | "completed";
+export type TabStatus = "all" | "not-started" | "in_progress" | "completed";
 
 export class QuizAttemptError extends Error {}
 

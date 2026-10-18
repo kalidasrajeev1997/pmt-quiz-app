@@ -1,4 +1,5 @@
 import { getQuizzesQuery } from "./db/queries";
+import type { TabStatus } from "../types/quiz";
 import {
   loadQuizSessionMutation,
   startOrResumeAttemptMutation,
@@ -29,7 +30,7 @@ export const getQuizzes = async (
   pageSize: number,
   userId: User["id"],
   country: Country["code"],
-  status: "all" | "not-started" | "in-progress" | "completed" = "all",
+  status: TabStatus = "all",
 ): Promise<QuizPageResult> => {
   return await getQuizzesQuery(page, pageSize, userId, country, status);
 };
