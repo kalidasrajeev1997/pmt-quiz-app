@@ -7,6 +7,14 @@ import {
 } from "@tanstack/react-router";
 import PageLayout from "../components/layouts/PageLayout";
 import HomeContainer from "../components/home/HomeContainer";
+import QuizContainer from "../components/quizzes/QuizContainer";
+import TAB_VALUES from "../helpers/tabs";
+import type { TabStatus } from "../types/quiz";
+
+export interface HomeSearch {
+  status: TabStatus;
+  page: number;
+}
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -20,13 +28,21 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   beforeLoad: () => {
-    throw redirect({ to: "/home" });
+    throw redirect({ to: "/home", search: { status: "all", page: 1 } });
   },
 });
 
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/home",
+  validateSearch: (search: Record<string, unknown>): HomeSearch => {
+    const status = TAB_VALUES.find((value) => value === search.status);
+    const page = Math.floor(Number(search.page));
+    return {
+      status: status ?? "all",
+      page: Number.isFinite(page) && page > 0 ? page : 1,
+    };
+  },
   component: () => <HomeContainer />,
 });
 
@@ -42,7 +58,7 @@ const quizRoute = createRoute({
   component: () => {
     const { id } = quizRoute.useParams();
 
-    return <h1>Quiz {id}</h1>;
+    return <QuizContainer key={id} quizId={id} />;
   },
 });
 

@@ -1,29 +1,28 @@
 import HomeTabs from "./HomeTabs";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 import { useSelection } from "@/hooks/useSelection";
 import { getQuizzes } from "@/services/quiz.service";
 import QuizCard from "@/components/home/QuizCard";
 import QuizCardSkeleton from "@/components/home/QuizCardSkeleton";
+import QuizPagination from "@/components/home/QuizPagination";
+import type { TabStatus } from "@/types/quiz";
 
 const PAGE_SIZE = 10;
 
 const HomeContainer = () => {
-  const [tab, setTab] = useState<
-    "all" | "not-started" | "in-progress" | "completed"
-  >("all");
+  const { status: tab, page } = useSearch({ from: "/home" });
+  const navigate = useNavigate({ from: "/home" });
   const { selectedUser, selectedCountry, isLoading, error } = useSelection();
-  const scope = JSON.stringify([tab, selectedUser?.id, selectedCountry?.code]);
-  const [pagination, setPagination] = useState({ scope, page: 1 });
-  if (pagination.scope !== scope) {
-    setPagination({ scope, page: 1 });
-  }
-  const page = pagination.scope === scope ? pagination.page : 1;
+
+  const setTab = (status: TabStatus) =>
+    navigate({ search: { status, page: 1 } });
 
   const {
     data,
     isLoading: quizzesLoading,
+    isFetching,
     error: quizzesError,
   } = useQuery({
     enabled: !isLoading && !error && !!selectedUser && !!selectedCountry,
@@ -35,22 +34,18 @@ const HomeContainer = () => {
       page,
       PAGE_SIZE,
     ],
-    queryFn: async () => {
-      const userId = selectedUser?.id ?? "";
-      const country = selectedCountry?.code ?? "";
-      const quizzes = await getQuizzes(page, PAGE_SIZE, userId, country, tab);
-      const hasNextPage =
-        quizzes.length === PAGE_SIZE &&
-        (await getQuizzes(page + 1, PAGE_SIZE, userId, country, tab)).length >
-          0;
-      return { quizzes, hasNextPage };
-    },
+    queryFn: () =>
+      getQuizzes(
+        page,
+        PAGE_SIZE,
+        selectedUser?.id ?? "",
+        selectedCountry?.code ?? "",
+        tab,
+      ),
   });
   const quizzes = data?.quizzes;
+  const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
 
-  console.log({ quizzes });
-  // const previousDisabled = page === 1 || isFetching;
-  // const nextDisabled = !data?.hasNextPage || isFetching || !!quizzesError;
   return (
     <div className="p-3">
       <HomeTabs tab={tab} setTab={setTab}>
@@ -91,6 +86,11 @@ const HomeContainer = () => {
             ))}
           </ul>
         )}
+        <QuizPagination
+          page={page}
+          totalPages={totalPages}
+          disabled={isFetching}
+        />
       </HomeTabs>
     </div>
   );

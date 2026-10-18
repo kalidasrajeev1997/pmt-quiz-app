@@ -1,4 +1,6 @@
 import { initializeDatabase } from "../database";
+import type { IDBPTransaction } from "idb";
+import type { QuizDatabase } from "../../../types/database";
 import type { Answer, Attempt, Country, Quiz, User } from "@/types/quiz";
 import { simulateDelay } from "../../../lib/utils";
 
@@ -15,13 +17,105 @@ export type QuizQueryResult = Omit<Quiz, "questions"> & {
   scorePercentage: number | null;
 };
 
+export type QuizPageResult = {
+  quizzes: QuizQueryResult[];
+  total: number;
+};
+
+export interface QuizAttemptRecords {
+  quiz: Quiz | undefined;
+  user: User | undefined;
+  attempt: Attempt | null;
+}
+
+export type QuizAttemptTransaction = IDBPTransaction<
+  QuizDatabase,
+  ["quizzes", "users", "attempts"],
+  "readwrite"
+>;
+
+const getQuizProgress = (quiz: Quiz, attempts: Attempt[], now: number) => {
+  let latestAttempt: Attempt | undefined;
+  let activeAttempt: Attempt | undefined;
+  let latestStartedAt = -Infinity;
+  let activeStartedAt = -Infinity;
+
+  for (const attempt of attempts) {
+    const startedAt = Date.parse(attempt.startedAt);
+    if (startedAt > latestStartedAt) {
+      latestAttempt = attempt;
+      latestStartedAt = startedAt;
+    }
+
+    const timeLimitSeconds = Math.min(
+      quiz.timeLimitSeconds ?? Infinity,
+      quiz.perQuestionSeconds === null
+        ? Infinity
+        : quiz.perQuestionSeconds * attempt.totalQuestions,
+    );
+    const isActive =
+      attempt.status !== "completed" &&
+      now < startedAt + timeLimitSeconds * 1000;
+
+    if (isActive && startedAt > activeStartedAt) {
+      activeAttempt = attempt;
+      activeStartedAt = startedAt;
+    }
+  }
+
+  const status: QuizStatus = activeAttempt
+    ? "in-progress"
+    : latestAttempt
+      ? "completed"
+      : "not-started";
+  const attemptForProgress = activeAttempt ?? latestAttempt;
+  const questionIds = new Set(quiz.questions.map((question) => question.id));
+  const latestAnswers = new Map<Answer["questionId"], Answer>();
+
+  for (const answer of attemptForProgress?.answers ?? []) {
+    if (!questionIds.has(answer.questionId)) {
+      continue;
+    }
+
+    const previousAnswer = latestAnswers.get(answer.questionId);
+    if (
+      !previousAnswer ||
+      Date.parse(answer.answeredAt) >= Date.parse(previousAnswer.answeredAt)
+    ) {
+      latestAnswers.set(answer.questionId, answer);
+    }
+  }
+
+  const answered = [...latestAnswers.values()].filter(
+    (answer) => answer.selectedOptionIds.length > 0,
+  );
+  const answeredQuestions = answered.length;
+  const correctQuestions = answered.filter((answer) => answer.isCorrect).length;
+  const score = status === "completed" ? correctQuestions : null;
+
+  return {
+    status,
+    answeredQuestions,
+    correctQuestions,
+    incorrectQuestions: answeredQuestions - correctQuestions,
+    unansweredQuestions: quiz.questions.length - answeredQuestions,
+    score,
+    scorePercentage:
+      score === null
+        ? null
+        : quiz.questions.length > 0
+          ? Math.round((score / quiz.questions.length) * 100)
+          : 0,
+  };
+};
+
 export const getQuizzesQuery = async (
   page: number,
   pageSize: number,
   userId: User["id"],
   country: Country["code"],
   status: "all" | QuizStatus = "all",
-): Promise<QuizQueryResult[]> => {
+): Promise<QuizPageResult> => {
   if (!Number.isSafeInteger(page) || page < 1) {
     throw new RangeError("page must be a positive integer");
   }
@@ -51,72 +145,9 @@ export const getQuizzesQuery = async (
   const matchingQuizzes = quizzes
     .filter((quiz) => quiz.countries.includes(country))
     .map((quiz) => {
-      const quizAttempts = [...(attemptsByQuiz.get(quiz.id) ?? [])].sort(
-        (first, second) =>
-          Date.parse(second.startedAt) - Date.parse(first.startedAt),
-      );
-      const activeAttempt = quizAttempts.find((attempt) => {
-        if (attempt.status === "completed") {
-          return false;
-        }
-
-        const timeLimitSeconds = Math.min(
-          quiz.timeLimitSeconds ?? Infinity,
-          quiz.perQuestionSeconds === null
-            ? Infinity
-            : quiz.perQuestionSeconds * attempt.totalQuestions,
-        );
-        return now < Date.parse(attempt.startedAt) + timeLimitSeconds * 1000;
-      });
-      const quizStatus: QuizStatus = activeAttempt
-        ? "in-progress"
-        : quizAttempts.length > 0
-          ? "completed"
-          : "not-started";
-
-      const latestAttempt = activeAttempt ?? quizAttempts[0];
-      const questionIds = new Set(
-        quiz.questions.map((question) => question.id),
-      );
-      const latestAnswers = new Map<Answer["questionId"], Answer>();
-      for (const answer of latestAttempt?.answers ?? []) {
-        if (!questionIds.has(answer.questionId)) {
-          continue;
-        }
-        const previousAnswer = latestAnswers.get(answer.questionId);
-        if (
-          !previousAnswer ||
-          Date.parse(answer.answeredAt) >= Date.parse(previousAnswer.answeredAt)
-        ) {
-          latestAnswers.set(answer.questionId, answer);
-        }
-      }
-      const answered = [...latestAnswers.values()].filter(
-        (answer) => answer.selectedOptionIds.length > 0,
-      );
-      const answeredQuestions = answered.length;
-      const correctQuestions = answered.filter(
-        (answer) => answer.isCorrect,
-      ).length;
-      const incorrectQuestions = answeredQuestions - correctQuestions;
-      const unansweredQuestions = quiz.questions.length - answeredQuestions;
-      const score = quizStatus === "completed" ? correctQuestions : null;
-      const scorePercentage =
-        score === null
-          ? null
-          : quiz.questions.length > 0
-            ? Math.round((score / quiz.questions.length) * 100)
-            : 0;
-
       return {
         ...quiz,
-        status: quizStatus,
-        answeredQuestions,
-        correctQuestions,
-        incorrectQuestions,
-        unansweredQuestions,
-        score,
-        scorePercentage,
+        ...getQuizProgress(quiz, attemptsByQuiz.get(quiz.id) ?? [], now),
       };
     })
     .filter((quiz) => status === "all" || quiz.status === status);
@@ -124,13 +155,67 @@ export const getQuizzesQuery = async (
   const offset = (page - 1) * pageSize;
   await simulateDelay(1500); // Simulate a 1.5s delay before returning the results
 
-  return matchingQuizzes.slice(offset, offset + pageSize).map((quiz) => ({
-    ...quiz,
-    questions: quiz.questions.map(({ id, text, type, options }) => ({
-      id,
-      text,
-      type,
-      options,
+  return {
+    total: matchingQuizzes.length,
+    quizzes: matchingQuizzes.slice(offset, offset + pageSize).map((quiz) => ({
+      ...quiz,
+      questions: quiz.questions.map(({ id, text, type, options }) => ({
+        id,
+        text,
+        type,
+        options,
+      })),
     })),
-  }));
+  };
+};
+
+export const getQuizAttemptQuery = async (
+  quizId: Quiz["id"],
+  userId: User["id"],
+  existingTransaction?: QuizAttemptTransaction,
+): Promise<QuizAttemptRecords> => {
+  const transaction =
+    existingTransaction ??
+    (await initializeDatabase()).transaction(
+      ["quizzes", "users", "attempts"],
+      "readonly",
+    );
+  const [quiz, user, allAttempts] = await Promise.all([
+    transaction.objectStore("quizzes").get(quizId),
+    transaction.objectStore("users").get(userId),
+    transaction.objectStore("attempts").getAll(),
+  ]);
+  const attempts = allAttempts
+    .filter((att) => att.quizId === quizId && att.userId === userId)
+    .sort(
+      (att1, att2) =>
+        Date.parse(att2.startedAt) - Date.parse(att1.startedAt) ||
+        att2.id.localeCompare(att1.id),
+    );
+  if (!existingTransaction) {
+    await transaction.done;
+  }
+  return {
+    quiz,
+    user,
+    attempt:
+      attempts.find((attempt) => attempt.status === "in_progress") ??
+      attempts[0] ??
+      null,
+  };
+};
+
+export const getAttemptQuery = async (
+  attemptId: Attempt["id"],
+  transaction: QuizAttemptTransaction,
+): Promise<QuizAttemptRecords> => {
+  const attempt = await transaction.objectStore("attempts").get(attemptId);
+  if (!attempt) {
+    return { quiz: undefined, user: undefined, attempt: null };
+  }
+  const [quiz, user] = await Promise.all([
+    transaction.objectStore("quizzes").get(attempt.quizId),
+    transaction.objectStore("users").get(attempt.userId),
+  ]);
+  return { quiz, user, attempt };
 };

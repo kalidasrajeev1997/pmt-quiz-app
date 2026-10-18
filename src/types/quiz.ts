@@ -55,6 +55,9 @@ interface AttemptBase {
   currentQuestionIndex: number;
   answers: Answer[];
   totalQuestions: number;
+  quizSnapshot?: string;
+  questionStartedAt?: string;
+  draftOptionIds?: QuestionOption["id"][];
 }
 
 export interface InProgressAttempt extends AttemptBase {
@@ -84,3 +87,37 @@ export interface SeedData {
 }
 
 export type TabStatus = "all" | "not-started" | "in-progress" | "completed";
+
+export class QuizAttemptError extends Error {}
+
+export type PublicQuestion = Omit<Question, "correctOptionIds">;
+export type PublicQuiz = Omit<Quiz, "questions"> & {
+  questions: PublicQuestion[];
+};
+export type InProgressQuizAttempt = Omit<
+  InProgressAttempt,
+  "answers" | "quizSnapshot"
+> & { answers: Omit<Answer, "isCorrect">[] };
+export type QuizResult = Omit<CompletedAttempt, "quizSnapshot"> & {
+  correctQuestions: number;
+  incorrectQuestions: number;
+  unansweredQuestions: number;
+};
+export type QuizAttempt = InProgressQuizAttempt | QuizResult;
+
+export interface QuizSession {
+  quiz: PublicQuiz;
+  attempt: QuizAttempt | null;
+}
+
+export interface CurrentQuestion {
+  attemptId: Attempt["id"];
+  status: Attempt["status"];
+  question: PublicQuestion | null;
+  index: number;
+  total: number;
+  remainingSeconds: number | null;
+  overallRemainingSeconds: number | null;
+  questionRemainingSeconds: number | null;
+  selectedOptionIds: string[];
+}

@@ -15,3 +15,11 @@ export const statusStyles = {
     dot: "bg-green-100",
   },
 };
+
+export const attemptSteps = {
+  Overview: 0,
+  InProgress: 1,
+  Completed: 2,
+} as const;
+
+export type attemptSteps = (typeof attemptSteps)[keyof typeof attemptSteps];
