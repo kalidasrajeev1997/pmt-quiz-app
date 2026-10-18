@@ -22,8 +22,8 @@ export default function QuestionTimer({ deadlines, now }: QuestionTimerProps) {
   );
   const urgent = nearestDeadline - now <= 10000;
   const timers = [
-    { label: "Quiz", deadline: deadlines.overall },
-    { label: "Question", deadline: deadlines.question },
+    { label: "Time Remaining", deadline: deadlines.overall },
+    { label: "Time Remaining for Question", deadline: deadlines.question },
   ];
 
   return (

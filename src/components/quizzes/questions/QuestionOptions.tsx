@@ -14,10 +14,10 @@ interface QuestionOptionsProps {
 
 function optionClassName(selected: boolean) {
   const base =
-    "flex min-h-14 cursor-pointer items-center gap-4 rounded-md px-4 py-3 text-base leading-relaxed wrap-anywhere transition-colors motion-reduce:transition-none";
+    "flex min-h-14 cursor-pointer items-center gap-4 rounded-lg px-4 py-3 text-base leading-relaxed wrap-anywhere transition-colors motion-reduce:transition-none";
   const state = selected
-    ? "bg-accent text-foreground"
-    : "bg-muted text-foreground hover:bg-secondary";
+    ? "bg-accent text-foreground border-2 border-b-6 border-primary"
+    : "bg-muted text-foreground hover:bg-secondary border-2 border-b-6";
 
   return `${base} ${state}`;
 }
@@ -41,7 +41,7 @@ export default function QuestionOptions({
         aria-labelledby="question-prompt"
         aria-describedby={descriptionId}
         aria-invalid={invalid}
-        className="gap-3"
+        className="grid-cols-1 gap-3 sm:grid-cols-2"
       >
         {question.options.map((option, index) => (
           <label
@@ -73,7 +73,7 @@ export default function QuestionOptions({
       role="group"
       aria-labelledby="question-prompt"
       aria-describedby={descriptionId}
-      className="grid gap-3"
+      className="grid grid-cols-1 gap-3 sm:grid-cols-2"
     >
       {question.options.map((option, index) => (
         <label
