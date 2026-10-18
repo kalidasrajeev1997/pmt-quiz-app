@@ -10,6 +10,7 @@ import HomeContainer from "../components/home/HomeContainer";
 import QuizContainer from "../components/quizzes/QuizContainer";
 import TAB_VALUES from "../helpers/tabs";
 import type { TabStatus } from "../types/quiz";
+import LeaderboardContainer from "@/components/leaderboard/LeaderboardContainer";
 
 export interface HomeSearch {
   status: TabStatus;
@@ -62,11 +63,18 @@ const quizRoute = createRoute({
   },
 });
 
+const leaderboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/leaderboard",
+  component: () => <LeaderboardContainer />,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   homeRoute,
   adminRoute,
   quizRoute,
+  leaderboardRoute,
 ]);
 
 export const router = createRouter({ routeTree });
