@@ -166,7 +166,7 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
   }
 
   function refetchSession() {
-    void sessionQuery.refetch();
+    sessionQuery.refetch();
   }
 
   return {

@@ -1,34 +1,32 @@
 import { Link } from "@tanstack/react-router";
 import { ListChecks, Trophy } from "lucide-react";
-
+import { cn } from "@/lib/utils";
 const items = [
   { label: "Quizzes", to: "/home", icon: ListChecks },
   { label: "Leaderboard", to: "/leaderboard", icon: Trophy },
 ] as const;
-
 const Sidebar = () => (
   <nav
     aria-label="Primary"
-    className="flex w-12 shrink-0 flex-col gap-1 border-r p-2 md:w-48"
+    className="order-last flex w-full shrink-0 flex-row items-center justify-around border-t bg-background px-3 py-1 md:order-first md:h-full md:w-48 md:flex-col md:items-stretch md:justify-start md:gap-1 md:border-r md:border-t-0 md:p-2"
   >
     {items.map(({ label, to, icon: Icon }) => (
       <Link
         key={to}
-        // "/leaderboard" is not registered in the router yet; drop the cast once it is.
         to={to as "/home"}
         search={{ status: "all", page: 1 }}
+        activeOptions={{ includeSearch: false }}
         aria-label={label}
-        className="flex items-center justify-center gap-2 rounded-md p-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:justify-start"
+        className="group flex min-h-11 flex-1 flex-col items-center justify-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:min-h-0 md:w-full md:flex-initial md:flex-row md:items-center md:justify-start md:gap-2 md:p-2 md:text-sm"
         activeProps={{
-          className: "bg-muted font-medium text-foreground",
+          className: "font-medium text-foreground! bg-muted",
           "aria-current": "page",
         }}
       >
-        <Icon className="size-4 shrink-0" />
-        <span className="hidden md:inline">{label}</span>
+        <Icon className={cn("size-5 shrink-0 md:size-4")} />
+        <span>{label}</span>
       </Link>
     ))}
   </nav>
 );
-
 export default Sidebar;

@@ -26,7 +26,7 @@ const QuizCard = ({ quiz }: { quiz: QuizQueryResult }) => {
     <Card
       role="article"
       aria-labelledby={`quiz-title-${quiz.id}`}
-      className="h-full min-w-0 gap-5.5 rounded-lg bg-muted py-5 shadow-none ring-0 [--card-spacing:--spacing(5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300"
+      className="h-full min-w-0 gap-5.5 rounded-lg bg-muted py-5 shadow-none ring-0 [--card-spacing:--spacing(4)] sm:[--card-spacing:--spacing(5)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300"
     >
       <CardHeader className="flex items-start justify-between gap-4 rounded-none">
         <div className="min-w-0 flex-1">

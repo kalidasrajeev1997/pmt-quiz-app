@@ -9,12 +9,12 @@ interface StepperProps {
 
 function Stepper({ steps, currentStep }: StepperProps) {
   return (
-    <ol aria-label="Quiz progress" className="flex w-fit max-w-full">
+    <ol aria-label="Quiz progress" className="flex w-full max-w-2xl">
       {steps.map(({ label, icon: Icon }, index) => (
         <li
           key={label}
           aria-current={index === currentStep ? "step" : undefined}
-          className="relative w-80 min-w-0 sm:w-80"
+          className="relative flex-1 min-w-0"
         >
           {index < steps.length - 1 && (
             <div
@@ -27,7 +27,7 @@ function Stepper({ steps, currentStep }: StepperProps) {
           )}
           <div
             className={cn(
-              "relative flex flex-col items-center gap-2 px-2 text-center text-sm",
+              "relative flex flex-col items-center gap-2 px-1 text-center text-sm sm:px-2",
               index > currentStep ? "text-muted-foreground" : "text-foreground",
             )}
           >
@@ -45,7 +45,9 @@ function Stepper({ steps, currentStep }: StepperProps) {
                 <Icon className="size-4" aria-hidden="true" />
               )}
             </span>
-            <span className="text-xs">{label}</span>
+            <span className="max-w-full truncate text-[11px] sm:text-xs">
+              {label}
+            </span>
             {index < currentStep && <span className="sr-only">Completed</span>}
           </div>
         </li>

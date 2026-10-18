@@ -12,17 +12,29 @@ interface HomeTabsProps {
 const HomeTabs = ({ tab, setTab, children }: HomeTabsProps) => {
   return (
     <Tabs value={tab} onValueChange={setTab} className="w-full">
-      <TabsList>
-        <TabsTrigger value="all" className="text-xs">
+      <TabsList className="inline-flex w-full max-w-full justify-start overflow-x-auto p-1 group-data-horizontal/tabs:h-11 sm:w-fit sm:justify-center sm:group-data-horizontal/tabs:h-9">
+        <TabsTrigger
+          value="all"
+          className="flex-1 shrink-0 px-2.5 text-xs sm:flex-initial"
+        >
           All
         </TabsTrigger>
-        <TabsTrigger value="not-started" className="text-xs">
+        <TabsTrigger
+          value="not-started"
+          className="flex-1 shrink-0 px-2.5 text-xs sm:flex-initial"
+        >
           Not Started
         </TabsTrigger>
-        <TabsTrigger value="in_progress" className="text-xs">
+        <TabsTrigger
+          value="in_progress"
+          className="flex-1 shrink-0 px-2.5 text-xs sm:flex-initial"
+        >
           In Progress
         </TabsTrigger>
-        <TabsTrigger value="completed" className="text-xs">
+        <TabsTrigger
+          value="completed"
+          className="flex-1 shrink-0 px-2.5 text-xs sm:flex-initial"
+        >
           Completed
         </TabsTrigger>
       </TabsList>

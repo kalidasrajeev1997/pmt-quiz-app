@@ -37,7 +37,12 @@ describe("PageLayout", () => {
     vi.mocked(useSelection).mockReturnValue({
       users: [{ id: "u-1", name: "Alice Bob", country: "IN", role: "user" }],
       countries: [{ code: "IN", name: "India" }],
-      selectedUser: { id: "u-1", name: "Alice Bob", country: "IN", role: "user" },
+      selectedUser: {
+        id: "u-1",
+        name: "Alice Bob",
+        country: "IN",
+        role: "user",
+      },
       selectedCountry: { code: "IN", name: "India" },
       isLoading: false,
       error: null,
@@ -97,9 +102,7 @@ describe("PageLayout", () => {
     const selectCountry = vi.fn();
 
     vi.mocked(useSelection).mockReturnValue({
-      users: [
-        { id: "u-1", name: "Alice", country: "IN", role: "user" },
-      ],
+      users: [{ id: "u-1", name: "Alice", country: "IN", role: "user" }],
       countries: [
         { code: "IN", name: "India" },
         { code: "GB", name: "United Kingdom" },
@@ -118,7 +121,9 @@ describe("PageLayout", () => {
       </PageLayout>,
     );
 
-    const countryTrigger = screen.getByRole("combobox", { name: "Selected country" });
+    const countryTrigger = screen.getByRole("combobox", {
+      name: "Selected country",
+    });
     await user.click(countryTrigger);
     const gbOption = await screen.findByRole("option", { name: /GB/i });
     await user.click(gbOption);
@@ -143,6 +148,8 @@ describe("PageLayout", () => {
       </PageLayout>,
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent("Failed to load selection");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Failed to load selection",
+    );
   });
 });
