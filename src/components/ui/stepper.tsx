@@ -21,7 +21,7 @@ function Stepper({ steps, currentStep }: StepperProps) {
               aria-hidden="true"
               className={cn(
                 "absolute left-1/2 top-4 h-px w-full",
-                index < currentStep ? "bg-primary" : "bg-[#00a5df80]",
+                index < currentStep ? "bg-primary" : "bg-muted-foreground/30",
               )}
             />
           )}
@@ -36,7 +36,7 @@ function Stepper({ steps, currentStep }: StepperProps) {
                 "grid size-8 shrink-0 place-items-center rounded-full",
                 index <= currentStep
                   ? "bg-primary text-white"
-                  : "bg-accent text-[#0087c1]",
+                  : "bg-muted text-muted-foreground",
               )}
             >
               {index < currentStep ? (

@@ -62,7 +62,7 @@ export default function AdminQuizTable({
                 <Link
                   to="/admin/quizzes/$id"
                   params={{ id: quiz.id }}
-                  className="block font-medium wrap-break-word hover:text-primary focus-visible:outline-2 focus-visible:outline-ring"
+                  className="block font-medium wrap-break-word hover:text-sky-700 dark:hover:text-sky-400 focus-visible:outline-2 focus-visible:outline-ring"
                 >
                   {quiz.title}
                 </Link>

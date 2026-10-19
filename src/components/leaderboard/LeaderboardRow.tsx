@@ -9,7 +9,7 @@ const medalColors = [
   "text-[#D6B288] fill-orange-200",
 ];
 
-const rankColors = ["text-[#9A6200]", "text-[#40566D]", "text-[#814719]"];
+const rankColors = ["text-[#784d00]", "text-[#40566D]", "text-[#814719]"];
 
 export const leaderboardColumns =
   "grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 sm:grid-cols-[3rem_minmax(0,1fr)_6rem_8rem] sm:px-4";
@@ -65,7 +65,9 @@ export default function LeaderboardRow({
           <span className="block wrap-anywhere text-sm font-medium">
             {entry.name}
             {isCurrentUser && (
-              <span className="ml-2 text-sm font-medium text-primary">You</span>
+              <span className="ml-2 text-sm font-medium text-sky-700 dark:text-sky-400">
+                You
+              </span>
             )}
           </span>
           {overall && (
@@ -89,7 +91,9 @@ export default function LeaderboardRow({
         role="cell"
         className={cn(
           "col-span-2 col-start-2 text-sm tabular-nums sm:col-span-1 sm:col-start-auto sm:text-right",
-          isCurrentUser ? "text-primary" : "text-muted-foreground",
+          isCurrentUser
+            ? "text-sky-700 dark:text-sky-400"
+            : "text-muted-foreground",
         )}
       >
         <span className="sm:sr-only">Time </span>

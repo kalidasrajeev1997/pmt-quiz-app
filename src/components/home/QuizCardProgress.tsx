@@ -90,7 +90,9 @@ export default function QuizCardProgress({ quiz }: QuizCardProgressProps) {
       className={cn(
         "size-14",
         hasTimeRemaining &&
-          (isUrgent || isExpired ? "text-destructive" : "text-amber-500"),
+          (isUrgent || isExpired
+            ? "text-destructive"
+            : "text-amber-600 dark:text-amber-400"),
       )}
     >
       <span

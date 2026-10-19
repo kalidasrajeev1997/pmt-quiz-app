@@ -11,8 +11,8 @@ export const statusStyles = {
   },
   completed: {
     label: "Completed",
-    color: "text-green-700",
-    dot: "bg-green-700",
+    color: "text-green-700 dark:text-green-400",
+    dot: "bg-green-700 dark:bg-green-400",
   },
 };
 

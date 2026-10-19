@@ -35,7 +35,7 @@ export default function QuizResults({
           >
             Quiz completed
           </h1>
-          <BookOpenCheck className="text-[#2f8646] size-6" />
+          <BookOpenCheck aria-hidden="true" className="text-[#2f8646] size-6" />
         </span>
         <p className="text-base wrap-anywhere">{quiz.title}</p>
       </div>

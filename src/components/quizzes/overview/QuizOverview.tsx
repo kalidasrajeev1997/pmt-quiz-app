@@ -50,7 +50,7 @@ export default function QuizOverview({
           <h1 className="text-xl leading-tight font-medium wrap-anywhere sm:text-2xl">
             {quiz.title}
           </h1>
-          <Goal className="text-[#2f8646] size-6" />
+          <Goal aria-hidden="true" className="text-[#2f8646] size-6" />
         </span>
 
         <p className="text-base leading-relaxed text-foreground">
@@ -88,7 +88,7 @@ export default function QuizOverview({
       <div className="flex flex-wrap items-center gap-4">
         <Button
           size="lg"
-          className="rounded-md px-5 text-white"
+          className="rounded-md h-10 text-white"
           disabled={pending || !quiz.questions.length}
           onClick={onStart}
         >
