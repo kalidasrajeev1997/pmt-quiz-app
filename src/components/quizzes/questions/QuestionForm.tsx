@@ -107,15 +107,18 @@ export default function QuestionForm({
 
   return (
     <section
-      className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 dark:border-border p-4 bg-white dark:bg-card text-foreground"
+      className="quiz-scene @container relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 dark:border-border p-4 bg-white dark:bg-card text-foreground"
       aria-label="Current question"
     >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 @min-[36rem]:flex-row @min-[36rem]:items-start @min-[36rem]:justify-between">
         <div className="min-w-0 flex-1 space-y-2">
           <h1 className="text-lg leading-snug font-semibold wrap-anywhere sm:text-xl">
             {quiz.title}
           </h1>
-          <p className="text-sm text-muted-foreground" aria-live="polite">
+          <p
+            className="text-sm whitespace-nowrap text-muted-foreground"
+            aria-live="polite"
+          >
             Question {attempt.currentQuestionIndex + 1} of{" "}
             {quiz.questions.length}
           </p>

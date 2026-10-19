@@ -23,23 +23,25 @@ export default function QuestionTimer({ deadlines, now }: QuestionTimerProps) {
       role="timer"
       aria-label="Time remaining"
       aria-live="off"
-      className={`flex flex-wrap gap-x-5 gap-y-2 ${urgent ? "text-destructive" : "text-foreground"}`}
+      className={`grid grid-cols-2 gap-x-4 gap-y-2 @min-[36rem]:flex @min-[36rem]:shrink-0 @min-[36rem]:gap-x-5 ${urgent ? "text-destructive" : "text-foreground"}`}
     >
       {timers.map(({ label, deadline }) => {
         if (deadline === null) return null;
 
         return (
-          <div key={label} className="space-y-1">
+          <div key={label} className="grid min-w-0 grid-rows-[1fr_auto] gap-1">
             <p className="text-xs">{label}</p>
-            <p className="flex items-center gap-1.5 text-lg font-semibold tabular-nums">
-              <Clock3 className="size-4" aria-hidden="true" />
+            <p className="flex items-center gap-1.5 text-lg font-semibold whitespace-nowrap tabular-nums">
+              <Clock3 className="size-4 shrink-0" aria-hidden="true" />
               {formatCountdown(deadline, now)}
             </p>
           </div>
         );
       })}
       {nearestDeadline === Infinity && (
-        <span className="text-sm text-muted-foreground">No time limit</span>
+        <span className="col-span-full text-sm text-muted-foreground">
+          No time limit
+        </span>
       )}
     </div>
   );

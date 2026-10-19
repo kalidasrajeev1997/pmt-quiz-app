@@ -14,7 +14,7 @@ interface QuestionOptionsProps {
 
 function optionClassName(selected: boolean) {
   const base =
-    "flex min-h-14 cursor-pointer items-center gap-4 rounded-lg px-4 py-3 text-base leading-relaxed wrap-anywhere transition-colors motion-reduce:transition-none has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring/35";
+    "flex min-h-14 cursor-pointer items-center gap-4 rounded-lg px-4 py-3 text-base leading-relaxed wrap-anywhere transition-colors motion-reduce:transition-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/80";
   const state = selected
     ? "bg-accent text-foreground border-2 border-b-6 border-primary"
     : "bg-muted text-foreground hover:bg-secondary border-2 border-b-6";
@@ -121,7 +121,7 @@ export default function QuestionOptions({
             onCheckedChange={(checked) => toggleOption(option.id, checked)}
             onBlur={onBlur}
             aria-invalid={invalid}
-            className="size-5 border-muted-foreground focus-visible:ring-0"
+            className="size-5 border-muted-foreground focus-visible:border-primary focus-visible:ring-2"
           />
           <span className="min-w-0">{option.text}</span>
         </label>

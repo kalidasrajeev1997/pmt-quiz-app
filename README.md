@@ -47,8 +47,11 @@ indexed DB with queries and mutations
 
 Assumptions: If the admin edits the quiz, the user is not allowed continue. This is the follow we have currently setup.
 
-Limitations: Mainly limitations are the data mocking, all the data operations are served and stored through the client itself. Due to this there can raise conditions across multiple tabs.
-User cannot go back or attempt any question for the second time.
+Limitations:
+
+- Mainly limitations are the data mocking, all the data operations are served and stored through the client itself. Due to this there can raise conditions across multiple tabs.
+- User cannot go back or attempt any question for the second time.
+- To select admin, user needs to select India
 
 Improvements: I have bring review mode before user submits the quiz.
 
