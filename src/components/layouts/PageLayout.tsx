@@ -29,7 +29,7 @@ function UserAvatar({ name }: { name: string }) {
 
   return (
     <Avatar aria-hidden="true" className="size-8 md:size-5">
-      <AvatarFallback className="bg-primary text-xs font-semibold text-background dark:text-foreground md:text-[10px]">
+      <AvatarFallback className="bg-primary text-xs font-semibold text-white! md:text-[10px]">
         {initials}
       </AvatarFallback>
     </Avatar>

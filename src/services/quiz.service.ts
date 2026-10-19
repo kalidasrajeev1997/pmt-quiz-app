@@ -24,7 +24,12 @@ import {
   toQuizResult,
 } from "@/helpers/quizHelpers";
 import { simulateDelay } from "@/lib/utils";
-import { getAllRecords, getRecord, initializeDatabase } from "./db/database";
+import {
+  getAllRecords,
+  getRecord,
+  initializeDatabase,
+  resetDatabase,
+} from "./db/database";
 import { quizSchema, type QuizFormValues } from "@/helpers/quizSchema";
 
 async function validateQuizData(data: QuizFormValues): Promise<QuizFormValues> {
@@ -188,4 +193,8 @@ export async function saveDraft(
     now,
   );
   return toCurrentQuestion(quiz, attempt, now);
+}
+
+export async function resetDataToSeed(): Promise<void> {
+  await resetDatabase();
 }

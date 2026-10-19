@@ -140,3 +140,40 @@ export async function deleteRecord<Table extends TableName>(
   const database = await initializeDatabase();
   await database.delete(tableName, key);
 }
+
+export async function resetDatabase(): Promise<void> {
+  const database = await initializeDatabase();
+  const transaction = database.transaction(TABLE_NAMES, "readwrite");
+
+  try {
+    const freshRecords: {
+      [Table in TableName]: StoreValue<QuizDatabase, Table>[];
+    } = {
+      meta: [structuredClone(seedData.meta)],
+      countries: structuredClone(seedData.countries),
+      users: structuredClone(seedData.users),
+      quizzes: structuredClone(seedData.quizzes),
+      attempts: structuredClone(seedData.attempts),
+    };
+
+    await Promise.all(
+      TABLE_NAMES.map(async (tableName): Promise<void> => {
+        const store = transaction.objectStore(tableName);
+        await store.clear();
+        await Promise.all(
+          freshRecords[tableName].map((record) => store.add(record)),
+        );
+      }),
+    );
+    await transaction.done;
+  } catch (error: unknown) {
+    try {
+      transaction.abort();
+    } catch {
+      await transaction.done.catch((): void => {});
+      throw error;
+    }
+    await transaction.done.catch((): void => {});
+    throw error;
+  }
+}
