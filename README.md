@@ -28,7 +28,7 @@ styling:
 
 routing:
 
-- `@tanstack/router`: Chosen for typesafe navigation, this gives us the error during runtime itself. It also provides us with built-in param validation, navigation blocking and route level loading. I have used code level routing rather than file level. tanstack router provides both conventions.
+- `@tanstack/react-router`: Chosen for typesafe navigation, this gives us the error during runtime itself. It also provides us with built-in param validation, navigation blocking and route level loading. I have used code level routing rather than file level. tanstack router provides both conventions. `lazyRouteComponent` uses dynamic imports so Vite automatically splits page bundles. Built-in `Suspense` boundaries use `defaultPendingComponent` for the loading, so no manual `Suspense` wrapper is needed.
 
 forms:
 

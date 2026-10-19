@@ -2,20 +2,35 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   Outlet,
   redirect,
 } from "@tanstack/react-router";
 import PageLayout from "../components/layouts/PageLayout";
-import HomeContainer from "../components/home/HomeContainer";
-import QuizContainer from "../components/quizzes/QuizContainer";
 import TAB_VALUES from "../helpers/tabs";
 import type { TabStatus } from "../types/quiz";
-import LeaderboardContainer from "@/components/leaderboard/LeaderboardContainer";
-import AdminQuizList from "@/components/quiz-builder/AdminQuizList";
-import QuizEditor from "@/components/quiz-builder/QuizEditor";
+import { Spinner } from "@/components/ui/spinner";
 import RoleBoundary from "./RoleBoundary";
 import { getActiveUser, requireRole } from "./roleMiddleware";
-import SettingsContainer from "@/components/settings/SettingsContainer";
+
+const HomeContainer = lazyRouteComponent(
+  () => import("../components/home/HomeContainer"),
+);
+const QuizContainer = lazyRouteComponent(
+  () => import("../components/quizzes/QuizContainer"),
+);
+const LeaderboardContainer = lazyRouteComponent(
+  () => import("@/components/leaderboard/LeaderboardContainer"),
+);
+const AdminQuizList = lazyRouteComponent(
+  () => import("@/components/quiz-builder/AdminQuizList"),
+);
+const QuizEditor = lazyRouteComponent(
+  () => import("@/components/quiz-builder/QuizEditor"),
+);
+const SettingsContainer = lazyRouteComponent(
+  () => import("@/components/settings/SettingsContainer"),
+);
 
 export interface HomeSearch {
   status: TabStatus;
@@ -54,7 +69,7 @@ const homeRoute = createRoute({
       page: Number.isFinite(page) && page > 0 ? page : 1,
     };
   },
-  component: () => <HomeContainer />,
+  component: HomeContainer,
 });
 
 const adminRoute = createRoute({
@@ -68,7 +83,7 @@ const newQuizRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin/quizzes/new",
   beforeLoad: () => requireRole("admin"),
-  component: () => <QuizEditor />,
+  component: QuizEditor,
 });
 
 const editQuizRoute = createRoute({
@@ -107,13 +122,13 @@ const leaderboardRoute = createRoute({
           : undefined,
     };
   },
-  component: () => <LeaderboardContainer />,
+  component: LeaderboardContainer,
 });
 
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
-  component: () => <SettingsContainer />,
+  component: SettingsContainer,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -127,7 +142,14 @@ const routeTree = rootRoute.addChildren([
   settingsRoute,
 ]);
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({
+  routeTree,
+  defaultPendingComponent: () => (
+    <div className="flex flex-1 items-center justify-center p-8">
+      <Spinner className="size-6" />
+    </div>
+  ),
+});
 
 declare module "@tanstack/react-router" {
   interface Register {

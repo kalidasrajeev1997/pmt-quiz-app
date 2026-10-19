@@ -1,5 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { lazyRouteComponent } from "@tanstack/react-router";
+import { describe, expect, it, vi } from "vitest";
 import { router } from "../router";
+
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@tanstack/react-router")>();
+  return {
+    ...actual,
+    lazyRouteComponent: vi.fn(actual.lazyRouteComponent),
+  };
+});
 
 describe("Router configuration", () => {
   it("initializes router with expected registered routes", () => {
@@ -9,6 +19,29 @@ describe("Router configuration", () => {
     expect(router.routesByPath["/leaderboard"]).toBeDefined();
     expect(router.routesByPath["/admin"]).toBeDefined();
     expect(router.routesByPath["/settings"]).toBeDefined();
+  });
+
+  it("defers all six page modules through lazy route components", async () => {
+    const lazyComponents = vi.mocked(lazyRouteComponent);
+
+    expect(lazyComponents).toHaveBeenCalledTimes(6);
+
+    for (const [importPage] of lazyComponents.mock.calls) {
+      const page = await importPage();
+      expect(page.default).toBeTypeOf("function");
+    }
+  });
+
+  it.each([
+    "/home",
+    "/admin",
+    "/admin/quizzes/new",
+    "/leaderboard",
+    "/settings",
+  ] as const)("allows the router to preload %s", (path) => {
+    expect(router.routesByPath[path].options.component?.preload).toBeTypeOf(
+      "function",
+    );
   });
 
   it("validates home search parameters with fallback defaults", () => {
