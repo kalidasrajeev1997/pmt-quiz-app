@@ -145,8 +145,8 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultPendingComponent: () => (
-    <div className="flex flex-1 items-center justify-center p-8">
-      <Spinner className="size-6" />
+    <div className="flex flex-1 items-center justify-center p-8 h-dvh">
+      <Spinner className="size-4" />
     </div>
   ),
 });
