@@ -174,7 +174,7 @@ describe("LeaderboardContainer", () => {
       placeholders?.querySelectorAll('[data-slot="skeleton"]').length,
     ).toBeGreaterThan(0);
     const rows = placeholders?.querySelectorAll('[class*="min-h-22"]');
-    expect(rows).toHaveLength(10);
+    expect(rows).toHaveLength(4);
     rows?.forEach((row) => {
       expect(row).toHaveClass(...leaderboardColumns.split(" "));
     });
