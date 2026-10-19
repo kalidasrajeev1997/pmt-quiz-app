@@ -15,6 +15,7 @@ import AdminQuizList from "@/components/quiz-builder/AdminQuizList";
 import QuizEditor from "@/components/quiz-builder/QuizEditor";
 import RoleBoundary from "./RoleBoundary";
 import { getActiveUser, requireRole } from "./roleMiddleware";
+import SettingsContainer from "@/components/settings/SettingsContainer";
 
 export interface HomeSearch {
   status: TabStatus;
@@ -109,6 +110,12 @@ const leaderboardRoute = createRoute({
   component: () => <LeaderboardContainer />,
 });
 
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/settings",
+  component: () => <SettingsContainer />,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   homeRoute,
@@ -117,6 +124,7 @@ const routeTree = rootRoute.addChildren([
   editQuizRoute,
   quizRoute,
   leaderboardRoute,
+  settingsRoute,
 ]);
 
 export const router = createRouter({ routeTree });

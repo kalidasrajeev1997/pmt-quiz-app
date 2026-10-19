@@ -45,7 +45,7 @@ function sidebar(user: User | null) {
 }
 
 describe("Sidebar", () => {
-  it("renders navigation links for Quizzes and Leaderboard", () => {
+  it("renders navigation links for Quizzes, Leaderboard, and Settings", () => {
     render(sidebar({ id: "u1", name: "Aarav", country: "IN", role: "user" }));
 
     expect(
@@ -63,6 +63,10 @@ describe("Sidebar", () => {
     expect(screen.getByRole("link", { name: "Leaderboard" })).toHaveAttribute(
       "href",
       "/leaderboard",
+    );
+    expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute(
+      "href",
+      "/settings",
     );
     expect(
       screen.queryByRole("link", { name: "Quiz admin" }),
@@ -86,6 +90,9 @@ describe("Sidebar", () => {
     expect(
       screen.getByRole("link", { name: "Leaderboard" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Settings" }),
+    ).toBeInTheDocument();
   });
 
   it("does not expose either workspace while no user is selected", () => {
@@ -96,5 +103,11 @@ describe("Sidebar", () => {
     expect(
       screen.queryByRole("link", { name: "Quiz admin" }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Leaderboard" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Settings" }),
+    ).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import type { Ref } from "react";
+import type { KeyboardEvent, Ref } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { PublicQuestion } from "@/types/quiz";
@@ -14,7 +14,7 @@ interface QuestionOptionsProps {
 
 function optionClassName(selected: boolean) {
   const base =
-    "flex min-h-14 cursor-pointer items-center gap-4 rounded-lg px-4 py-3 text-base leading-relaxed wrap-anywhere transition-colors motion-reduce:transition-none";
+    "flex min-h-14 cursor-pointer items-center gap-4 rounded-lg px-4 py-3 text-base leading-relaxed wrap-anywhere transition-colors motion-reduce:transition-none has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring/35";
   const state = selected
     ? "bg-accent text-foreground border-2 border-b-6 border-primary"
     : "bg-muted text-foreground hover:bg-secondary border-2 border-b-6";
@@ -51,7 +51,7 @@ export default function QuestionOptions({
             <RadioGroupItem
               ref={index === 0 ? inputRef : undefined}
               value={option.id}
-              className="size-5 border-muted-foreground"
+              className="size-5 border-muted-foreground focus-visible:ring-0"
             />
             <span className="min-w-0">{option.text}</span>
           </label>
@@ -68,11 +68,46 @@ export default function QuestionOptions({
     onChange(nextSelection);
   }
 
+  function handleCheckboxKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (
+      ![
+        "ArrowDown",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowLeft",
+        "Home",
+        "End",
+      ].includes(event.key)
+    ) {
+      return;
+    }
+
+    const options = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        '[role="checkbox"]:not(:disabled)',
+      ),
+    );
+    const currentIndex = options.findIndex((option) => option === event.target);
+    if (currentIndex === -1) return;
+
+    event.preventDefault();
+    let nextIndex: number;
+    if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = options.length - 1;
+    else {
+      const direction =
+        event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
+      nextIndex = (currentIndex + direction + options.length) % options.length;
+    }
+    options[nextIndex]?.focus();
+  }
+
   return (
     <div
       role="group"
       aria-labelledby="question-prompt"
       aria-describedby={descriptionId}
+      onKeyDown={handleCheckboxKeyDown}
       className="grid grid-cols-1 gap-3 sm:grid-cols-2"
     >
       {question.options.map((option, index) => (
@@ -86,7 +121,7 @@ export default function QuestionOptions({
             onCheckedChange={(checked) => toggleOption(option.id, checked)}
             onBlur={onBlur}
             aria-invalid={invalid}
-            className="size-5 border-muted-foreground"
+            className="size-5 border-muted-foreground focus-visible:ring-0"
           />
           <span className="min-w-0">{option.text}</span>
         </label>

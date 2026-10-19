@@ -8,6 +8,7 @@ describe("Router configuration", () => {
     expect(router.routesByPath["/quiz/$id"]).toBeDefined();
     expect(router.routesByPath["/leaderboard"]).toBeDefined();
     expect(router.routesByPath["/admin"]).toBeDefined();
+    expect(router.routesByPath["/settings"]).toBeDefined();
   });
 
   it("validates home search parameters with fallback defaults", () => {

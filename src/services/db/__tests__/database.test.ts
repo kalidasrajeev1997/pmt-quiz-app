@@ -21,6 +21,7 @@ import {
   getAllRecords,
   getRecord,
   initializeDatabase,
+  resetDatabase,
   saveRecord,
 } from "@/services/db/database";
 
@@ -787,4 +788,44 @@ test("quiz queries derive status from attempts and time limits before pagination
     await assert.rejects(getQuizzesQuery(invalid, 2, "u1", "IN"), RangeError);
     await assert.rejects(getQuizzesQuery(1, invalid, "u1", "IN"), RangeError);
   }
+});
+
+test("resetDatabase clears modifications and restores seed data", async () => {
+  await initializeDatabase();
+  const quiz = await getRecord("quizzes", "q1");
+  assert.ok(quiz);
+  await saveRecord("quizzes", { ...quiz, title: "Modified Title" });
+  assert.equal((await getRecord("quizzes", "q1"))?.title, "Modified Title");
+
+  await saveRecord("quizzes", {
+    ...quiz,
+    id: "new-custom-quiz",
+    title: "Custom Quiz",
+  });
+  assert.ok(await getRecord("quizzes", "new-custom-quiz"));
+
+  await deleteRecord("attempts", "a1");
+  assert.equal(await getRecord("attempts", "a1"), undefined);
+
+  await resetDatabase();
+
+  const restoredQ1 = await getRecord("quizzes", "q1");
+  assert.equal(restoredQ1?.title, quiz.title);
+
+  assert.equal(await getRecord("quizzes", "new-custom-quiz"), undefined);
+
+  const restoredA1 = await getRecord("attempts", "a1");
+  assert.ok(restoredA1);
+
+  const allQuizzes = await getAllRecords("quizzes");
+  assert.equal(allQuizzes.length, seed.quizzes.length);
+
+  const allAttempts = await getAllRecords("attempts");
+  assert.equal(allAttempts.length, seed.attempts.length);
+
+  const allUsers = await getAllRecords("users");
+  assert.equal(allUsers.length, seed.users.length);
+
+  const allCountries = await getAllRecords("countries");
+  assert.equal(allCountries.length, seed.countries.length);
 });

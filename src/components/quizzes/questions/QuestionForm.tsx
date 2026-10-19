@@ -40,6 +40,7 @@ export default function QuestionForm({
 }: QuestionFormProps) {
   const question = quiz.questions[attempt.currentQuestionIndex];
   const headingRef = useRef<HTMLParagraphElement>(null);
+  const fieldsetRef = useRef<HTMLFieldSetElement>(null);
   const deadlines = getDeadlines(quiz, attempt);
   const nearestDeadline = Math.min(
     deadlines.overall ?? Infinity,
@@ -58,8 +59,23 @@ export default function QuestionForm({
   const answerError = form.formState.errors.selectedOptionIds?.message;
 
   useEffect(() => {
-    headingRef.current?.focus({ preventScroll: true });
-    headingRef.current?.scrollIntoView({ block: "nearest" });
+    let cancelled = false;
+    queueMicrotask(() => {
+      const fieldset = fieldsetRef.current;
+      if (cancelled || !fieldset || fieldset.disabled) return;
+
+      headingRef.current?.scrollIntoView({ block: "nearest" });
+      const selectedOption = fieldset.querySelector<HTMLElement>(
+        '[role="radio"][aria-checked="true"], [role="checkbox"][aria-checked="true"]',
+      );
+      const firstOption = fieldset.querySelector<HTMLElement>(
+        '[role="radio"], [role="checkbox"]',
+      );
+      (selectedOption ?? firstOption)?.focus({ preventScroll: true });
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function sendAnswerCommand(
@@ -118,6 +134,7 @@ export default function QuestionForm({
         className="space-y-5 sm:space-y-6"
       >
         <fieldset
+          ref={fieldsetRef}
           disabled={expired || form.formState.isSubmitting}
           className="min-w-0 space-y-4 sm:space-y-5"
         >

@@ -38,7 +38,9 @@ function makeSampleQuiz(overrides: Partial<PublicQuiz> = {}): PublicQuiz {
   };
 }
 
-function makeSampleAttempt(overrides: Partial<InProgressQuizAttempt> = {}): InProgressQuizAttempt {
+function makeSampleAttempt(
+  overrides: Partial<InProgressQuizAttempt> = {},
+): InProgressQuizAttempt {
   return {
     id: "att-form-1",
     quizId: "quiz-form-1",
@@ -59,6 +61,125 @@ function makeSampleAttempt(overrides: Partial<InProgressQuizAttempt> = {}): InPr
 }
 
 describe("QuestionForm Component", () => {
+  it("focuses the first option without selecting it and supports immediate arrow selection", async () => {
+    const user = userEvent.setup();
+    const onCommand = vi.fn();
+
+    render(
+      <QuestionForm
+        quiz={makeSampleQuiz()}
+        attempt={makeSampleAttempt()}
+        pending={false}
+        saveFailed={false}
+        onCommand={onCommand}
+      />,
+    );
+
+    const options = screen.getAllByRole("radio");
+    await waitFor(() => expect(options[0]).toHaveFocus());
+    expect(options[0]).not.toBeChecked();
+    expect(onCommand).not.toHaveBeenCalled();
+
+    await user.keyboard("{ArrowDown}");
+
+    await waitFor(() => expect(options[1]).toHaveFocus());
+    expect(options[1]).toBeChecked();
+    expect(onCommand).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "draft", selectedOptionIds: ["o2"] }),
+    );
+
+    await user.keyboard("{Enter}");
+
+    await waitFor(() => {
+      expect(onCommand).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "submit", selectedOptionIds: ["o2"] }),
+      );
+    });
+  });
+
+  it("focuses the saved option without saving again or stealing focus on rerender", async () => {
+    const user = userEvent.setup();
+    const onCommand = vi.fn();
+    const quiz = makeSampleQuiz();
+    const attempt = makeSampleAttempt({ draftOptionIds: ["o2"] });
+    const { rerender } = render(
+      <QuestionForm
+        quiz={quiz}
+        attempt={attempt}
+        pending={false}
+        saveFailed={false}
+        onCommand={onCommand}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("radio", { name: "A database system" }),
+      ).toHaveFocus();
+    });
+    expect(onCommand).not.toHaveBeenCalled();
+
+    await user.tab();
+    const submitButton = screen.getByRole("button", { name: /submit answer/i });
+    expect(submitButton).toHaveFocus();
+
+    rerender(
+      <QuestionForm
+        quiz={quiz}
+        attempt={attempt}
+        pending={true}
+        saveFailed={false}
+        onCommand={onCommand}
+      />,
+    );
+
+    expect(
+      screen.getByRole("radio", { name: "A database system" }),
+    ).not.toHaveFocus();
+  });
+
+  it("navigates multiple-choice options with arrows and toggles only with Space", async () => {
+    const user = userEvent.setup();
+    const onCommand = vi.fn();
+
+    render(
+      <QuestionForm
+        quiz={makeSampleQuiz()}
+        attempt={makeSampleAttempt({ currentQuestionIndex: 1 })}
+        pending={false}
+        saveFailed={false}
+        onCommand={onCommand}
+      />,
+    );
+
+    const options = screen.getAllByRole("checkbox");
+    await waitFor(() => expect(options[0]).toHaveFocus());
+
+    await user.keyboard("{ArrowDown}");
+    expect(options[1]).toHaveFocus();
+    expect(onCommand).not.toHaveBeenCalled();
+
+    await user.keyboard(" ");
+    expect(options[1]).toBeChecked();
+    expect(onCommand).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "draft", selectedOptionIds: ["m2"] }),
+    );
+    onCommand.mockClear();
+
+    await user.keyboard("{End}");
+    expect(options[2]).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+    expect(options[0]).toHaveFocus();
+    await user.keyboard("{ArrowLeft}");
+    expect(options[2]).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(options[0]).toHaveFocus();
+    await user.keyboard("{ArrowUp}");
+    expect(options[2]).toHaveFocus();
+    expect(options[1]).toBeChecked();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("renders question prompt, progress indicator, and single-choice options", () => {
     const quiz = makeSampleQuiz();
     const attempt = makeSampleAttempt();
@@ -71,15 +192,19 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     expect(screen.getByText("TypeScript Form Quiz")).toBeInTheDocument();
     expect(screen.getByText("Question 1 of 2")).toBeInTheDocument();
     expect(screen.getAllByText("What is TypeScript?")).toHaveLength(2);
-    expect(screen.getByText("Typed superset of JavaScript")).toBeInTheDocument();
+    expect(
+      screen.getByText("Typed superset of JavaScript"),
+    ).toBeInTheDocument();
     expect(screen.getByText("A database system")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /submit answer/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /submit answer/i }),
+    ).toBeInTheDocument();
   });
 
   it("selecting single-choice option updates selection and emits draft command", async () => {
@@ -95,7 +220,7 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     const optionText = screen.getByText("Typed superset of JavaScript");
@@ -122,17 +247,19 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     const submitBtn = screen.getByRole("button", { name: /submit answer/i });
     await user.click(submitBtn);
 
     // Validation alert shown
-    expect(await screen.findByRole("alert")).toHaveTextContent("Select at least one answer.");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Select at least one answer.",
+    );
     // Submit command was not dispatched
     expect(onCommand).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "submit" })
+      expect.objectContaining({ type: "submit" }),
     );
   });
 
@@ -149,7 +276,7 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     await user.click(screen.getByText("Typed superset of JavaScript"));
@@ -177,7 +304,7 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     expect(screen.getAllByText("Which are primitive types?")).toHaveLength(2);
@@ -210,7 +337,7 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     await user.click(screen.getByText("Typed superset of JavaScript"));
@@ -225,7 +352,7 @@ describe("QuestionForm Component", () => {
           type: "submit",
           questionId: "q1",
           selectedOptionIds: ["o1"],
-        })
+        }),
       );
     });
   });
@@ -246,7 +373,7 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     // Fieldset is disabled
@@ -270,7 +397,7 @@ describe("QuestionForm Component", () => {
         pending={true}
         saveFailed={false}
         onCommand={onCommand}
-      />
+      />,
     );
 
     expect(screen.getByText("Saving...")).toBeInTheDocument();
@@ -282,7 +409,7 @@ describe("QuestionForm Component", () => {
         pending={false}
         saveFailed={true}
         onCommand={onCommand}
-      />
+      />,
     );
 
     expect(screen.getByText("Not saved")).toBeInTheDocument();
