@@ -16,6 +16,7 @@ import Sidebar from "@/components/layouts/Sidebar";
 import { usePageEdges } from "@/hooks/usePageEdges";
 import { useLocation } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { confirmSelectionChange } from "@/hooks/useUnsavedChanges";
 
 function UserAvatar({ name }: { name: string }) {
   const initials = name
@@ -38,7 +39,8 @@ function UserAvatar({ name }: { name: string }) {
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const pageRef = usePageEdges();
   const { pathname, href } = useLocation();
-  const isQuizScreen = pathname.startsWith("/quiz/");
+  const isQuizScreen =
+    pathname.startsWith("/quiz/") || pathname.startsWith("/admin/quizzes/");
   const {
     users,
     countries,
@@ -75,7 +77,12 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
               }))}
               value={selectedCountry?.code ?? null}
               onValueChange={(value) => {
-                if (value !== null) selectCountry(value);
+                if (
+                  value !== null &&
+                  value !== selectedCountry?.code &&
+                  confirmSelectionChange()
+                )
+                  selectCountry(value);
               }}
               disabled={isLoading || countries.length === 0 || !!error}
             >
@@ -135,7 +142,12 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
               }))}
               value={selectedUser?.id ?? null}
               onValueChange={(value) => {
-                if (value !== null) selectUser(value);
+                if (
+                  value !== null &&
+                  value !== selectedUser?.id &&
+                  confirmSelectionChange()
+                )
+                  selectUser(value);
               }}
               disabled={isLoading || users.length === 0 || !!error}
             >

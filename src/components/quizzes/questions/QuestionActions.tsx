@@ -49,7 +49,7 @@ export default function QuestionActions({
         type="submit"
         size="lg"
         disabled={pending || expired || isSubmitting}
-        className="min-h-10 rounded-md px-4 text-background"
+        className="min-h-10 rounded-md px-4 text-white"
       >
         {submitLabel}
         <SubmitIcon aria-hidden="true" />

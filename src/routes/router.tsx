@@ -11,6 +11,10 @@ import QuizContainer from "../components/quizzes/QuizContainer";
 import TAB_VALUES from "../helpers/tabs";
 import type { TabStatus } from "../types/quiz";
 import LeaderboardContainer from "@/components/leaderboard/LeaderboardContainer";
+import AdminQuizList from "@/components/quiz-builder/AdminQuizList";
+import QuizEditor from "@/components/quiz-builder/QuizEditor";
+import RoleBoundary from "./RoleBoundary";
+import { getActiveUser, requireRole } from "./roleMiddleware";
 
 export interface HomeSearch {
   status: TabStatus;
@@ -20,7 +24,9 @@ export interface HomeSearch {
 const rootRoute = createRootRoute({
   component: () => (
     <PageLayout>
-      <Outlet />
+      <RoleBoundary>
+        <Outlet />
+      </RoleBoundary>
     </PageLayout>
   ),
 });
@@ -28,7 +34,9 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  beforeLoad: () => {
+  beforeLoad: async () => {
+    if ((await getActiveUser())?.role === "admin")
+      throw redirect({ to: "/admin" });
     throw redirect({ to: "/home", search: { status: "all", page: 1 } });
   },
 });
@@ -36,6 +44,7 @@ const indexRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/home",
+  beforeLoad: () => requireRole("user"),
   validateSearch: (search: Record<string, unknown>): HomeSearch => {
     const status = TAB_VALUES.find((value) => value === search.status);
     const page = Math.floor(Number(search.page));
@@ -50,12 +59,31 @@ const homeRoute = createRoute({
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
-  component: () => <h1>Admin</h1>,
+  beforeLoad: () => requireRole("admin"),
+  component: AdminQuizList,
+});
+
+const newQuizRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/quizzes/new",
+  beforeLoad: () => requireRole("admin"),
+  component: () => <QuizEditor />,
+});
+
+const editQuizRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/quizzes/$id",
+  beforeLoad: () => requireRole("admin"),
+  component: () => {
+    const { id } = editQuizRoute.useParams();
+    return <QuizEditor key={id} quizId={id} />;
+  },
 });
 
 const quizRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/quiz/$id",
+  beforeLoad: () => requireRole("user"),
   component: () => {
     const { id } = quizRoute.useParams();
 
@@ -85,6 +113,8 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   homeRoute,
   adminRoute,
+  newQuizRoute,
+  editQuizRoute,
   quizRoute,
   leaderboardRoute,
 ]);

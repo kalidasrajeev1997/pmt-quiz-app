@@ -32,7 +32,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     countries.find((countryIdx) => countryIdx.code === country) ??
     countries[0] ??
     null;
-  const activeCountry = country ?? selectedCountry?.code;
+  const activeCountry = selectedCountry?.code;
   const users =
     usersQuery.data?.filter((user) => user.country === activeCountry) ?? [];
   const selectedUser =

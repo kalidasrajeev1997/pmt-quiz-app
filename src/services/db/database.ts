@@ -33,8 +33,14 @@ async function seedEmptyTables(
   const transaction = database.transaction(TABLE_NAMES, "readwrite");
 
   try {
+    const initialized = (await transaction.objectStore("meta").count()) > 0;
     await Promise.all(
       TABLE_NAMES.map(async (tableName): Promise<void> => {
+        if (
+          initialized &&
+          (tableName === "quizzes" || tableName === "attempts")
+        )
+          return;
         const store = transaction.objectStore(tableName);
 
         if ((await store.count()) > 0) {
