@@ -44,7 +44,7 @@ export default function QuizOverview({
       : "Start Quiz";
 
   return (
-    <section className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 p-4 bg-white">
+    <section className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 dark:border-border p-4 bg-white dark:bg-card text-foreground">
       <div className="max-w-[60ch] space-y-2">
         <span className="flex gap-1 items-center">
           <h1 className="text-xl leading-tight font-medium wrap-anywhere sm:text-2xl">

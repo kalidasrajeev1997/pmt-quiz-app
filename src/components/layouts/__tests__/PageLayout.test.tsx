@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PageLayout from "../PageLayout";
 import { useSelection } from "@/hooks/useSelection";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 const location = vi.hoisted(() => ({
   pathname: "/home",
@@ -84,6 +85,9 @@ describe("PageLayout", () => {
     expect(screen.getByText("Alice Bob")).toBeInTheDocument();
     expect(screen.getByText("AB")).toBeInTheDocument();
     expect(screen.getByText("IN")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /switch to (dark|light) theme/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Page Body Content")).toBeInTheDocument();
     expect(screen.getByRole("banner").parentElement).toHaveClass("h-dvh");
     expect(screen.getByRole("main")).toHaveClass("h-full", "min-h-full");
@@ -91,6 +95,29 @@ describe("PageLayout", () => {
     expect(
       document.querySelectorAll('[data-slot="scroll-area-viewport"]'),
     ).toHaveLength(1);
+  });
+
+  it("renders mode toggle button in header and allows toggling theme", async () => {
+    const user = userEvent.setup();
+    render(
+      <ThemeProvider defaultTheme="light">
+        <PageLayout>
+          <div>Body</div>
+        </PageLayout>
+      </ThemeProvider>,
+    );
+
+    const toggle = screen.getByRole("button", {
+      name: "Switch to dark theme",
+    });
+    expect(toggle).toBeInTheDocument();
+
+    await user.click(toggle);
+
+    expect(
+      screen.getByRole("button", { name: "Switch to light theme" }),
+    ).toBeInTheDocument();
+    expect(document.documentElement).toHaveClass("dark");
   });
 
   it("lets quiz screens own scrolling without a nested layout scroller", () => {

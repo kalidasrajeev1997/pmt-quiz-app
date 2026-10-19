@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { SelectionProvider } from "@/providers/SelectionProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { router } from "./routes/router";
 
 function App() {
@@ -9,9 +10,11 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SelectionProvider>
-        <RouterProvider router={router} />
-      </SelectionProvider>
+      <ThemeProvider>
+        <SelectionProvider>
+          <RouterProvider router={router} />
+        </SelectionProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

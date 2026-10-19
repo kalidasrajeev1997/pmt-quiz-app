@@ -79,7 +79,7 @@ function AchievementCard({
           <dt className="flex items-center gap-1 text-xs text-muted-foreground">
             <CircleStar
               aria-hidden="true"
-              className="size-4 stroke-[#00a5df] fill-white"
+              className="size-4 stroke-[#00a5df] fill-white dark:stroke-background dark:fill-primary"
               strokeWidth={2}
             />
             Score
@@ -92,7 +92,7 @@ function AchievementCard({
           <dt className="flex items-center gap-1 text-xs text-muted-foreground">
             <CircleCheck
               aria-hidden="true"
-              className="size-4 stroke-[#00a5df] fill-white"
+              className="size-4 stroke-[#00a5df] fill-white dark:stroke-background dark:fill-[#00a5df]"
               strokeWidth={2}
             />
             Correct
@@ -105,7 +105,7 @@ function AchievementCard({
           <dt className="flex items-center gap-1 text-xs text-muted-foreground">
             <CircleHelp
               aria-hidden="true"
-              className="size-3.5 stroke-[#00a5df] fill-white"
+              className="size-3.5 stroke-[#00a5df] fill-white dark:stroke-background dark:fill-[#00a5df]"
               strokeWidth={2}
             />
             Unanswered
@@ -118,7 +118,7 @@ function AchievementCard({
           <dt className="flex items-center gap-1 text-xs text-muted-foreground">
             <Clock3
               aria-hidden="true"
-              className="size-3.5 stroke-[#00a5df] fill-white"
+              className="size-3.5 stroke-[#00a5df] fill-white dark:stroke-background dark:fill-[#00a5df]"
               strokeWidth={2}
             />
             Time taken

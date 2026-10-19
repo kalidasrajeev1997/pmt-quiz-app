@@ -15,6 +15,7 @@ import countryFlagMap from "@/helpers/countryFlagMap";
 import Sidebar from "@/components/layouts/Sidebar";
 import { usePageEdges } from "@/hooks/usePageEdges";
 import { useLocation } from "@tanstack/react-router";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 function UserAvatar({ name }: { name: string }) {
   const initials = name
@@ -61,11 +62,12 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             <div className="bg-primary rounded p-1">
               <Blocks className="size-5 text-white md:size-6" />
             </div>
-            <span className="ml-2 font-semibold text-black max-md:sr-only">
+            <span className="ml-2 font-semibold text-foreground max-md:sr-only">
               Quizly
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <ModeToggle />
             <Select
               items={countries.map((country) => ({
                 label: country.name,
