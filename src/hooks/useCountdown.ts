@@ -50,11 +50,18 @@ export function useCountdown(
   const onExpireRef = useRef(onExpire);
   const hasExpiredRef = useRef(false);
 
+  const hasDeadline =
+    targetDeadline !== null &&
+    targetDeadline !== undefined &&
+    Number.isFinite(targetDeadline);
+
   useEffect(() => {
     onExpireRef.current = onExpire;
   }, [onExpire]);
 
   useEffect(() => {
+    if (!hasDeadline) return;
+
     const updateClock = () => setNow(Date.now());
 
     // Update immediately on mount / when timer changes
@@ -71,12 +78,7 @@ export function useCountdown(
       document.removeEventListener("visibilitychange", updateClock);
       window.removeEventListener("focus", updateClock);
     };
-  }, [intervalMs]);
-
-  const hasDeadline =
-    targetDeadline !== null &&
-    targetDeadline !== undefined &&
-    Number.isFinite(targetDeadline);
+  }, [hasDeadline, intervalMs]);
 
   const remainingMs = hasDeadline ? Math.max(0, targetDeadline - now) : null;
   const remainingSeconds =

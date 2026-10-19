@@ -90,21 +90,27 @@ const editQuizRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin/quizzes/$id",
   beforeLoad: () => requireRole("admin"),
-  component: () => {
-    const { id } = editQuizRoute.useParams();
-    return <QuizEditor key={id} quizId={id} />;
-  },
+  component: Object.assign(
+    () => {
+      const { id } = editQuizRoute.useParams();
+      return <QuizEditor key={id} quizId={id} />;
+    },
+    { preload: QuizEditor.preload },
+  ),
 });
 
 const quizRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/quiz/$id",
   beforeLoad: () => requireRole("user"),
-  component: () => {
-    const { id } = quizRoute.useParams();
+  component: Object.assign(
+    () => {
+      const { id } = quizRoute.useParams();
 
-    return <QuizContainer key={id} quizId={id} />;
-  },
+      return <QuizContainer key={id} quizId={id} />;
+    },
+    { preload: QuizContainer.preload },
+  ),
 });
 
 export interface LeaderboardSearch {

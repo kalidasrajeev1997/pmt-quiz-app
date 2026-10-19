@@ -1,11 +1,19 @@
 export { cn } from "cn";
 
 export const setLocalStorage = (key: string, value: string) => {
-  localStorage.setItem(key, value);
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // The app can continue with in-memory selection when storage is unavailable.
+  }
 };
 
 export const getLocalStorage = (key: string) => {
-  return localStorage.getItem(key);
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 };
 
 export const simulateDelay = (ms: number) => {

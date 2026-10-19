@@ -36,6 +36,8 @@ describe("Router configuration", () => {
     "/home",
     "/admin",
     "/admin/quizzes/new",
+    "/admin/quizzes/$id",
+    "/quiz/$id",
     "/leaderboard",
     "/settings",
   ] as const)("allows the router to preload %s", (path) => {
