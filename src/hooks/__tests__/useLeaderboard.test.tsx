@@ -114,7 +114,9 @@ describe("useLeaderboard hook", () => {
   });
 
   it("cleans up search param and falls back to null if quizId is not in available quizzes", async () => {
-    vi.mocked(router.useSearch).mockReturnValue({ quizId: "non-existent-quiz" });
+    vi.mocked(router.useSearch).mockReturnValue({
+      quizId: "non-existent-quiz",
+    });
 
     const { result } = renderHook(() => useLeaderboard(), { wrapper });
 
@@ -127,7 +129,9 @@ describe("useLeaderboard hook", () => {
   });
 
   it("clears stale data and sets isLoading to true when switching users until fresh data is fetched", async () => {
-    const { result, rerender } = renderHook(() => useLeaderboard(), { wrapper });
+    const { result, rerender } = renderHook(() => useLeaderboard(), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.leaderboard).toBeDefined());
     expect(result.current.leaderboard?.entries[0].name).toBe("Ada Lovelace");
@@ -189,7 +193,9 @@ describe("useLeaderboard hook", () => {
   });
 
   it("clears stale data and sets isLoading to true when user country changes until fresh data is fetched", async () => {
-    const { result, rerender } = renderHook(() => useLeaderboard(), { wrapper });
+    const { result, rerender } = renderHook(() => useLeaderboard(), {
+      wrapper,
+    });
 
     await waitFor(() => expect(result.current.leaderboard).toBeDefined());
     expect(result.current.leaderboard?.entries[0].name).toBe("Ada Lovelace");
@@ -226,9 +232,7 @@ describe("useLeaderboard hook", () => {
     expect(result.current.leaderboard).toBeUndefined();
     expect(result.current.isLoading).toBe(true);
 
-    await waitFor(() =>
-      expect(getLeaderboard).toHaveBeenCalledTimes(2),
-    );
+    await waitFor(() => expect(getLeaderboard).toHaveBeenCalledTimes(2));
 
     const freshLeader: LeaderboardEntry = {
       rank: 1,
@@ -245,7 +249,9 @@ describe("useLeaderboard hook", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.leaderboard?.entries[0].name).toBe("Margaret Hamilton");
+      expect(result.current.leaderboard?.entries[0].name).toBe(
+        "Margaret Hamilton",
+      );
       expect(result.current.isLoading).toBe(false);
     });
   });

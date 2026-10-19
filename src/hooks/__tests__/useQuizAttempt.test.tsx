@@ -6,7 +6,12 @@ import { useQuizAttempt } from "../useQuizAttempt";
 import { useSelection } from "@/hooks/useSelection";
 import * as quizService from "@/services/quiz.service";
 import * as router from "@tanstack/react-router";
-import type { CurrentQuestion, PublicQuiz, QuizAttempt, QuizSession } from "@/types/quiz";
+import type {
+  CurrentQuestion,
+  PublicQuiz,
+  QuizAttempt,
+  QuizSession,
+} from "@/types/quiz";
 import { attemptSteps, quizStatuses } from "@/helpers/constants";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -65,7 +70,10 @@ describe("useQuizAttempt hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
     });
 
     vi.mocked(router.useNavigate).mockReturnValue(mockNavigate);
@@ -132,7 +140,9 @@ describe("useQuizAttempt hook", () => {
     vi.mocked(quizService.getQuiz)
       .mockResolvedValueOnce(initialSession)
       .mockResolvedValueOnce(updatedSession);
-    vi.mocked(quizService.startOrResumeAttempt).mockResolvedValue(inProgressAttempt);
+    vi.mocked(quizService.startOrResumeAttempt).mockResolvedValue(
+      inProgressAttempt,
+    );
 
     const { result } = renderHook(() => useQuizAttempt("quiz-1"), { wrapper });
 
@@ -149,7 +159,10 @@ describe("useQuizAttempt hook", () => {
       expect(result.current.isPending).toBe(false);
     });
 
-    expect(quizService.startOrResumeAttempt).toHaveBeenCalledWith("quiz-1", "u-1");
+    expect(quizService.startOrResumeAttempt).toHaveBeenCalledWith(
+      "quiz-1",
+      "u-1",
+    );
     expect(mockNavigate).toHaveBeenCalledWith({
       to: "/quiz/$id",
       params: { id: "quiz-1" },
@@ -201,7 +214,9 @@ describe("useQuizAttempt hook", () => {
       expect(result.current.isPending).toBe(false);
     });
 
-    expect(quizService.saveDraft).toHaveBeenCalledWith("att-1", "q-1", ["opt-1"]);
+    expect(quizService.saveDraft).toHaveBeenCalledWith("att-1", "q-1", [
+      "opt-1",
+    ]);
 
     await act(async () => {
       result.current.handleCommand({
@@ -216,7 +231,9 @@ describe("useQuizAttempt hook", () => {
       expect(result.current.isPending).toBe(false);
     });
 
-    expect(quizService.submitAnswer).toHaveBeenCalledWith("att-1", "q-1", ["opt-1"]);
+    expect(quizService.submitAnswer).toHaveBeenCalledWith("att-1", "q-1", [
+      "opt-1",
+    ]);
   });
 
   it("handles completed attempt and retake navigation", async () => {

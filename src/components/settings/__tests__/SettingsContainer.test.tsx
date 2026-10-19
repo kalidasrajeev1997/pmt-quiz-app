@@ -88,7 +88,9 @@ describe("SettingsContainer", () => {
 
     render(<SettingsContainer />);
 
-    const button = screen.getByRole("button", { name: /resetting data\.\.\./i });
+    const button = screen.getByRole("button", {
+      name: /resetting data\.\.\./i,
+    });
     expect(button).toBeDisabled();
   });
 

@@ -7,7 +7,10 @@ import QuizCardSkeleton from "../QuizCardSkeleton";
 import type { QuizQueryResult } from "@/services/db/queries/quiz";
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+  Link: ({
+    children,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a {...props}>{children}</a>
   ),
 }));
@@ -64,7 +67,9 @@ describe("QuizCard and related card components", () => {
   it("renders not-started quiz card with meta details and start action", () => {
     renderWithClient(<QuizCard quiz={baseQuiz} />);
 
-    expect(screen.getByRole("heading", { name: "JavaScript Basics" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "JavaScript Basics" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Test your JS knowledge")).toBeInTheDocument();
     expect(screen.getByText("2 min limit")).toBeInTheDocument();
     expect(screen.getByText("Retakes allowed")).toBeInTheDocument();
@@ -72,7 +77,9 @@ describe("QuizCard and related card components", () => {
     expect(screen.getByText("GB")).toBeInTheDocument();
     expect(screen.getByText("0 of 2 answered")).toBeInTheDocument();
     expect(screen.getByText("Not started")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Start quiz: JavaScript Basics/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Start quiz: JavaScript Basics/i }),
+    ).toBeInTheDocument();
   });
 
   it("renders in-progress quiz card with countdown timer and continue action", () => {
@@ -87,7 +94,9 @@ describe("QuizCard and related card components", () => {
 
     expect(screen.getByText("In progress")).toBeInTheDocument();
     expect(screen.getByText("1 of 2 answered")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Continue quiz: JavaScript Basics/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Continue quiz: JavaScript Basics/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText("01:00")).toBeInTheDocument();
   });
 
@@ -118,8 +127,14 @@ describe("QuizCard and related card components", () => {
     renderWithClient(<QuizCard quiz={completedQuiz} />);
 
     expect(screen.getByText("Completed")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "View results for JavaScript Basics" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Retake quiz: JavaScript Basics/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "View results for JavaScript Basics",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Retake quiz: JavaScript Basics/i }),
+    ).toBeInTheDocument();
   });
 
   it("renders single attempt text and hides retake button when retakes are disabled", () => {
@@ -135,8 +150,14 @@ describe("QuizCard and related card components", () => {
 
     expect(screen.getByText("30 sec / ques")).toBeInTheDocument();
     expect(screen.getByText("Single attempt")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "View results for JavaScript Basics" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Retake quiz/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "View results for JavaScript Basics",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Retake quiz/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders No time limit when neither quiz nor question time limit exists", () => {

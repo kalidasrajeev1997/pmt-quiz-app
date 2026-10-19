@@ -12,7 +12,12 @@ describe("useSelection", () => {
   });
 
   it("returns context value when wrapped in SelectionContext.Provider", () => {
-    const mockUser: User = { id: "u-1", name: "Alice", country: "IN", role: "user" };
+    const mockUser: User = {
+      id: "u-1",
+      name: "Alice",
+      country: "IN",
+      role: "user",
+    };
     const mockCountry: Country = { code: "IN", name: "India" };
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (

@@ -51,7 +51,7 @@ describe("useCountdown Hook", () => {
   it("returns inactive / null state when targetDeadline is null or undefined", () => {
     const { result, rerender } = renderHook(
       ({ deadline }: { deadline?: number | null }) => useCountdown(deadline),
-      { initialProps: { deadline: null as number | null | undefined } }
+      { initialProps: { deadline: null as number | null | undefined } },
     );
 
     expect(result.current.remainingMs).toBeNull();
@@ -69,7 +69,7 @@ describe("useCountdown Hook", () => {
     const deadline = INITIAL_NOW + 30_000; // 30 seconds in future
 
     const { result } = renderHook(() =>
-      useCountdown(deadline, { intervalMs: 250, urgentThresholdMs: 10_000 })
+      useCountdown(deadline, { intervalMs: 250, urgentThresholdMs: 10_000 }),
     );
 
     expect(result.current.remainingSeconds).toBe(30);
@@ -93,7 +93,7 @@ describe("useCountdown Hook", () => {
     const deadline = INITIAL_NOW + 15_000; // 15 seconds
 
     const { result } = renderHook(() =>
-      useCountdown(deadline, { intervalMs: 250, urgentThresholdMs: 10_000 })
+      useCountdown(deadline, { intervalMs: 250, urgentThresholdMs: 10_000 }),
     );
 
     expect(result.current.isUrgent).toBe(false);
@@ -113,7 +113,7 @@ describe("useCountdown Hook", () => {
     const deadline = INITIAL_NOW + 5_000;
 
     const { result } = renderHook(() =>
-      useCountdown(deadline, { intervalMs: 250, onExpire })
+      useCountdown(deadline, { intervalMs: 250, onExpire }),
     );
 
     expect(result.current.isExpired).toBe(false);
@@ -168,7 +168,13 @@ describe("useCountdown Hook", () => {
     unmount();
 
     expect(clearIntervalSpy).toHaveBeenCalled();
-    expect(removeEventListenerSpy).toHaveBeenCalledWith("focus", expect.any(Function));
-    expect(docRemoveEventListenerSpy).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "focus",
+      expect.any(Function),
+    );
+    expect(docRemoveEventListenerSpy).toHaveBeenCalledWith(
+      "visibilitychange",
+      expect.any(Function),
+    );
   });
 });

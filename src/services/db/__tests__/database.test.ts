@@ -517,7 +517,10 @@ test("quiz queries keep correct, incorrect, and unanswered questions separate", 
   const database = await initializeDatabase();
   const quiz = await database.get("quizzes", "q1");
   const attempt = (await database.get("attempts", "a11")) as InProgressAttempt;
-  const completedAttempt = (await database.get("attempts", "a1")) as CompletedAttempt;
+  const completedAttempt = (await database.get(
+    "attempts",
+    "a1",
+  )) as CompletedAttempt;
   assert.ok(quiz);
   assert.ok(attempt);
   assert.ok(completedAttempt);

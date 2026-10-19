@@ -29,7 +29,9 @@ function Consumer() {
   return (
     <div>
       <div data-testid="selected-user">{selectedUser?.name ?? "none"}</div>
-      <div data-testid="selected-country">{selectedCountry?.code ?? "none"}</div>
+      <div data-testid="selected-country">
+        {selectedCountry?.code ?? "none"}
+      </div>
       <div data-testid="user-count">{users.length}</div>
       <div data-testid="country-count">{countries.length}</div>
       <button onClick={() => selectCountry("GB")}>Select GB</button>

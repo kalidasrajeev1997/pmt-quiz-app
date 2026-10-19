@@ -90,9 +90,7 @@ describe("Sidebar", () => {
     expect(
       screen.getByRole("link", { name: "Leaderboard" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Settings" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Settings" })).toBeInTheDocument();
   });
 
   it("does not expose either workspace while no user is selected", () => {
@@ -106,8 +104,6 @@ describe("Sidebar", () => {
     expect(
       screen.getByRole("link", { name: "Leaderboard" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Settings" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Settings" })).toBeInTheDocument();
   });
 });

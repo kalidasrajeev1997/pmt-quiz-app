@@ -14,7 +14,12 @@ import {
   validateQuizAccess,
 } from "@/helpers/quizHelpers";
 import { QuizAttemptError } from "@/types/quiz";
-import type { CompletedAttempt, InProgressAttempt, Quiz, User } from "@/types/quiz";
+import type {
+  CompletedAttempt,
+  InProgressAttempt,
+  Quiz,
+  User,
+} from "@/types/quiz";
 
 function makeQuiz(overrides: Partial<Quiz> = {}): Quiz {
   return {
@@ -58,12 +63,22 @@ describe("quizHelpers - Scoring Logic", () => {
     const attempt = createQuizAttempt(quiz, "user-1", 1000);
 
     // Correct choice
-    const afterCorrect = recordAnswer(quiz, attempt, ["opt1"], 2000) as InProgressAttempt;
+    const afterCorrect = recordAnswer(
+      quiz,
+      attempt,
+      ["opt1"],
+      2000,
+    ) as InProgressAttempt;
     expect(afterCorrect.answers[0].isCorrect).toBe(true);
     expect(afterCorrect.answers[0].selectedOptionIds).toEqual(["opt1"]);
 
     // Incorrect choice
-    const afterWrong = recordAnswer(quiz, attempt, ["opt2"], 2000) as InProgressAttempt;
+    const afterWrong = recordAnswer(
+      quiz,
+      attempt,
+      ["opt2"],
+      2000,
+    ) as InProgressAttempt;
     expect(afterWrong.answers[0].isCorrect).toBe(false);
   });
 
@@ -75,19 +90,39 @@ describe("quizHelpers - Scoring Logic", () => {
     };
 
     // Exact match -> correct
-    const exact = recordAnswer(quiz, attempt, ["m1", "m3"], 2000) as CompletedAttempt;
+    const exact = recordAnswer(
+      quiz,
+      attempt,
+      ["m1", "m3"],
+      2000,
+    ) as CompletedAttempt;
     expect(exact.answers[0].isCorrect).toBe(true);
 
     // Reversed order exact match -> correct
-    const reversed = recordAnswer(quiz, attempt, ["m3", "m1"], 2000) as CompletedAttempt;
+    const reversed = recordAnswer(
+      quiz,
+      attempt,
+      ["m3", "m1"],
+      2000,
+    ) as CompletedAttempt;
     expect(reversed.answers[0].isCorrect).toBe(true);
 
     // Partial selection -> incorrect
-    const partial = recordAnswer(quiz, attempt, ["m1"], 2000) as CompletedAttempt;
+    const partial = recordAnswer(
+      quiz,
+      attempt,
+      ["m1"],
+      2000,
+    ) as CompletedAttempt;
     expect(partial.answers[0].isCorrect).toBe(false);
 
     // Extra selection -> incorrect
-    const extra = recordAnswer(quiz, attempt, ["m1", "m2", "m3"], 2000) as CompletedAttempt;
+    const extra = recordAnswer(
+      quiz,
+      attempt,
+      ["m1", "m2", "m3"],
+      2000,
+    ) as CompletedAttempt;
     expect(extra.answers[0].isCorrect).toBe(false);
 
     // Completely wrong -> incorrect
@@ -103,11 +138,17 @@ describe("quizHelpers - Scoring Logic", () => {
     expect(validateOptionIds(singleQ, ["opt1", "opt1"])).toEqual(["opt1"]);
 
     // Disallows multiple options for single-choice question
-    expect(() => validateOptionIds(singleQ, ["opt1", "opt2"])).toThrow(QuizAttemptError);
+    expect(() => validateOptionIds(singleQ, ["opt1", "opt2"])).toThrow(
+      QuizAttemptError,
+    );
 
     // Rejects non-existent option IDs
-    expect(() => validateOptionIds(singleQ, ["invalid-id"])).toThrow(QuizAttemptError);
-    expect(() => validateOptionIds(multiQ, ["m1", "non-existent"])).toThrow(QuizAttemptError);
+    expect(() => validateOptionIds(singleQ, ["invalid-id"])).toThrow(
+      QuizAttemptError,
+    );
+    expect(() => validateOptionIds(multiQ, ["m1", "non-existent"])).toThrow(
+      QuizAttemptError,
+    );
   });
 
   it("finishQuizAttempt computes score, rounded percentage, and time taken", () => {
@@ -159,9 +200,24 @@ describe("quizHelpers - Scoring Logic", () => {
       draftOptionIds: [],
       quizSnapshot: "{}",
       answers: [
-        { questionId: "q1", selectedOptionIds: ["opt1"], isCorrect: true, answeredAt: "..." },
-        { questionId: "q2", selectedOptionIds: ["opt2"], isCorrect: false, answeredAt: "..." },
-        { questionId: "q3", selectedOptionIds: [], isCorrect: false, answeredAt: "..." }, // unanswered
+        {
+          questionId: "q1",
+          selectedOptionIds: ["opt1"],
+          isCorrect: true,
+          answeredAt: "...",
+        },
+        {
+          questionId: "q2",
+          selectedOptionIds: ["opt2"],
+          isCorrect: false,
+          answeredAt: "...",
+        },
+        {
+          questionId: "q3",
+          selectedOptionIds: [],
+          isCorrect: false,
+          answeredAt: "...",
+        }, // unanswered
       ],
     };
 
@@ -178,7 +234,9 @@ describe("quizHelpers - Scoring Logic", () => {
     const publicAttempt = toQuizAttempt(inProgress);
 
     expect(publicAttempt.status).toBe("in_progress");
-    expect((publicAttempt as Record<string, unknown>).quizSnapshot).toBeUndefined();
+    expect(
+      (publicAttempt as Record<string, unknown>).quizSnapshot,
+    ).toBeUndefined();
     expect(publicAttempt.score).toBeNull();
   });
 
@@ -188,7 +246,9 @@ describe("quizHelpers - Scoring Logic", () => {
 
     for (const q of publicQuiz.questions) {
       expect("correctOptionIds" in q).toBe(false);
-      expect(toPublicQuestion(quiz.questions[0])).not.toHaveProperty("correctOptionIds");
+      expect(toPublicQuestion(quiz.questions[0])).not.toHaveProperty(
+        "correctOptionIds",
+      );
     }
   });
 });
@@ -207,22 +267,34 @@ describe("quizHelpers - Timing Logic", () => {
     };
 
     // Both limits present
-    const both = getDeadlines({ timeLimitSeconds: 100, perQuestionSeconds: 20 }, attempt);
+    const both = getDeadlines(
+      { timeLimitSeconds: 100, perQuestionSeconds: 20 },
+      attempt,
+    );
     expect(both.overall).toBe(startedMs + 100_000);
     expect(both.question).toBe(questionStartedMs + 20_000);
 
     // Overall only
-    const overallOnly = getDeadlines({ timeLimitSeconds: 60, perQuestionSeconds: null }, attempt);
+    const overallOnly = getDeadlines(
+      { timeLimitSeconds: 60, perQuestionSeconds: null },
+      attempt,
+    );
     expect(overallOnly.overall).toBe(startedMs + 60_000);
     expect(overallOnly.question).toBeNull();
 
     // Per-question only
-    const questionOnly = getDeadlines({ timeLimitSeconds: null, perQuestionSeconds: 15 }, attempt);
+    const questionOnly = getDeadlines(
+      { timeLimitSeconds: null, perQuestionSeconds: 15 },
+      attempt,
+    );
     expect(questionOnly.overall).toBeNull();
     expect(questionOnly.question).toBe(questionStartedMs + 15_000);
 
     // Neither limit
-    const neither = getDeadlines({ timeLimitSeconds: null, perQuestionSeconds: null }, attempt);
+    const neither = getDeadlines(
+      { timeLimitSeconds: null, perQuestionSeconds: null },
+      attempt,
+    );
     expect(neither.overall).toBeNull();
     expect(neither.question).toBeNull();
   });
@@ -234,14 +306,14 @@ describe("quizHelpers - Timing Logic", () => {
     // Fallback to last answer answeredAt when questionStartedAt is undefined
     const withAnswer = getDeadlines(
       { timeLimitSeconds: null, perQuestionSeconds: 30 },
-      { startedAt, questionStartedAt: undefined, answers: [{ answeredAt }] }
+      { startedAt, questionStartedAt: undefined, answers: [{ answeredAt }] },
     );
     expect(withAnswer.question).toBe(Date.parse(answeredAt) + 30_000);
 
     // Fallback to startedAt when no answers and no questionStartedAt
     const withStarted = getDeadlines(
       { timeLimitSeconds: null, perQuestionSeconds: 30 },
-      { startedAt, questionStartedAt: undefined, answers: [] }
+      { startedAt, questionStartedAt: undefined, answers: [] },
     );
     expect(withStarted.question).toBe(Date.parse(startedAt) + 30_000);
   });
@@ -264,7 +336,11 @@ describe("quizHelpers - Timing Logic", () => {
 
     // Completed attempt returns 0 remaining seconds
     const completed = finishQuizAttempt(attempt, startTime + 10_000);
-    const currentCompleted = toCurrentQuestion(quiz, completed, startTime + 10_000);
+    const currentCompleted = toCurrentQuestion(
+      quiz,
+      completed,
+      startTime + 10_000,
+    );
     expect(currentCompleted.remainingSeconds).toBe(0);
     expect(currentCompleted.question).toBeNull();
   });
@@ -322,7 +398,9 @@ describe("quizHelpers - Timing Logic", () => {
 
     // Modified quiz (different title/questions)
     const modifiedQuiz = { ...quiz, title: "Altered Quiz Title" };
-    expect(() => reconcileQuizAttempt(modifiedQuiz, attempt, 2000)).toThrow(QuizAttemptError);
+    expect(() => reconcileQuizAttempt(modifiedQuiz, attempt, 2000)).toThrow(
+      QuizAttemptError,
+    );
   });
 });
 
@@ -340,21 +418,21 @@ describe("quizHelpers - Country and Access Validation", () => {
     const user: User = { id: "u2", name: "Bob", role: "user", country: "US" };
 
     expect(() => validateQuizAccess(quiz, user)).toThrow(
-      "This quiz is not available for the selected user."
+      "This quiz is not available for the selected user.",
     );
   });
 
   it("validateQuizAccess throws QuizAttemptError when quiz was deleted", () => {
     const user: User = { id: "u1", name: "Alice", role: "user", country: "IN" };
     expect(() => validateQuizAccess(undefined, user)).toThrow(
-      "This quiz was deleted. Your saved attempt cannot continue."
+      "This quiz was deleted. Your saved attempt cannot continue.",
     );
   });
 
   it("createQuizAttempt throws QuizAttemptError if quiz has no questions", () => {
     const emptyQuiz = makeQuiz({ questions: [] });
     expect(() => createQuizAttempt(emptyQuiz, "u1", 1000)).toThrow(
-      "This quiz has no questions yet."
+      "This quiz has no questions yet.",
     );
   });
 });

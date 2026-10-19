@@ -33,7 +33,9 @@ describe("Pagination UI primitives", () => {
       </Pagination>,
     );
 
-    expect(screen.getByRole("navigation", { name: "pagination" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: "pagination" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Previous")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("More pages")).toBeInTheDocument();

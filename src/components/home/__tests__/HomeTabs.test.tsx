@@ -16,8 +16,12 @@ describe("HomeTabs", () => {
     );
 
     expect(screen.getByRole("tab", { name: "All" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Not Started" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "In Progress" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Not Started" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "In Progress" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Completed" })).toBeInTheDocument();
     expect(screen.getByText("Tab content")).toBeInTheDocument();
 

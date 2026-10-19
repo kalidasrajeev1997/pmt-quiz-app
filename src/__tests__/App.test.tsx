@@ -12,9 +12,7 @@ describe("App root component", () => {
   it("mounts the application and providers without crashing", async () => {
     vi.mocked(db.getAllRecords).mockImplementation((table: string) => {
       if (table === "countries") {
-        return Promise.resolve([
-          { code: "IN", name: "India" },
-        ] as never);
+        return Promise.resolve([{ code: "IN", name: "India" }] as never);
       }
       if (table === "users") {
         return Promise.resolve([

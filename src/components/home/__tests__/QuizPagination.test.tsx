@@ -15,7 +15,9 @@ describe("QuizPagination", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(router.useRouter).mockReturnValue({
-      buildLocation: vi.fn().mockReturnValue({ href: "/home?status=all&page=2" }),
+      buildLocation: vi
+        .fn()
+        .mockReturnValue({ href: "/home?status=all&page=2" }),
     } as unknown as ReturnType<typeof router.useRouter>);
     vi.mocked(router.useNavigate).mockReturnValue(mockNavigate);
   });
@@ -30,7 +32,9 @@ describe("QuizPagination", () => {
 
     render(<QuizPagination page={2} totalPages={5} />);
 
-    expect(screen.getByRole("button", { name: /previous/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /previous/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "1" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "2" })).toBeInTheDocument();

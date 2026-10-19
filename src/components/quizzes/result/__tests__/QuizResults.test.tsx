@@ -15,7 +15,9 @@ vi.mock("@tanstack/react-router", () => ({
     to: string;
     search?: Record<string, unknown>;
   }) => {
-    const searchString = search ? `?${new URLSearchParams(search as Record<string, string>).toString()}` : "";
+    const searchString = search
+      ? `?${new URLSearchParams(search as Record<string, string>).toString()}`
+      : "";
     return (
       <a href={`${to}${searchString}`} {...props}>
         {children}
@@ -63,11 +65,17 @@ function makeAttempt(overrides: Partial<QuizResult> = {}): QuizResult {
 describe("QuizResults Component", () => {
   it("renders completed heading, quiz title, and achievement card", async () => {
     const quiz = makeQuiz();
-    const attempt = makeAttempt({ percentage: 80, score: 4, totalQuestions: 5 });
+    const attempt = makeAttempt({
+      percentage: 80,
+      score: 4,
+      totalQuestions: 5,
+    });
 
     render(<QuizResults quiz={quiz} attempt={attempt} onRetake={vi.fn()} />);
 
-    expect(screen.getByRole("heading", { name: "Quiz completed" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Quiz completed" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("TypeScript Deep Dive")).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText("80%")).toBeInTheDocument();
@@ -84,7 +92,10 @@ describe("QuizResults Component", () => {
       name: "View leaderboard for Special Quiz",
     });
     expect(leaderboardButton).toBeInTheDocument();
-    expect(leaderboardButton).toHaveAttribute("href", "/leaderboard?quizId=quiz-special");
+    expect(leaderboardButton).toHaveAttribute(
+      "href",
+      "/leaderboard?quizId=quiz-special",
+    );
     expect(leaderboardButton).toHaveTextContent("Leaderboard");
   });
 
@@ -109,7 +120,9 @@ describe("QuizResults Component", () => {
 
     render(<QuizResults quiz={quiz} attempt={attempt} onRetake={vi.fn()} />);
 
-    expect(screen.queryByRole("button", { name: /retake quiz/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /retake quiz/i }),
+    ).not.toBeInTheDocument();
     // Leaderboard button is still accessible even when retakes are disabled
     expect(
       screen.getByRole("button", { name: /view leaderboard for/i }),

@@ -35,7 +35,9 @@ describe("Select component", () => {
       </Select>,
     );
 
-    expect(screen.getByRole("combobox", { name: "Select an option" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", { name: "Select an option" }),
+    ).toBeInTheDocument();
   });
 
   it("opens options when clicked", async () => {

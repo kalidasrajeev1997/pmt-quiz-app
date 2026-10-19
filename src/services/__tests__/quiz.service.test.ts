@@ -38,7 +38,9 @@ describe("Data Service - Scoring, Timing & Country Filtering", () => {
     await deleteDB(DATABASE_NAME);
   });
 
-  async function createCustomQuiz(overrides: Partial<Quiz> = {}): Promise<Quiz> {
+  async function createCustomQuiz(
+    overrides: Partial<Quiz> = {},
+  ): Promise<Quiz> {
     const base = await getRecord("quizzes", "q1");
     if (!base) throw new Error("Seed quiz q1 missing");
 
@@ -111,17 +113,32 @@ describe("Data Service - Scoring, Timing & Country Filtering", () => {
     expect(attempt.currentQuestionIndex).toBe(0);
 
     // 2. Save draft
-    const draftState = await saveDraft(attempt.id, "sq1", ["o1"], BASE_TIME + 2_000);
+    const draftState = await saveDraft(
+      attempt.id,
+      "sq1",
+      ["o1"],
+      BASE_TIME + 2_000,
+    );
     expect(draftState.selectedOptionIds).toEqual(["o1"]);
     expect(draftState.index).toBe(0);
 
     // 3. Submit first answer (correct: o1)
-    const afterQ1 = await submitAnswer(attempt.id, "sq1", ["o1"], BASE_TIME + 5_000);
+    const afterQ1 = await submitAnswer(
+      attempt.id,
+      "sq1",
+      ["o1"],
+      BASE_TIME + 5_000,
+    );
     expect(afterQ1.index).toBe(1);
     expect(afterQ1.question?.id).toBe("sq2");
 
     // 4. Submit second answer (incorrect: m1 only, needs m1 & m2)
-    const afterQ2 = await submitAnswer(attempt.id, "sq2", ["m1"], BASE_TIME + 15_000);
+    const afterQ2 = await submitAnswer(
+      attempt.id,
+      "sq2",
+      ["m1"],
+      BASE_TIME + 15_000,
+    );
     // All questions submitted -> status is completed
     expect(afterQ2.status).toBe("completed");
 
@@ -136,7 +153,10 @@ describe("Data Service - Scoring, Timing & Country Filtering", () => {
   });
 
   it("timing: reconciles expired question timer on getCurrentQuestion and loadQuizSession", async () => {
-    const quiz = await createCustomQuiz({ perQuestionSeconds: 10, timeLimitSeconds: 100 });
+    const quiz = await createCustomQuiz({
+      perQuestionSeconds: 10,
+      timeLimitSeconds: 100,
+    });
     const userId = "u1";
 
     const attempt = await startOrResumeAttempt(quiz.id, userId, BASE_TIME);
@@ -151,7 +171,7 @@ describe("Data Service - Scoring, Timing & Country Filtering", () => {
     // Draft was automatically recorded and isCorrect is withheld while in progress
     expect(session.attempt?.answers[0].selectedOptionIds).toEqual(["o1"]);
     expect(
-      (session.attempt?.answers[0] as Record<string, unknown>).isCorrect
+      (session.attempt?.answers[0] as Record<string, unknown>).isCorrect,
     ).toBeUndefined();
 
     // Check current question
@@ -169,7 +189,7 @@ describe("Data Service - Scoring, Timing & Country Filtering", () => {
 
     // Attempting to start another attempt must fail
     await expect(
-      startOrResumeAttempt(quiz.id, userId, BASE_TIME + 10_000)
+      startOrResumeAttempt(quiz.id, userId, BASE_TIME + 10_000),
     ).rejects.toThrow("This quiz allows only one attempt.");
   });
 });

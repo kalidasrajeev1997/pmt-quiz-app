@@ -99,10 +99,10 @@ export const GlassDock: React.FC<{ icons: DockIcon[]; href?: string }> = ({
 );
 
 // Button Component
-export const GlassButton: React.FC<{ children: React.ReactNode; href?: string }> = ({
-  children,
-  href,
-}) => (
+export const GlassButton: React.FC<{
+  children: React.ReactNode;
+  href?: string;
+}> = ({ children, href }) => (
   <GlassEffect
     href={href}
     className="rounded-3xl px-10 py-6 hover:px-11 hover:py-7 hover:rounded-4xl overflow-hidden"

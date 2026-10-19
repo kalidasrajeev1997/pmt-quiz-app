@@ -88,8 +88,18 @@ describe("Miscellaneous UI primitives", () => {
       incorrectQuestions: 2,
       unansweredQuestions: 0,
       answers: [
-        { questionId: "q1", selectedOptionIds: ["opt1"], isCorrect: true, answeredAt: new Date().toISOString() },
-        { questionId: "q2", selectedOptionIds: [], isCorrect: false, answeredAt: new Date().toISOString() },
+        {
+          questionId: "q1",
+          selectedOptionIds: ["opt1"],
+          isCorrect: true,
+          answeredAt: new Date().toISOString(),
+        },
+        {
+          questionId: "q2",
+          selectedOptionIds: [],
+          isCorrect: false,
+          answeredAt: new Date().toISOString(),
+        },
       ],
     };
 

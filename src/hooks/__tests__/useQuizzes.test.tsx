@@ -97,7 +97,9 @@ describe("useQuizzes hook", () => {
       total: 15,
     });
 
-    const { result } = renderHook(() => useQuizzes({ pageSize: 10 }), { wrapper });
+    const { result } = renderHook(() => useQuizzes({ pageSize: 10 }), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.quizzes).toEqual(mockQuizzes);
@@ -150,7 +152,9 @@ describe("useQuizzes hook", () => {
     const { result } = renderHook(() => useQuizzes(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.error).toBe("Error loading quizzes: Network failed");
+      expect(result.current.error).toBe(
+        "Error loading quizzes: Network failed",
+      );
     });
   });
 });
