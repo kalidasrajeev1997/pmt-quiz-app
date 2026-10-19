@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/select";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import LeaderboardRow, { leaderboardColumns } from "./LeaderboardRow";
+import LeaderboardSkeleton from "./LeaderboardSkeleton";
+import LeaderboardEmptyState from "./LeaderboardEmptyState";
 
 const LeaderboardContainer = () => {
   const {
@@ -25,10 +27,10 @@ const LeaderboardContainer = () => {
   } = useLeaderboard();
   const overall = quizId === null;
   const isAdmin = selectedUser?.role === "admin";
-  const currentUser = leaderboard?.currentUser;
+  const currentUser = leaderboard?.currentUser ?? null;
   const outsideTopList =
     currentUser &&
-    !leaderboard.entries.some((entry) => entry.userId === currentUser.userId);
+    !leaderboard?.entries.some((entry) => entry.userId === currentUser.userId);
   const choices = [
     { value: "", label: "Overall" },
     ...quizzes.map((quiz) => ({ value: quiz.id, label: quiz.title })),
@@ -116,23 +118,9 @@ const LeaderboardContainer = () => {
           </button>
         </div>
       ) : isLoading ? (
-        <p
-          role="status"
-          className="py-12 text-center text-sm text-muted-foreground"
-        >
-          Loading leaderboard...
-        </p>
+        <LeaderboardSkeleton overall={overall} />
       ) : !leaderboard?.entries.length ? (
-        <div className="bg-muted px-6 py-10 text-center">
-          <h2 className="text-lg font-semibold">No finishers yet</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {isAdmin
-              ? "No completed attempts yet."
-              : overall
-                ? "Complete a quiz to join the leaderboard."
-                : "Be the first to finish this quiz."}
-          </p>
-        </div>
+        <LeaderboardEmptyState overall={overall} isAdmin={isAdmin} />
       ) : (
         <div aria-busy={isFetching}>
           <div className="mb-4 flex items-center justify-between gap-3">

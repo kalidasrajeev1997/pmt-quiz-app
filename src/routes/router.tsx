@@ -63,9 +63,21 @@ const quizRoute = createRoute({
   },
 });
 
+export interface LeaderboardSearch {
+  quizId?: string;
+}
+
 const leaderboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/leaderboard",
+  validateSearch: (search: Record<string, unknown>): LeaderboardSearch => {
+    return {
+      quizId:
+        typeof search.quizId === "string" && search.quizId.trim().length > 0
+          ? search.quizId.trim()
+          : undefined,
+    };
+  },
   component: () => <LeaderboardContainer />,
 });
 

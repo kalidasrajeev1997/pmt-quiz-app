@@ -1,4 +1,5 @@
-import { BookOpenCheck, Clock3, RotateCcw } from "lucide-react";
+import { BookOpenCheck, Clock3, RotateCcw, Trophy } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AchievementCard } from "@/components/ui/achievement-card";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,22 @@ export default function QuizResults({
       )}
       <AchievementCard attempt={attempt} />
       <div className="flex flex-wrap gap-3">
+        <Button
+          size="lg"
+          variant="secondary"
+          nativeButton={false}
+          className="min-h-11 rounded-md px-4"
+          render={
+            <Link
+              to="/leaderboard"
+              search={{ quizId: quiz.id }}
+              aria-label={`View leaderboard for ${quiz.title}`}
+            />
+          }
+        >
+          <Trophy />
+          Leaderboard
+        </Button>
         {quiz.retakesAllowed && (
           <Button
             size="lg"

@@ -2,12 +2,19 @@ import {
   getLeaderboardQuizzesQuery,
   getLeaderboardRecordsQuery,
 } from "./db/queries";
-import type { CompletedAttempt, Quiz, User } from "@/types/quiz";
+import type {
+  Answer,
+  Attempt,
+  CompletedAttempt,
+  Quiz,
+  User,
+} from "@/types/quiz";
 import type {
   LeaderboardEntry,
   LeaderboardQuiz,
   LeaderboardResult,
 } from "@/types/leaderboard";
+import { simulateDelay } from "@/lib/utils";
 
 export async function getLeaderboardQuizzes(
   currentUserId?: User["id"],
@@ -27,6 +34,8 @@ export async function getLeaderboard(
     throw new RangeError("limit must be a positive integer");
   }
 
+  await simulateDelay(500);
+
   const { users, quizzes, attempts } =
     await getLeaderboardRecordsQuery(currentUserId);
 
@@ -36,9 +45,56 @@ export async function getLeaderboard(
   }
 
   const usersById = new Map(users.map((user) => [user.id, user]));
+  const quizzesById = new Map(quizzes.map((quiz) => [quiz.id, quiz]));
   const bestByUser = new Map<User["id"], Map<Quiz["id"], CompletedAttempt>>();
 
-  for (const attempt of attempts) {
+  for (const rawAttempt of attempts) {
+    let attempt: Attempt = rawAttempt;
+
+    // If an attempt is in-progress, check if its quiz time limit has expired
+    if (attempt.status !== "completed") {
+      const quiz = quizzesById.get(attempt.quizId);
+      if (quiz) {
+        const timeLimitSeconds = Math.min(
+          quiz.timeLimitSeconds ?? Infinity,
+          quiz.perQuestionSeconds === null
+            ? Infinity
+            : quiz.perQuestionSeconds * attempt.totalQuestions,
+        );
+        const startedAt = Date.parse(attempt.startedAt);
+        const isExpired =
+          Number.isFinite(timeLimitSeconds) &&
+          Date.now() >= startedAt + timeLimitSeconds * 1000;
+
+        if (isExpired) {
+          const correctQuestions = attempt.answers.filter(
+            (answer: Answer) => answer.isCorrect,
+          ).length;
+          const score = attempt.score ?? correctQuestions;
+          const timeTakenSeconds =
+            attempt.timeTakenSeconds ??
+            (Number.isFinite(timeLimitSeconds)
+              ? timeLimitSeconds
+              : Math.max(0, Math.ceil((Date.now() - startedAt) / 1000)));
+
+          attempt = {
+            ...attempt,
+            status: "completed",
+            score,
+            timeTakenSeconds,
+            completedAt:
+              attempt.completedAt ??
+              new Date(startedAt + timeLimitSeconds * 1000).toISOString(),
+            percentage:
+              attempt.totalQuestions > 0
+                ? Math.round((score / attempt.totalQuestions) * 100)
+                : 0,
+            currentQuestionIndex: attempt.totalQuestions,
+          };
+        }
+      }
+    }
+
     if (
       attempt.status !== "completed" ||
       !usersById.has(attempt.userId) ||
@@ -48,17 +104,18 @@ export async function getLeaderboard(
       continue;
     }
 
-    const bestByQuiz = bestByUser.get(attempt.userId) ?? new Map();
-    const previous = bestByQuiz.get(attempt.quizId);
+    const completedAttempt = attempt as CompletedAttempt;
+    const bestByQuiz = bestByUser.get(completedAttempt.userId) ?? new Map();
+    const previous = bestByQuiz.get(completedAttempt.quizId);
     if (
       !previous ||
-      attempt.score > previous.score ||
-      (attempt.score === previous.score &&
-        attempt.timeTakenSeconds < previous.timeTakenSeconds)
+      completedAttempt.score > previous.score ||
+      (completedAttempt.score === previous.score &&
+        completedAttempt.timeTakenSeconds < previous.timeTakenSeconds)
     ) {
-      bestByQuiz.set(attempt.quizId, attempt);
+      bestByQuiz.set(completedAttempt.quizId, completedAttempt);
     }
-    bestByUser.set(attempt.userId, bestByQuiz);
+    bestByUser.set(completedAttempt.userId, bestByQuiz);
   }
 
   const standings: LeaderboardEntry[] = [];

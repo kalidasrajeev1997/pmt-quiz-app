@@ -7,7 +7,7 @@ export default function QuizHomeLink() {
     <Button
       variant="ghost"
       nativeButton={false}
-      className="min-h-11 justify-start rounded-md px-2 hover:bg-transparent hover:underline"
+      className="min-h-11 justify-start rounded-md px-2 hover:bg-transparent hover:dark:bg-background hover:underline"
       render={<Link to="/home" search={{ status: "all", page: 1 }} />}
     >
       <ArrowLeft aria-hidden="true" />

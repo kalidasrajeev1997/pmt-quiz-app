@@ -108,9 +108,10 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
       // Synchronously update session query cache
       queryClient.setQueryData([...QUERY_KEYS.SESSION, quizId, userId], data);
 
-      // Invalidate quiz list cards if quiz state progressed
+      // Invalidate quiz list cards and leaderboard if quiz state progressed
       if (action.type !== "draft") {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LEADERBOARD });
       }
 
       // Clear #retake hash upon start

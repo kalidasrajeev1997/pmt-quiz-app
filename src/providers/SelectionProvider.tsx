@@ -1,5 +1,5 @@
 import { type ReactNode, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SelectionContext } from "@/hooks/useSelection";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 import { getAllRecords } from "@/services/db/database";
@@ -12,6 +12,7 @@ import {
 } from "@/services/filters.service";
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User["id"] | null>(() => getUser());
   const [country, setCountry] = useState<Country["code"] | null>(() =>
     getCountry(),
@@ -47,11 +48,15 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
   function selectUser(userId: User["id"]) {
     userFilterService(userId);
     setUser(userId);
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LEADERBOARD });
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LEADERBOARD_QUIZZES });
   }
 
   function selectCountry(countryCode: Country["code"]) {
     countryFilterService(countryCode);
     setCountry(countryCode);
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LEADERBOARD });
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LEADERBOARD_QUIZZES });
   }
 
   return (

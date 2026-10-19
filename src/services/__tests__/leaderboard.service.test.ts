@@ -156,6 +156,63 @@ describe("leaderboard service", () => {
     expect(result.currentUser).toBeNull();
   });
 
+  it("includes in-progress attempts whose quiz time limit has expired as completed", async () => {
+    await initializeDatabase();
+    await saveRecord("quizzes", {
+      id: "timed-quiz",
+      title: "Timed Quiz",
+      description: "",
+      countries: ["IN"],
+      timeLimitSeconds: 120,
+      perQuestionSeconds: null,
+      retakesAllowed: true,
+      questions: [],
+    });
+
+    await saveRecord("attempts", {
+      id: "expired-attempt",
+      userId: "user-2",
+      quizId: "timed-quiz",
+      status: "in_progress",
+      startedAt: "2026-10-16T09:00:00.000Z",
+      currentQuestionIndex: 2,
+      totalQuestions: 5,
+      answers: [
+        {
+          questionId: "q1",
+          selectedOptionIds: ["opt1"],
+          isCorrect: true,
+          answeredAt: "2026-10-16T09:00:30.000Z",
+        },
+        {
+          questionId: "q2",
+          selectedOptionIds: ["opt2"],
+          isCorrect: true,
+          answeredAt: "2026-10-16T09:01:00.000Z",
+        },
+      ],
+      completedAt: null,
+      score: null,
+      percentage: null,
+      timeTakenSeconds: null,
+    });
+
+    const result = await getLeaderboard("timed-quiz", 10, "user-2");
+    expect(result.totalParticipants).toBe(1);
+    expect(result.entries[0]).toMatchObject({
+      userId: "user-2",
+      score: 2,
+      timeTakenSeconds: 120,
+      quizzesCompleted: 1,
+    });
+    expect(result.currentUser).toMatchObject({
+      userId: "user-2",
+      rank: 1,
+      score: 2,
+      timeTakenSeconds: 120,
+    });
+  });
+
   it("handles empty standings and lists quiz choices without questions", async () => {
     expect(await getLeaderboard(null)).toEqual({
       entries: [],
