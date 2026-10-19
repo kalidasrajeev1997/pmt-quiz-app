@@ -38,14 +38,20 @@ export function QuizUnavailable({ error, onRetry }: QuizUnavailableProps) {
       <CircleAlert />
       <AlertTitle>Quiz unavailable</AlertTitle>
       <AlertDescription>
-        {error instanceof QuizAttemptError
-          ? error.message
-          : "Your quiz could not be loaded. Check that browser storage is available, then try again."}
+        <div className="flex flex-col">
+          {error instanceof QuizAttemptError
+            ? error.message
+            : "Your quiz could not be loaded. Check that browser storage is available, then try again."}
+          <Button
+            variant="secondary"
+            onClick={onRetry}
+            className="mt-3 w-fit h-10 bg-foreground text-background"
+          >
+            <RotateCcw />
+            Try again
+          </Button>
+        </div>
       </AlertDescription>
-      <Button variant="secondary" onClick={onRetry} className="mt-3 w-fit">
-        <RotateCcw />
-        Try again
-      </Button>
     </Alert>
   );
 }

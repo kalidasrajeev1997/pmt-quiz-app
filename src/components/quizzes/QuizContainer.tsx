@@ -94,7 +94,11 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
     }
 
     if (isSessionError && sessionError) {
-      return <QuizUnavailable error={sessionError} onRetry={refetchSession} />;
+      return (
+        <div className="p-4">
+          <QuizUnavailable error={sessionError} onRetry={refetchSession} />
+        </div>
+      );
     }
 
     if (!session) return null;

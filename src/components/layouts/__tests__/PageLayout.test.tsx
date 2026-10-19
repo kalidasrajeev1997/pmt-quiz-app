@@ -120,21 +120,27 @@ describe("PageLayout", () => {
     expect(document.documentElement).toHaveClass("dark");
   });
 
-  it("lets quiz screens own scrolling without a nested layout scroller", () => {
-    location.pathname = "/quiz/q1";
-    location.href = "/quiz/q1";
+  it.each(["/quiz/q1", "/admin/quizzes/new", "/admin/quizzes/q1"])(
+    "lets %s own scrolling without a nested layout scroller",
+    (pathname) => {
+      location.pathname = pathname;
+      location.href = pathname;
 
-    render(
-      <PageLayout>
-        <ScrollArea>Quiz content</ScrollArea>
-      </PageLayout>,
-    );
+      render(
+        <PageLayout>
+          <ScrollArea>Quiz content</ScrollArea>
+        </PageLayout>,
+      );
 
-    expect(
-      document.querySelectorAll('[data-slot="scroll-area-viewport"]'),
-    ).toHaveLength(1);
-    expect(screen.getByRole("main")).toHaveClass("min-h-0", "overflow-hidden");
-  });
+      expect(
+        document.querySelectorAll('[data-slot="scroll-area-viewport"]'),
+      ).toHaveLength(1);
+      expect(screen.getByRole("main")).toHaveClass(
+        "min-h-0",
+        "overflow-hidden",
+      );
+    },
+  );
 
   it("resets scrolling on screen and search changes, but not ordinary updates", () => {
     const content = <div>Page content</div>;
