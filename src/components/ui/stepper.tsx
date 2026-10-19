@@ -9,7 +9,7 @@ interface StepperProps {
 
 function Stepper({ steps, currentStep }: StepperProps) {
   return (
-    <ol aria-label="Quiz progress" className="flex w-full max-w-2xl">
+    <ol aria-label="Quiz progress" className="mx-auto flex w-full max-w-2xl">
       {steps.map(({ label, icon: Icon }, index) => (
         <li
           key={label}

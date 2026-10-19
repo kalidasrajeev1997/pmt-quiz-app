@@ -21,7 +21,7 @@ export default function QuizResults({
 
   return (
     <section
-      className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 p-4 bg-white"
+      className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 dark:border-border p-4 bg-white dark:bg-card text-foreground"
       aria-labelledby="results-title"
     >
       <div className="space-y-3">

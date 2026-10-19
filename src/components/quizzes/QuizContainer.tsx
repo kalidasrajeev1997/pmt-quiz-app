@@ -100,7 +100,7 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
     if (!session) return null;
 
     return (
-      <div className="flex-1 space-y-4 px-3 pt-4 bg-[#efefef45] sm:space-y-9 sm:px-6 sm:pt-8">
+      <div className="flex-1 space-y-4 px-3 pt-4 bg-[#efefef45] dark:bg-background sm:space-y-9 sm:px-6 sm:pt-8">
         <Stepper steps={steps} currentStep={currentStep} />
         {renderAttempt(session)}
         {error && <QuizSaveError error={error} />}

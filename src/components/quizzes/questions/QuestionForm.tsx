@@ -91,7 +91,7 @@ export default function QuestionForm({
 
   return (
     <section
-      className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 p-4 bg-white"
+      className="quiz-scene relative space-y-4 sm:space-y-4 rounded-xl border-2 border-b-6 border-gray-300 dark:border-border p-4 bg-white dark:bg-card text-foreground"
       aria-label="Current question"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
