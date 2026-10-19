@@ -217,9 +217,67 @@ describe("shared quiz form", () => {
     expect(await screen.findByText("Add at least two options.")).toBeVisible();
   });
 
-  it("persists blank timers as null and changes country assignment", async () => {
+  it.each([
+    { label: "Overall time limit (seconds)", name: "timeLimitSeconds" },
+    { label: "Per-question limit (seconds)", name: "perQuestionSeconds" },
+  ])("accepts only digits for $label", async ({ label, name }) => {
     const { user, save } = setup(quiz);
+    const input = screen.getByLabelText(label);
+    expect(input).toHaveAttribute("inputmode", "numeric");
+    await user.clear(input);
+    await user.type(input, "230--+e.abc");
+    expect(input).toHaveValue("230");
+
+    for (const invalid of ["230--", "-5", "1.5", "1e3", "abc"]) {
+      await user.paste(invalid);
+      expect(input).toHaveValue("230");
+    }
+
+    await submit();
+    await waitFor(() => expect(save).toHaveBeenCalledOnce());
+    expect(save.mock.calls[0][0][name]).toBe(230);
+  });
+
+  it.each([
+    { label: "Overall time limit (seconds)", value: "0" },
+    { label: "Overall time limit (seconds)", value: "86401" },
+    { label: "Per-question limit (seconds)", value: "0" },
+    { label: "Per-question limit (seconds)", value: "86401" },
+  ])("rejects $value for $label", async ({ label, value }) => {
+    const { user, save } = setup(quiz);
+    const input = screen.getByLabelText(label);
+    await user.clear(input);
+    await user.type(input, value);
+    await submit();
+    expect(
+      await screen.findByText(
+        value === "0"
+          ? "Time must be greater than zero."
+          : "Use 86,400 seconds or fewer.",
+      ),
+    ).toBeVisible();
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it("persists pasted timers at the range boundaries as numbers", async () => {
+    const { user, save } = setup(quiz);
+    const overall = screen.getByLabelText("Overall time limit (seconds)");
+    const perQuestion = screen.getByLabelText("Per-question limit (seconds)");
+    await user.clear(overall);
+    await user.paste("86400");
+    await user.click(perQuestion);
+    await user.paste("1");
+    await submit();
+    await waitFor(() => expect(save).toHaveBeenCalledOnce());
+    expect(save.mock.calls[0][0].timeLimitSeconds).toBe(86400);
+    expect(save.mock.calls[0][0].perQuestionSeconds).toBe(1);
+  });
+
+  it("persists blank timers as null and changes country assignment", async () => {
+    const { user, save } = setup({ ...quiz, perQuestionSeconds: 30 });
     await user.clear(screen.getByLabelText("Overall time limit (seconds)"));
+    await user.clear(screen.getByLabelText("Per-question limit (seconds)"));
     await user.click(
       screen.getByRole("checkbox", { name: "United Arab Emirates" }),
     );

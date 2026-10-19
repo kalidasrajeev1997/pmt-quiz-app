@@ -7,7 +7,6 @@ import type { QuizFormValues } from "@/helpers/quizSchema";
 export default function QuizTimingFields() {
   const {
     control,
-    register,
     formState: { errors },
   } = useFormContext<QuizFormValues>();
 
@@ -23,20 +22,29 @@ export default function QuizTimingFields() {
               ? "Overall time limit (seconds)"
               : "Per-question limit (seconds)"}
           </Label>
-          <Input
-            id={name}
-            type="number"
-            min="1"
-            max="86400"
-            step="1"
-            placeholder="No limit"
-            {...register(name, {
-              setValueAs: (value: string | number | null) =>
-                value === "" || value === null ? null : Number(value),
-            })}
-            aria-invalid={!!errors[name]}
-            aria-describedby={errors[name] ? `${name}-error` : undefined}
-            className="h-10"
+          <Controller
+            control={control}
+            name={name}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id={name}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="No limit"
+                value={field.value ?? ""}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  if (/^[0-9]*$/.test(value)) {
+                    field.onChange(value === "" ? null : Number(value));
+                  }
+                }}
+                aria-invalid={!!errors[name]}
+                aria-describedby={errors[name] ? `${name}-error` : undefined}
+                className="h-10"
+              />
+            )}
           />
           {errors[name] && (
             <p
