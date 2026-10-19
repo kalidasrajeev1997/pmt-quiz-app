@@ -29,6 +29,7 @@ export default function QuizCardProgress({ quiz }: QuizCardProgressProps) {
   } = useCountdown(isInProgress ? quiz.deadline : null, {
     onExpire: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.QUIZZES });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LEADERBOARD });
     },
   });
 

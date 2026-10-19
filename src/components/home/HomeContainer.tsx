@@ -2,6 +2,7 @@ import HomeTabs from "./HomeTabs";
 import QuizCard from "@/components/home/QuizCard";
 import QuizCardSkeleton from "@/components/home/QuizCardSkeleton";
 import QuizPagination from "@/components/home/QuizPagination";
+import QuizEmptyState from "@/components/home/QuizEmptyState";
 import { useQuizzes } from "@/hooks/useQuizzes";
 
 const HomeContainer = () => {
@@ -42,7 +43,7 @@ const HomeContainer = () => {
         ) : !hasSelection ? (
           <p>No user or country available.</p>
         ) : quizzes?.length === 0 ? (
-          <p>No quizzes found.</p>
+          <QuizEmptyState tab={tab} />
         ) : (
           <ul
             aria-label="Quizzes"

@@ -35,4 +35,32 @@ describe("Router configuration", () => {
       });
     }
   });
+
+  it("validates leaderboard search parameters", () => {
+    const leaderboardRoute = router.routesByPath["/leaderboard"];
+    const validateSearch = leaderboardRoute?.options?.validateSearch;
+
+    expect(validateSearch).toBeDefined();
+
+    if (typeof validateSearch === "function") {
+      // Valid quizId parameter
+      expect(validateSearch({ quizId: "quiz-123" })).toEqual({
+        quizId: "quiz-123",
+      });
+
+      // Whitespace or empty quizId falls back to undefined
+      expect(validateSearch({ quizId: "   " })).toEqual({
+        quizId: undefined,
+      });
+
+      expect(validateSearch({ quizId: 123 })).toEqual({
+        quizId: undefined,
+      });
+
+      // Missing search parameter
+      expect(validateSearch({})).toEqual({
+        quizId: undefined,
+      });
+    }
+  });
 });

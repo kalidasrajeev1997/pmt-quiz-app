@@ -9,12 +9,27 @@ import {
   getLeaderboard,
   getLeaderboardQuizzes,
 } from "@/services/leaderboard.service";
-import type { LeaderboardEntry } from "@/types/leaderboard";
+import React from "react";
+import type { LeaderboardEntry, LeaderboardResult } from "@/types/leaderboard";
 
 vi.mock("@/hooks/useSelection", () => ({ useSelection: vi.fn() }));
 vi.mock("@/services/leaderboard.service", () => ({
   getLeaderboard: vi.fn(),
   getLeaderboardQuizzes: vi.fn(),
+}));
+
+let currentSearch: { quizId?: string } = {};
+const mockNavigate = vi.fn();
+
+vi.mock("@tanstack/react-router", () => ({
+  useSearch: vi.fn(() => currentSearch),
+  useNavigate: vi.fn(() => mockNavigate),
+  Link: ({
+    children,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+    <a {...props}>{children}</a>
+  ),
 }));
 
 const leader: LeaderboardEntry = {
@@ -49,6 +64,7 @@ function renderLeaderboard() {
 describe("LeaderboardContainer", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    currentSearch = {};
     vi.mocked(useSelection).mockReturnValue({
       users: [],
       countries: [],
@@ -82,6 +98,7 @@ describe("LeaderboardContainer", () => {
     expect(
       await screen.findByRole("table", { name: "Overall standings" }),
     ).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(getLeaderboard).toHaveBeenCalledWith(null, 10, "user-me");
     expect(getLeaderboardQuizzes).toHaveBeenCalledWith("user-me");
     expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
@@ -148,9 +165,19 @@ describe("LeaderboardContainer", () => {
   it("shows a loading state without displaying stale standings", () => {
     vi.mocked(getLeaderboard).mockReturnValue(new Promise(() => {}));
     renderLeaderboard();
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Loading leaderboard...",
-    );
+    const loading = screen.getByRole("status");
+    expect(loading).toHaveTextContent("Loading leaderboard...");
+    expect(loading).toHaveAttribute("aria-busy", "true");
+    const placeholders = loading.querySelector('[aria-hidden="true"]');
+    expect(placeholders).toBeInTheDocument();
+    expect(
+      placeholders?.querySelectorAll('[data-slot="skeleton"]').length,
+    ).toBeGreaterThan(0);
+    const rows = placeholders?.querySelectorAll('[class*="min-h-22"]');
+    expect(rows).toHaveLength(10);
+    rows?.forEach((row) => {
+      expect(row).toHaveClass(...leaderboardColumns.split(" "));
+    });
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
@@ -162,6 +189,10 @@ describe("LeaderboardContainer", () => {
     });
     const view = renderLeaderboard();
     expect(await screen.findByText("No finishers yet")).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "No finishers yet" }),
+    ).toHaveTextContent("Complete a quiz to join the leaderboard.");
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
     view.unmount();
     vi.mocked(getLeaderboard).mockResolvedValue({
       entries: [leader],
@@ -172,6 +203,23 @@ describe("LeaderboardContainer", () => {
     expect(
       await screen.findByText("You haven't completed a quiz yet."),
     ).toBeInTheDocument();
+  });
+
+  it("shows the quiz-specific empty state for empty quiz standings", async () => {
+    currentSearch = { quizId: "quiz-a" };
+    vi.mocked(getLeaderboard).mockResolvedValue({
+      entries: [],
+      currentUser: null,
+      totalParticipants: 0,
+    });
+    renderLeaderboard();
+    expect(
+      await screen.findByRole("status", { name: "No finishers yet" }),
+    ).toHaveTextContent("Be the first to finish this quiz.");
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Complete a quiz to join the leaderboard."),
+    ).not.toBeInTheDocument();
   });
 
   it("retries a failed request", async () => {
@@ -248,6 +296,9 @@ describe("LeaderboardContainer", () => {
     expect(
       await screen.findByText("No completed attempts yet."),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "No finishers yet" }),
+    ).toHaveTextContent("No completed attempts yet.");
     expect(
       screen.queryByText(/Complete a quiz|Be the first|You haven't completed/),
     ).not.toBeInTheDocument();
@@ -360,5 +411,94 @@ describe("LeaderboardContainer", () => {
       expect(getLeaderboard).toHaveBeenLastCalledWith(null, 10, "user-1"),
     );
     expect(await screen.findByText("You")).toBeInTheDocument();
+  });
+
+  it("loads a specific quiz leaderboard when quizId is in the URL search params", async () => {
+    currentSearch = { quizId: "quiz-a" };
+    renderLeaderboard();
+    await screen.findByRole("table", { name: "Quiz standings" });
+    expect(getLeaderboard).toHaveBeenCalledWith("quiz-a", 10, "user-me");
+    expect(
+      screen.getByRole("combobox", { name: "Standings" }),
+    ).toHaveTextContent("Science quiz");
+  });
+
+  it("updates search parameters when a quiz is selected in the standings dropdown", async () => {
+    const user = userEvent.setup();
+    renderLeaderboard();
+    await screen.findByRole("table", { name: "Overall standings" });
+
+    await user.click(screen.getByRole("combobox", { name: "Standings" }));
+    await user.click(
+      await screen.findByRole("option", { name: "Science quiz" }),
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      search: { quizId: "quiz-a" },
+    });
+  });
+
+  it("shows loading state and does not show previous user's stale leaderboard when switching user", async () => {
+    const view = renderLeaderboard();
+    await screen.findByRole("table", { name: "Overall standings" });
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+
+    // Now switch user, but getLeaderboard is pending
+    let resolveLeaderboard: (val: LeaderboardResult) => void;
+    vi.mocked(getLeaderboard).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveLeaderboard = resolve;
+        }),
+    );
+
+    vi.mocked(useSelection).mockReturnValue({
+      users: [],
+      countries: [],
+      selectedCountry: { code: "IN", name: "India" },
+      selectedUser: {
+        id: "user-2",
+        name: "Alan Turing",
+        country: "IN",
+        role: "user",
+      },
+      isLoading: false,
+      error: null,
+      selectUser: vi.fn(),
+      selectCountry: vi.fn(),
+    });
+
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        <LeaderboardContainer />
+      </QueryClientProvider>,
+    );
+
+    // Stale leaderboard from the previous user must NOT be displayed
+    expect(screen.getByText("Loading leaderboard...")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(getLeaderboard).toHaveBeenCalledWith(null, 10, "user-2");
+    });
+
+    // When background fetch completes, it displays the fresh updated results
+    const newLeader: LeaderboardEntry = {
+      rank: 1,
+      userId: "user-2",
+      name: "Alan Turing",
+      score: 100,
+      timeTakenSeconds: 50,
+      quizzesCompleted: 5,
+    };
+    resolveLeaderboard!({
+      entries: [newLeader],
+      currentUser: newLeader,
+      totalParticipants: 1,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Alan Turing")).toBeInTheDocument();
+    });
   });
 });

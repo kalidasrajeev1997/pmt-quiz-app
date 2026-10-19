@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import HomeContainer from "../HomeContainer";
 import { useQuizzes } from "@/hooks/useQuizzes";
 import type { QuizQueryResult } from "@/services/db/queries/quiz";
+import type { TabStatus } from "@/types/quiz";
 
 vi.mock("@/hooks/useQuizzes", () => ({
   useQuizzes: vi.fn(),
@@ -15,7 +16,10 @@ vi.mock("@tanstack/react-router", () => ({
     buildLocation: vi.fn().mockReturnValue({ href: "#" }),
   }),
   useNavigate: vi.fn().mockReturnValue(vi.fn()),
-  Link: ({ children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+  Link: ({
+    children,
+    ...props
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a {...props}>{children}</a>
   ),
 }));
@@ -75,7 +79,9 @@ describe("HomeContainer", () => {
 
     renderComponent();
 
-    expect(screen.getByRole("alert")).toHaveTextContent("Failed to fetch quizzes");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Failed to fetch quizzes",
+    );
   });
 
   it("renders message when no user or country is selected", () => {
@@ -96,29 +102,62 @@ describe("HomeContainer", () => {
 
     renderComponent();
 
-    expect(screen.getByText("No user or country available.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No user or country available."),
+    ).toBeInTheDocument();
   });
 
-  it("renders empty state message when no quizzes match", () => {
-    vi.mocked(useQuizzes).mockReturnValue({
-      quizzes: [],
-      total: 0,
-      totalPages: 1,
+  it.each<{ tab: TabStatus; title: string; description: string }>([
+    {
       tab: "all",
-      page: 1,
-      pageSize: 10,
-      setTab: vi.fn(),
-      setPage: vi.fn(),
-      isLoading: false,
-      isFetching: false,
-      error: null,
-      hasSelection: true,
-    });
+      title: "No quizzes found.",
+      description: "No quizzes are available for this country yet.",
+    },
+    {
+      tab: "not-started",
+      title: "No unstarted quizzes",
+      description: "There are no quizzes waiting to be started.",
+    },
+    {
+      tab: "in_progress",
+      title: "No quizzes in progress",
+      description: "Your ongoing quizzes will appear here.",
+    },
+    {
+      tab: "completed",
+      title: "No completed quizzes yet",
+      description: "Your completed quizzes will appear here.",
+    },
+  ])(
+    "renders the empty state for $tab quizzes",
+    ({ tab, title, description }) => {
+      vi.mocked(useQuizzes).mockReturnValue({
+        quizzes: [],
+        total: 0,
+        totalPages: 1,
+        tab,
+        page: 1,
+        pageSize: 10,
+        setTab: vi.fn(),
+        setPage: vi.fn(),
+        isLoading: false,
+        isFetching: false,
+        error: null,
+        hasSelection: true,
+      });
 
-    renderComponent();
+      renderComponent();
 
-    expect(screen.getByText("No quizzes found.")).toBeInTheDocument();
-  });
+      expect(screen.getByRole("status", { name: title })).toHaveTextContent(
+        description,
+      );
+      expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("list", { name: "Quizzes" }),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("article")).not.toBeInTheDocument();
+    },
+  );
 
   it("renders quiz cards when quizzes are present", () => {
     const mockQuiz: QuizQueryResult = {
