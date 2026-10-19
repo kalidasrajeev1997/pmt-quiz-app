@@ -137,7 +137,7 @@ describe("PageLayout", () => {
     }
   });
 
-  it("mounts decorative edge strips directly under body and restores document colors", () => {
+  it("omits decorative edge strips and restores document colors", () => {
     vi.mocked(useSelection).mockReturnValue({
       users: [],
       countries: [],
@@ -160,9 +160,7 @@ describe("PageLayout", () => {
     const { unmount } = render(<PageLayout>Content</PageLayout>);
 
     for (const selector of [".edge-top", ".edge-bottom"]) {
-      const edge = document.querySelector(selector);
-      expect(edge).toHaveAttribute("aria-hidden", "true");
-      expect(edge?.parentElement).toBe(document.body);
+      expect(document.querySelector(selector)).not.toBeInTheDocument();
     }
     expect(document.documentElement.style.backgroundColor).not.toBe("red");
     expect(document.body.style.backgroundColor).not.toBe("blue");

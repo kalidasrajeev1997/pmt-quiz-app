@@ -13,7 +13,6 @@ import { Blocks } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import countryFlagMap from "@/helpers/countryFlagMap";
 import Sidebar from "@/components/layouts/Sidebar";
-import { createPortal } from "react-dom";
 import { usePageEdges } from "@/hooks/usePageEdges";
 import { useLocation } from "@tanstack/react-router";
 
@@ -55,13 +54,6 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       ref={pageRef}
       className="page-layout flex h-dvh flex-col overflow-hidden"
     >
-      {createPortal(
-        <>
-          <div aria-hidden="true" className="edge-top" />
-          <div aria-hidden="true" className="edge-bottom" />
-        </>,
-        document.body,
-      )}
       {/* header */}
       <header className="shrink-0 border-b-0 md:border-b">
         <div className="flex min-h-13 items-center justify-between gap-2 px-3 py-2 md:p-2">
