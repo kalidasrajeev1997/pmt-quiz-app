@@ -28,7 +28,7 @@ export default function QuizEditor({ quizId }: { quizId?: string }) {
           <Button
             variant="secondary"
             onClick={goBack}
-            className="h-10 text-white bg-muted"
+            className="h-10 text-foreground bg-muted"
           >
             Back to quizzes
           </Button>

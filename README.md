@@ -49,7 +49,7 @@ Assumptions: If the admin edits the quiz, the user is not allowed continue. This
 
 Limitations:
 
-- Mainly limitations are the data mocking, all the data operations are served and stored through the client itself. Due to this there can raise conditions across multiple tabs.
+- Mainly limitations are the data mocking, all the data operations are served and stored through the client itself. Due to this there can race conditions across multiple tabs.
 - User cannot go back or attempt any question for the second time.
 - To select admin, user needs to select India
 
