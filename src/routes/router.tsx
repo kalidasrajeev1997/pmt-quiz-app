@@ -7,6 +7,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import PageLayout from "../components/layouts/PageLayout";
+import NotFoundPage from "../components/layouts/NotFoundPage";
 import TAB_VALUES from "../helpers/tabs";
 import type { TabStatus } from "../types/quiz";
 import { Spinner } from "@/components/ui/spinner";
@@ -38,6 +39,7 @@ export interface HomeSearch {
 }
 
 const rootRoute = createRootRoute({
+  notFoundComponent: NotFoundPage,
   component: () => (
     <PageLayout>
       <RoleBoundary>

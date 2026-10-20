@@ -14,6 +14,9 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 describe("Router configuration", () => {
   it("initializes router with expected registered routes", () => {
     expect(router).toBeDefined();
+    expect(
+      router.routesById["__root__"]?.options.notFoundComponent,
+    ).toBeTypeOf("function");
     expect(router.routesByPath["/home"]).toBeDefined();
     expect(router.routesByPath["/quiz/$id"]).toBeDefined();
     expect(router.routesByPath["/leaderboard"]).toBeDefined();
