@@ -7,13 +7,9 @@ import type { User } from "@/types/quiz";
 const mocks = vi.hoisted(() => ({ navigate: vi.fn() }));
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({
-    children,
-    to,
-  }: {
-    children: React.ReactNode;
-    to: string;
-  }) => <a href={to}>{children}</a>,
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
+    <a href={to}>{children}</a>
+  ),
   useNavigate: () => mocks.navigate,
 }));
 
@@ -40,11 +36,11 @@ describe("NotFoundPage", () => {
     render(<NotFoundPage />);
 
     expect(
-      screen.getByRole("heading", { name: "This page went wandering." }),
+      screen.getByRole("heading", { name: "Oops. You took a wrong turn." }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "No worries—your quizzes are right where you left them. Head back there, or see who’s leading the leaderboard.",
+        "No worries. Your quizzes are right where you left them. Head back there, or see who's leading the leaderboard.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -82,8 +78,7 @@ describe("NotFoundPage", () => {
     render(<NotFoundPage />);
     fireEvent.click(
       screen.getByRole("button", {
-      name:
-        role === "admin" ? "Back to quiz admin" : "Back to your quizzes",
+        name: role === "admin" ? "Back to quiz admin" : "Back to your quizzes",
       }),
     );
 

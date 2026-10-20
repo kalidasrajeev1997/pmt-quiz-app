@@ -20,6 +20,7 @@ const Sidebar = () => {
       {selectedUser?.role === "admin" ? (
         <Link
           to="/admin"
+          preload="render"
           activeOptions={{ exact: false }}
           aria-label="Quiz admin"
           className={navLinkClass}
@@ -33,6 +34,7 @@ const Sidebar = () => {
           <Link
             to="/home"
             search={{ status: "all", page: 1 }}
+            preload="render"
             activeOptions={{ includeSearch: false }}
             aria-label="Quizzes"
             className={navLinkClass}
@@ -46,6 +48,7 @@ const Sidebar = () => {
       <Link
         to="/leaderboard"
         search={{}}
+        preload="render"
         activeOptions={{ includeSearch: false }}
         aria-label="Leaderboard"
         className={navLinkClass}
@@ -56,6 +59,7 @@ const Sidebar = () => {
       </Link>
       <Link
         to="/settings"
+        preload="render"
         activeOptions={{ exact: false }}
         aria-label="Settings"
         className={navLinkClass}

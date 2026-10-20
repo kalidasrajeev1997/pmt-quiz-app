@@ -14,9 +14,9 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 describe("Router configuration", () => {
   it("initializes router with expected registered routes", () => {
     expect(router).toBeDefined();
-    expect(
-      router.routesById["__root__"]?.options.notFoundComponent,
-    ).toBeTypeOf("function");
+    expect(router.routesById["__root__"]?.options.notFoundComponent).toBeTypeOf(
+      "function",
+    );
     expect(router.routesByPath["/home"]).toBeDefined();
     expect(router.routesByPath["/quiz/$id"]).toBeDefined();
     expect(router.routesByPath["/leaderboard"]).toBeDefined();
@@ -101,5 +101,20 @@ describe("Router configuration", () => {
         quizId: undefined,
       });
     }
+  });
+
+  it("configures router-level preloading on intent to eliminate route transition flicker", () => {
+    expect(router.options.defaultPreload).toBe("intent");
+    expect(router.options.defaultPreloadDelay).toBe(0);
+  });
+
+  it("provides dedicated pending components for routes to prevent jarring fallback jumps", () => {
+    expect(router.routesByPath["/home"].options.pendingComponent).toBeDefined();
+    expect(
+      router.routesByPath["/quiz/$id"].options.pendingComponent,
+    ).toBeDefined();
+    expect(
+      router.routesByPath["/leaderboard"].options.pendingComponent,
+    ).toBeDefined();
   });
 });

@@ -8,7 +8,9 @@ export default function QuizHomeLink() {
       variant="ghost"
       nativeButton={false}
       className="min-h-11 justify-start rounded-md px-2 hover:bg-transparent hover:dark:bg-background hover:underline"
-      render={<Link to="/home" search={{ status: "all", page: 1 }} />}
+      render={
+        <Link to="/home" search={{ status: "all", page: 1 }} preload="render" />
+      }
     >
       <ArrowLeft aria-hidden="true" />
       Back to quizzes

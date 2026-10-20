@@ -26,17 +26,8 @@ const HomeContainer = () => {
             <p role="status" className="sr-only">
               Loading quizzes...
             </p>
-            <ul
-              aria-label="Loading quizzes"
-              aria-busy="true"
-              className="grid auto-rows-fr grid-cols-1 gap-4 py-3 md:grid-cols-2 xl:grid-cols-3"
-            >
-              {Array.from({ length: 4 }, (_, index) => (
-                <li key={index} className="min-w-0">
-                  <QuizCardSkeleton />
-                </li>
-              ))}
-            </ul>
+
+            <QuizCardSkeleton />
           </>
         ) : error ? (
           <p role="alert">{error}</p>

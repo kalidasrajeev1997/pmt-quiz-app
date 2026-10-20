@@ -40,6 +40,7 @@ export default function QuizCardActions({ quiz }: QuizCardActionsProps) {
               to="/quiz/$id"
               params={{ id: quiz.id }}
               hash="results"
+              preload="render"
               aria-label={`View results for ${quiz.title}`}
             />
           }
@@ -58,6 +59,7 @@ export default function QuizCardActions({ quiz }: QuizCardActionsProps) {
               to="/quiz/$id"
               params={{ id: quiz.id }}
               hash={targetHash}
+              preload="render"
               aria-label={actionAriaLabel}
             />
           }

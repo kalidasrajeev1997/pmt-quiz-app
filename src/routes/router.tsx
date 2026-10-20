@@ -13,6 +13,10 @@ import type { TabStatus } from "../types/quiz";
 import { Spinner } from "@/components/ui/spinner";
 import RoleBoundary from "./RoleBoundary";
 import { getActiveUser, requireRole } from "./roleMiddleware";
+import QuizCardSkeleton from "@/components/home/QuizCardSkeleton";
+import QuizHomeLink from "@/components/quizzes/QuizHomeLink";
+import { QuizLoading } from "@/components/quizzes/QuizFeedback";
+import LeaderboardSkeleton from "@/components/leaderboard/LeaderboardSkeleton";
 
 const HomeContainer = lazyRouteComponent(
   () => import("../components/home/HomeContainer"),
@@ -71,21 +75,41 @@ const homeRoute = createRoute({
       page: Number.isFinite(page) && page > 0 ? page : 1,
     };
   },
-  component: HomeContainer,
+  pendingComponent: () => (
+    <div className="p-3">
+      <QuizCardSkeleton />
+    </div>
+  ),
+  component: Object.assign(
+    () => {
+      return <HomeContainer />;
+    },
+    { preload: HomeContainer.preload },
+  ),
 });
 
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
   beforeLoad: () => requireRole("admin"),
-  component: AdminQuizList,
+  component: Object.assign(
+    () => {
+      return <AdminQuizList />;
+    },
+    { preload: AdminQuizList.preload },
+  ),
 });
 
 const newQuizRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin/quizzes/new",
   beforeLoad: () => requireRole("admin"),
-  component: QuizEditor,
+  component: Object.assign(
+    () => {
+      return <QuizEditor />;
+    },
+    { preload: QuizEditor.preload },
+  ),
 });
 
 const editQuizRoute = createRoute({
@@ -105,6 +129,16 @@ const quizRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/quiz/$id",
   beforeLoad: () => requireRole("user"),
+  pendingComponent: () => (
+    <div className="flex h-full min-h-0 flex-col overflow-hidden tracking-normal">
+      <div className="shrink-0 border-b bg-background">
+        <QuizHomeLink />
+      </div>
+      <div className="min-h-0 flex-1 p-4">
+        <QuizLoading />
+      </div>
+    </div>
+  ),
   component: Object.assign(
     () => {
       const { id } = quizRoute.useParams();
@@ -130,13 +164,28 @@ const leaderboardRoute = createRoute({
           : undefined,
     };
   },
-  component: LeaderboardContainer,
+  pendingComponent: () => (
+    <div className="p-4">
+      <LeaderboardSkeleton overall={true} />
+    </div>
+  ),
+  component: Object.assign(
+    () => {
+      return <LeaderboardContainer />;
+    },
+    { preload: LeaderboardContainer.preload },
+  ),
 });
 
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
-  component: SettingsContainer,
+  component: Object.assign(
+    () => {
+      return <SettingsContainer />;
+    },
+    { preload: SettingsContainer.preload },
+  ),
 });
 
 const routeTree = rootRoute.addChildren([
@@ -152,12 +201,30 @@ const routeTree = rootRoute.addChildren([
 
 export const router = createRouter({
   routeTree,
+  defaultPreload: "intent",
+  defaultPreloadDelay: 0,
   defaultPendingComponent: () => (
     <div className="flex flex-1 items-center justify-center p-8 h-dvh">
       <Spinner className="size-4" />
     </div>
   ),
 });
+
+export function preloadRouteComponents() {
+  QuizContainer.preload?.();
+  LeaderboardContainer.preload?.();
+  SettingsContainer.preload?.();
+  AdminQuizList.preload?.();
+  QuizEditor.preload?.();
+}
+
+if (typeof window !== "undefined") {
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(preloadRouteComponents);
+  } else {
+    setTimeout(preloadRouteComponents, 200);
+  }
+}
 
 declare module "@tanstack/react-router" {
   interface Register {
