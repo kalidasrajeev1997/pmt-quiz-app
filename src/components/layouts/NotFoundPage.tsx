@@ -38,9 +38,9 @@ export default function NotFoundPage() {
           </h1>
           <p className="mt-3 text-base leading-relaxed text-foreground/75">
             No worries. Your quizzes are right where you left them. Head back
-            there, or see who’s leading the leaderboard.
+            there, or see who's leading the leaderboard.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 justify-center md:justify-start">
             <Button onClick={returnToQuizzes} className="h-10 px-4 text-white">
               <ArrowLeft aria-hidden="true" />
               {selectedUser?.role === "admin"
