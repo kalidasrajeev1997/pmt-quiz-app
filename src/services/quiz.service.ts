@@ -2,6 +2,7 @@ import { getQuizzesQuery } from "./db/queries";
 import type { TabStatus } from "../types/quiz";
 import {
   loadQuizSessionMutation,
+  restartEditedAttemptMutation,
   startOrResumeAttemptMutation,
   updateAttemptMutation,
 } from "./db/mutations/quiz";
@@ -137,6 +138,15 @@ export async function startOrResumeAttempt(
   now = Date.now(),
 ): Promise<QuizAttempt> {
   const attempt = await startOrResumeAttemptMutation(quizId, userId, now);
+  return toQuizAttempt(attempt);
+}
+
+export async function restartEditedAttempt(
+  quizId: Quiz["id"],
+  userId: User["id"],
+  now = Date.now(),
+): Promise<QuizAttempt> {
+  const attempt = await restartEditedAttemptMutation(quizId, userId, now);
   return toQuizAttempt(attempt);
 }
 

@@ -38,6 +38,7 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
     startQuiz,
     handleCommand,
     retakeQuiz,
+    restartEditedAttempt,
     refetchSession,
   } = useQuizAttempt(quizId);
 
@@ -96,7 +97,13 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
     if (isSessionError && sessionError) {
       return (
         <div className="p-4">
-          <QuizUnavailable error={sessionError} onRetry={refetchSession} />
+          <QuizUnavailable
+            error={sessionError}
+            onRetry={refetchSession}
+            onRestartEditedAttempt={restartEditedAttempt}
+            isRestarting={isPending}
+            restartError={error}
+          />
         </div>
       );
     }

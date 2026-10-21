@@ -10,6 +10,7 @@ import { getAttemptQuery, getQuizAttemptQuery } from "../queries/quiz";
 import {
   createQuizAttempt,
   finishQuizAttempt,
+  hasQuizChanged,
   reconcileQuizAttempt,
   recordAnswer,
   validateOptionIds,
@@ -89,6 +90,33 @@ export async function startOrResumeAttemptMutation(
         now,
       );
     }
+    await saveAttempt(transaction, { quiz, attempt });
+    return attempt;
+  } catch (error) {
+    await abortTransaction(transaction);
+    throw error;
+  }
+}
+
+export async function restartEditedAttemptMutation(
+  quizId: Quiz["id"],
+  userId: User["id"],
+  now: number,
+): Promise<Attempt> {
+  const transaction = await openAttemptTransaction();
+  try {
+    const records = await getQuizAttemptQuery(quizId, userId, transaction);
+    const quiz = validateQuizAccess(records.quiz, records.user);
+    if (
+      records.attempt?.status !== "in_progress" ||
+      !hasQuizChanged(quiz, records.attempt)
+    ) {
+      throw new QuizAttemptError(
+        "This quiz attempt cannot be restarted. Reload the quiz and try again.",
+      );
+    }
+
+    const attempt = createQuizAttempt(quiz, userId, now);
     await saveAttempt(transaction, { quiz, attempt });
     return attempt;
   } catch (error) {

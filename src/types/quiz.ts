@@ -90,6 +90,8 @@ export type TabStatus = "all" | "not-started" | "in_progress" | "completed";
 
 export class QuizAttemptError extends Error {}
 
+export class QuizEditedError extends QuizAttemptError {}
+
 export type PublicQuestion = Omit<Question, "correctOptionIds">;
 export type PublicQuiz = Omit<Quiz, "questions"> & {
   questions: PublicQuestion[];

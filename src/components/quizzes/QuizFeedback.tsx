@@ -2,7 +2,7 @@ import { CircleAlert, RotateCcw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { QuizAttemptError } from "@/types/quiz";
+import { QuizAttemptError, QuizEditedError } from "@/types/quiz";
 
 export function QuizLoading() {
   return (
@@ -30,9 +30,19 @@ export function QuizSelectionRequired({ error }: { error: string | null }) {
 interface QuizUnavailableProps {
   error: Error;
   onRetry: () => void;
+  onRestartEditedAttempt: () => void;
+  isRestarting: boolean;
+  restartError: Error | null;
 }
 
-export function QuizUnavailable({ error, onRetry }: QuizUnavailableProps) {
+export function QuizUnavailable({
+  error,
+  onRetry,
+  onRestartEditedAttempt,
+  isRestarting,
+  restartError,
+}: QuizUnavailableProps) {
+  const wasEdited = error instanceof QuizEditedError;
   return (
     <Alert variant="destructive" className="border-0 bg-muted p-5">
       <CircleAlert />
@@ -42,14 +52,27 @@ export function QuizUnavailable({ error, onRetry }: QuizUnavailableProps) {
           {error instanceof QuizAttemptError
             ? error.message
             : "Your quiz could not be loaded. Check that browser storage is available, then try again."}
-          <Button
-            variant="secondary"
-            onClick={onRetry}
-            className="mt-3 w-fit h-10 bg-foreground text-background"
-          >
-            <RotateCcw />
-            Try again
-          </Button>
+          {wasEdited ? (
+            <Button
+              variant="secondary"
+              onClick={onRestartEditedAttempt}
+              disabled={isRestarting}
+              className="mt-3 w-fit h-10 bg-foreground text-background"
+            >
+              <RotateCcw />
+              {isRestarting ? "Starting..." : "Start a new attempt"}
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              onClick={onRetry}
+              className="mt-3 w-fit h-10 bg-foreground text-background"
+            >
+              <RotateCcw />
+              Try again
+            </Button>
+          )}
+          {restartError && <p className="mt-2">{restartError.message}</p>}
         </div>
       </AlertDescription>
     </Alert>

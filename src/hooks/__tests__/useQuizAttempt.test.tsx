@@ -25,6 +25,7 @@ vi.mock("@/hooks/useSelection", () => ({
 
 vi.mock("@/services/quiz.service", () => ({
   getQuiz: vi.fn(),
+  restartEditedAttempt: vi.fn(),
   startOrResumeAttempt: vi.fn(),
   saveDraft: vi.fn(),
   submitAnswer: vi.fn(),

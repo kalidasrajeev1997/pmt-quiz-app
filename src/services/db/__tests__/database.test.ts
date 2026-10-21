@@ -8,6 +8,7 @@ import {
   getCurrentQuestion,
   getQuizzes,
   loadQuizSession,
+  restartEditedAttempt,
   saveDraft,
   startOrResumeAttempt,
   submitAnswer,
@@ -169,6 +170,45 @@ test("attendance reports edited and deleted quizzes without modifying the saved 
   assert.deepEqual(await getRecord("attempts", started.id), savedAttempt);
   await deleteRecord("quizzes", quizId);
   await assert.rejects(loadQuizSession(quizId, userId, now + 2000), /deleted/);
+});
+
+test("attendance can restart an edited in-progress attempt without losing saved answers", async () => {
+  const { quizId, userId, now } = await attendanceFixture();
+  const quiz = await getRecord("quizzes", quizId);
+  assert.ok(quiz);
+  await saveRecord("quizzes", { ...quiz, retakesAllowed: false });
+
+  const started = await startOrResumeAttempt(quizId, userId, now);
+  const { question } = await getCurrentQuestion(started.id, now);
+  assert.ok(question);
+  await saveDraft(
+    started.id,
+    question.id,
+    [question.options[0].id],
+    now + 1000,
+  );
+  const savedAttempt = await getRecord("attempts", started.id);
+  assert.ok(savedAttempt);
+
+  await assert.rejects(
+    restartEditedAttempt(quizId, userId, now + 2000),
+    /cannot be restarted/,
+  );
+  await saveRecord("quizzes", {
+    ...quiz,
+    retakesAllowed: false,
+    title: "Edited",
+  });
+
+  const restarted = await restartEditedAttempt(quizId, userId, now + 3000);
+  assert.notEqual(restarted.id, started.id);
+  assert.equal(restarted.status, "in_progress");
+  assert.equal(restarted.answers.length, 0);
+  assert.deepEqual(await getRecord("attempts", started.id), savedAttempt);
+  assert.equal(
+    (await loadQuizSession(quizId, userId, now + 4000)).attempt?.id,
+    restarted.id,
+  );
 });
 
 test("attendance scores exact multiple choice sets and enforces retake policy", async () => {

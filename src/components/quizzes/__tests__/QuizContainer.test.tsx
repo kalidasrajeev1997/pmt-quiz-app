@@ -10,6 +10,7 @@ import type {
   QuizResult,
   QuizSession,
 } from "@/types/quiz";
+import { QuizEditedError } from "@/types/quiz";
 
 vi.mock("@tanstack/react-router", () => ({
   Link: ({
@@ -147,6 +148,7 @@ describe("QuizAttend Flow Component Tests", () => {
       startQuiz: vi.fn(),
       handleCommand: vi.fn(),
       retakeQuiz: vi.fn(),
+      restartEditedAttempt: vi.fn(),
       refetchSession: vi.fn(),
     };
 
@@ -498,6 +500,28 @@ describe("QuizAttend Flow Component Tests", () => {
       await user.click(retryBtn);
 
       expect(defaultHookReturn.refetchSession).toHaveBeenCalledTimes(1);
+    });
+
+    it("offers a new attempt when the current quiz was edited", async () => {
+      const user = userEvent.setup();
+      defaultHookReturn = {
+        ...defaultHookReturn,
+        isSessionError: true,
+        sessionError: new QuizEditedError(
+          "This quiz was edited while your attempt was in progress.",
+        ),
+        session: undefined,
+      };
+
+      render(<QuizAttend quizId="quiz-attend-1" />);
+      await user.click(
+        screen.getByRole("button", { name: /start a new attempt/i }),
+      );
+
+      expect(defaultHookReturn.restartEditedAttempt).toHaveBeenCalledTimes(1);
+      expect(
+        screen.queryByRole("button", { name: /try again/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("renders save error alert when error occurs during attempt", () => {

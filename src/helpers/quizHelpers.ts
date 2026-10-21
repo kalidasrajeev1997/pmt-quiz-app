@@ -12,6 +12,7 @@ import {
   type QuizAttempt,
   type QuizResult,
   QuizAttemptError,
+  QuizEditedError,
 } from "@/types/quiz";
 
 export function toPublicQuestion(question: Question): PublicQuestion {
@@ -245,6 +246,16 @@ export function recordAnswer(
     : next;
 }
 
+export function hasQuizChanged(quiz: Quiz, saved: Attempt): boolean {
+  const quizSnapshot = JSON.stringify(quiz);
+  return saved.quizSnapshot !== undefined
+    ? saved.quizSnapshot !== quizSnapshot
+    : saved.totalQuestions !== quiz.questions.length ||
+        saved.answers.some(
+          (answer, index) => answer.questionId !== quiz.questions[index]?.id,
+        );
+}
+
 export function reconcileQuizAttempt(
   quiz: Quiz,
   saved: Attempt,
@@ -254,15 +265,8 @@ export function reconcileQuizAttempt(
     return saved;
   }
   const quizSnapshot = JSON.stringify(quiz);
-  const changed =
-    saved.quizSnapshot !== undefined
-      ? saved.quizSnapshot !== quizSnapshot
-      : saved.totalQuestions !== quiz.questions.length ||
-        saved.answers.some(
-          (answer, index) => answer.questionId !== quiz.questions[index]?.id,
-        );
-  if (changed) {
-    throw new QuizAttemptError(
+  if (hasQuizChanged(quiz, saved)) {
+    throw new QuizEditedError(
       "This quiz was edited while your attempt was in progress. Your saved answers have been kept, but this attempt cannot continue.",
     );
   }

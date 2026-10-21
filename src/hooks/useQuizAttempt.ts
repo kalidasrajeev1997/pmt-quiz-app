@@ -9,6 +9,7 @@ import { useSelection } from "@/hooks/useSelection";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 import {
   getQuiz,
+  restartEditedAttempt as restartEditedAttemptService,
   saveDraft as saveDraftService,
   startOrResumeAttempt,
   submitAnswer as submitAnswerService,
@@ -17,7 +18,10 @@ import type { QuizSession, PublicQuiz, QuizAttempt } from "@/types/quiz";
 import type { AnswerAction } from "@/components/quizzes/questions/QuestionForm";
 import { quizStatuses, attemptSteps } from "@/helpers/constants";
 
-type QuizAttemptAction = { type: "start"; retake: boolean } | AnswerAction;
+type QuizAttemptAction =
+  | { type: "start"; retake: boolean }
+  | { type: "restart-edited" }
+  | AnswerAction;
 
 export interface UseQuizAttemptReturn {
   session: QuizSession | undefined;
@@ -38,6 +42,7 @@ export interface UseQuizAttemptReturn {
   startQuiz: (retake?: boolean) => void;
   handleCommand: (command: AnswerAction) => void;
   retakeQuiz: () => void;
+  restartEditedAttempt: () => void;
   refetchSession: () => void;
 }
 
@@ -89,6 +94,8 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
     mutationFn: async (action: QuizAttemptAction) => {
       if (action.type === "start") {
         await startOrResumeAttempt(quizId, userId);
+      } else if (action.type === "restart-edited") {
+        await restartEditedAttemptService(quizId, userId);
       } else if (action.type === "draft") {
         await saveDraftService(
           action.attemptId,
@@ -115,7 +122,7 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
       }
 
       // Clear #retake hash upon start
-      if (action.type === "start") {
+      if (action.type === "start" || action.type === "restart-edited") {
         navigate({
           to: "/quiz/$id",
           params: { id: quizId },
@@ -166,6 +173,10 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
     });
   }
 
+  function restartEditedAttempt() {
+    mutation.mutate({ type: "restart-edited" });
+  }
+
   function refetchSession() {
     sessionQuery.refetch();
   }
@@ -189,6 +200,7 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
     startQuiz,
     handleCommand,
     retakeQuiz,
+    restartEditedAttempt,
     refetchSession,
   };
 }
