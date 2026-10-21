@@ -502,6 +502,30 @@ describe("QuizAttend Flow Component Tests", () => {
       expect(defaultHookReturn.refetchSession).toHaveBeenCalledTimes(1);
     });
 
+    it("shows completed results instead of a session error when session data exists", () => {
+      const quiz = makePublicQuiz();
+      const attempt = makeCompletedAttempt();
+      defaultHookReturn = {
+        ...defaultHookReturn,
+        showOverview: false,
+        currentStep: 2,
+        isSessionError: true,
+        sessionError: new Error("Stale session refetch failure"),
+        attempt,
+        session: { quiz, attempt },
+      };
+
+      render(<QuizAttend quizId="quiz-attend-1" />);
+
+      expect(
+        screen.getByRole("heading", { name: "Quiz completed" }),
+      ).toBeVisible();
+      expect(screen.queryByText("Quiz unavailable")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Progress could not be saved"),
+      ).not.toBeInTheDocument();
+    });
+
     it("offers a new attempt when the current quiz was edited", async () => {
       const user = userEvent.setup();
       const editedError = new QuizEditedError(

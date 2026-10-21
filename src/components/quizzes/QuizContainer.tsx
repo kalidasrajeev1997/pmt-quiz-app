@@ -94,7 +94,7 @@ export default function QuizAttend({ quizId }: { quizId: string }) {
       return <QuizSelectionRequired error={selectionError} />;
     }
 
-    if (isSessionError && sessionError) {
+    if (!session && isSessionError && sessionError) {
       return (
         <div className="p-4">
           <QuizUnavailable
