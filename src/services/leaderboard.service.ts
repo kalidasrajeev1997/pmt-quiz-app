@@ -49,6 +49,9 @@ export async function getLeaderboard(
   const bestByUser = new Map<User["id"], Map<Quiz["id"], CompletedAttempt>>();
 
   for (const rawAttempt of attempts) {
+    if (rawAttempt.supersededByAttemptId) {
+      continue;
+    }
     let attempt: Attempt = rawAttempt;
 
     // If an attempt is in-progress, check if its quiz time limit has expired

@@ -194,20 +194,42 @@ test("attendance can restart an edited in-progress attempt without losing saved 
     restartEditedAttempt(quizId, userId, now + 2000),
     /cannot be restarted/,
   );
-  await saveRecord("quizzes", {
+  const editedQuiz = {
     ...quiz,
-    retakesAllowed: false,
+    retakesAllowed: true,
     title: "Edited",
-  });
+  };
+  await saveRecord("quizzes", editedQuiz);
 
   const restarted = await restartEditedAttempt(quizId, userId, now + 3000);
   assert.notEqual(restarted.id, started.id);
   assert.equal(restarted.status, "in_progress");
   assert.equal(restarted.answers.length, 0);
-  assert.deepEqual(await getRecord("attempts", started.id), savedAttempt);
+  const supersededAttempt = await getRecord("attempts", started.id);
+  assert.equal(supersededAttempt?.supersededByAttemptId, restarted.id);
+  assert.deepEqual(supersededAttempt?.answers, savedAttempt.answers);
   assert.equal(
     (await loadQuizSession(quizId, userId, now + 4000)).attempt?.id,
     restarted.id,
+  );
+
+  for (const [index, question] of editedQuiz.questions.entries()) {
+    await submitAnswer(
+      restarted.id,
+      question.id,
+      [question.options[0].id],
+      now + 5000 + index * 1000,
+    );
+  }
+
+  const completedSession = await loadQuizSession(quizId, userId, now + 10000);
+  assert.equal(completedSession.attempt?.id, restarted.id);
+  assert.equal(completedSession.attempt?.status, "completed");
+
+  const quizProgress = await getQuizzesQuery(1, 20, userId, "IN");
+  assert.equal(
+    quizProgress.quizzes.find((entry) => entry.id === quizId)?.status,
+    "completed",
   );
 });
 

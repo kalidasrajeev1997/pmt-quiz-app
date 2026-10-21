@@ -57,7 +57,7 @@ export function QuizUnavailable({
               variant="secondary"
               onClick={onRestartEditedAttempt}
               disabled={isRestarting}
-              className="mt-3 w-fit h-10 bg-foreground text-background"
+              className="mt-3 w-fit h-10 bg-foreground text-background hover:bg-foreground/70"
             >
               <RotateCcw />
               {isRestarting ? "Starting..." : "Start a new attempt"}
@@ -81,15 +81,39 @@ export function QuizUnavailable({
   );
 }
 
-export function QuizSaveError({ error }: { error: Error }) {
+interface QuizSaveErrorProps {
+  error: Error;
+  onRestartEditedAttempt: () => void;
+  isRestarting: boolean;
+}
+
+export function QuizSaveError({
+  error,
+  onRestartEditedAttempt,
+  isRestarting,
+}: QuizSaveErrorProps) {
+  const wasEdited = error instanceof QuizEditedError;
   return (
     <Alert variant="destructive" className="border-0 bg-muted p-4">
       <CircleAlert />
       <AlertTitle>Progress could not be saved</AlertTitle>
       <AlertDescription>
-        {error instanceof QuizAttemptError
-          ? error.message
-          : "Please try again. Keep this tab open until your progress is saved."}
+        <div className="flex flex-col">
+          {error instanceof QuizAttemptError
+            ? error.message
+            : "Please try again. Keep this tab open until your progress is saved."}
+          {wasEdited && (
+            <Button
+              variant="secondary"
+              onClick={onRestartEditedAttempt}
+              disabled={isRestarting}
+              className="mt-3 w-fit h-10 bg-foreground text-background hover:bg-foreground/70"
+            >
+              <RotateCcw />
+              {isRestarting ? "Starting..." : "Start a new attempt"}
+            </Button>
+          )}
+        </div>
       </AlertDescription>
     </Alert>
   );

@@ -569,5 +569,30 @@ describe("QuizAttend Flow Component Tests", () => {
         screen.getByText("Progress could not be saved"),
       ).toBeInTheDocument();
     });
+
+    it("offers a new attempt when answer submission detects an edited quiz", async () => {
+      const user = userEvent.setup();
+      const quiz = makePublicQuiz();
+      const attempt = makeInProgressAttempt();
+      const editedError = new QuizEditedError(
+        "This quiz was edited while your attempt was in progress. Your saved answers have been kept, but this attempt cannot continue.",
+      );
+      defaultHookReturn = {
+        ...defaultHookReturn,
+        showOverview: false,
+        currentStep: 1,
+        attempt,
+        session: { quiz, attempt },
+        saveFailed: true,
+        error: editedError,
+      };
+
+      render(<QuizAttend quizId="quiz-attend-1" />);
+      await user.click(
+        screen.getByRole("button", { name: /start a new attempt/i }),
+      );
+
+      expect(defaultHookReturn.restartEditedAttempt).toHaveBeenCalledTimes(1);
+    });
   });
 });

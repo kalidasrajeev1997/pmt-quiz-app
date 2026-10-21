@@ -117,7 +117,14 @@ export async function restartEditedAttemptMutation(
     }
 
     const attempt = createQuizAttempt(quiz, userId, now);
-    await saveAttempt(transaction, { quiz, attempt });
+    await Promise.all([
+      transaction.objectStore("attempts").put({
+        ...records.attempt,
+        supersededByAttemptId: attempt.id,
+      }),
+      transaction.objectStore("attempts").put(attempt),
+    ]);
+    await transaction.done;
     return attempt;
   } catch (error) {
     await abortTransaction(transaction);

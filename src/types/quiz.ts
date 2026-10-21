@@ -56,6 +56,7 @@ interface AttemptBase {
   answers: Answer[];
   totalQuestions: number;
   quizSnapshot?: string;
+  supersededByAttemptId?: string;
   questionStartedAt?: string;
   draftOptionIds?: QuestionOption["id"][];
 }

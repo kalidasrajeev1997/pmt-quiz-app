@@ -44,6 +44,9 @@ const getQuizProgress = (quiz: Quiz, attempts: Attempt[], now: number) => {
   let activeStartedAt = -Infinity;
 
   for (const attempt of attempts) {
+    if (attempt.supersededByAttemptId) {
+      continue;
+    }
     const startedAt = Date.parse(attempt.startedAt);
     if (startedAt > latestStartedAt) {
       latestAttempt = attempt;
@@ -214,6 +217,7 @@ export const getQuizAttemptQuery = async (
   ]);
   const attempts = allAttempts
     .filter((att) => att.quizId === quizId && att.userId === userId)
+    .filter((att) => !att.supersededByAttemptId)
     .sort(
       (att1, att2) =>
         Date.parse(att2.startedAt) - Date.parse(att1.startedAt) ||

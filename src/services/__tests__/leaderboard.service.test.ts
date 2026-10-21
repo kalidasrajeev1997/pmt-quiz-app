@@ -103,6 +103,23 @@ describe("leaderboard service", () => {
     expect(result.entries[0]).toMatchObject({ score: 8, timeTakenSeconds: 60 });
   });
 
+  it("ignores superseded attempts when calculating leaderboard results", async () => {
+    const superseded = await addAttempt("old", "user-1", 10, 20);
+    await addAttempt("current", "user-1", 6, 50);
+    await saveRecord("attempts", {
+      ...superseded,
+      supersededByAttemptId: "current",
+    });
+
+    const result = await getLeaderboard("quiz-a");
+    expect(result.entries).toHaveLength(1);
+    expect(result.entries[0]).toMatchObject({
+      userId: "user-1",
+      score: 6,
+      timeTakenSeconds: 50,
+    });
+  });
+
   it("sums best scores and completion times across quizzes for overall standings", async () => {
     await addAttempt("a1", "user-1", 8, 90);
     await addAttempt("a2", "user-1", 7, 20);
