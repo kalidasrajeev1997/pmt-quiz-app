@@ -72,7 +72,9 @@ export function QuizUnavailable({
               Try again
             </Button>
           )}
-          {restartError && <p className="mt-2">{restartError.message}</p>}
+          {restartError && restartError !== error && (
+            <p className="mt-2">{restartError.message}</p>
+          )}
         </div>
       </AlertDescription>
     </Alert>

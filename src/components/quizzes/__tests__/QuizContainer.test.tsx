@@ -504,16 +504,19 @@ describe("QuizAttend Flow Component Tests", () => {
 
     it("offers a new attempt when the current quiz was edited", async () => {
       const user = userEvent.setup();
+      const editedError = new QuizEditedError(
+        "This quiz was edited while your attempt was in progress.",
+      );
       defaultHookReturn = {
         ...defaultHookReturn,
         isSessionError: true,
-        sessionError: new QuizEditedError(
-          "This quiz was edited while your attempt was in progress.",
-        ),
+        sessionError: editedError,
+        error: editedError,
         session: undefined,
       };
 
       render(<QuizAttend quizId="quiz-attend-1" />);
+      expect(screen.getAllByText(editedError.message)).toHaveLength(1);
       await user.click(
         screen.getByRole("button", { name: /start a new attempt/i }),
       );

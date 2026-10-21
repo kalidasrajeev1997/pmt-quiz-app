@@ -154,7 +154,7 @@ export function useQuizAttempt(quizId: string): UseQuizAttemptReturn {
   const isPending = pendingActions > 0;
   const isLoading = selectionLoading || (hasUser && sessionQuery.isPending);
   const error =
-    (sessionQuery.error as Error | null) ?? (mutation.error as Error | null);
+    (mutation.error as Error | null) ?? (sessionQuery.error as Error | null);
 
   // Action dispatches
   function startQuiz(retake = false) {
