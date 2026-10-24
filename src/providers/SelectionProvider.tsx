@@ -36,9 +36,12 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     null;
   const activeCountry = selectedCountry?.code;
   const users =
-    usersQuery.data?.filter(
-      (user) => user.country === activeCountry || user.country !== "All",
-    ) ?? [];
+    usersQuery.data?.filter((user) => {
+      if (activeCountry === "All") {
+        return user;
+      }
+      return user.country === activeCountry;
+    }) ?? [];
   const selectedUser =
     users.find((userIdx) => userIdx.id === user) ?? users[0] ?? null;
   const isLoading =

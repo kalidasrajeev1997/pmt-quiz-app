@@ -26,7 +26,7 @@ const HomeContainer = () => {
       <div>
         <Input
           name="search"
-          className="w-80 mb-4"
+          className="w-full h-11 mb-4 md:w-80 md:h-8"
           placeholder="Search quiz"
           onChange={(e) => setSearch(e.target.value)}
           defaultValue={search}
