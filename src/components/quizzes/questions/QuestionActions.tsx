@@ -17,13 +17,13 @@ export default function QuestionActions({
   isSubmitting,
   lastQuestion,
 }: QuestionActionsProps) {
-  const SaveIcon = pending ? LoaderIcon : saveFailed ? CircleAlert : Check;
+  const SaveIcon = pending ? LoaderIcon : saveFailed ? CircleAlert : null;
 
   const saveLabel = pending
     ? saveLabels.PENDING
     : saveFailed
       ? saveLabels.FAILED
-      : saveLabels.SUCCESS;
+      : "";
 
   const submitLabel = expired
     ? submitLabels.TIME_EXPIRED
@@ -39,10 +39,13 @@ export default function QuestionActions({
         role="status"
         className="flex items-center gap-1.5 text-sm text-muted-foreground"
       >
-        <SaveIcon
-          className={`size-4 ${pending ? "motion-safe:animate-spin" : ""}`}
-          aria-hidden="true"
-        />
+        {SaveIcon && (
+          <SaveIcon
+            className={`size-4 ${pending ? "motion-safe:animate-spin" : ""}`}
+            aria-hidden="true"
+          />
+        )}
+
         {saveLabel}
       </span>
       <Button

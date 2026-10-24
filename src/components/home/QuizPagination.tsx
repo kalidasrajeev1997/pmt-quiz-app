@@ -40,6 +40,7 @@ const QuizPagination = ({
         ...prev,
         status: prev.status ?? "all",
         page: target,
+        query: prev.query ?? "",
       }),
     }).href,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => {

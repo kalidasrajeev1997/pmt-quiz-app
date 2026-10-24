@@ -27,14 +27,18 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     enabled: !!countriesQuery.data,
   });
 
-  const countries = countriesQuery.data ?? [];
+  const globalObject = { code: "All", name: "Global" } as Country;
+  const countriesFromIndex = countriesQuery.data ?? [];
+  const countries = [globalObject, ...countriesFromIndex];
   const selectedCountry =
     countries.find((countryIdx) => countryIdx.code === country) ??
     countries[0] ??
     null;
   const activeCountry = selectedCountry?.code;
   const users =
-    usersQuery.data?.filter((user) => user.country === activeCountry) ?? [];
+    usersQuery.data?.filter(
+      (user) => user.country === activeCountry || user.country !== "All",
+    ) ?? [];
   const selectedUser =
     users.find((userIdx) => userIdx.id === user) ?? users[0] ?? null;
   const isLoading =

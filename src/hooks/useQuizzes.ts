@@ -5,6 +5,7 @@ import { QUERY_KEYS } from "@/lib/queryKeys";
 import { getQuizzes } from "@/services/quiz.service";
 import type { TabStatus } from "@/types/quiz";
 import type { QuizQueryResult } from "@/services/db/queries/quiz";
+import _ from "lodash";
 
 export interface UseQuizzesOptions {
   pageSize?: number;
@@ -23,6 +24,8 @@ export interface UseQuizzesReturn {
   isFetching: boolean;
   error: string | null;
   hasSelection: boolean;
+  setSearch: (query: string) => void;
+  search: string;
 }
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -38,7 +41,7 @@ const DEFAULT_PAGE_SIZE = 10;
 export function useQuizzes(options: UseQuizzesOptions = {}): UseQuizzesReturn {
   const pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
 
-  const { status: tab, page } = useSearch({ from: "/home" });
+  const { status: tab, page, query: search } = useSearch({ from: "/home" });
   const navigate = useNavigate({ from: "/home" });
 
   const {
@@ -65,6 +68,7 @@ export function useQuizzes(options: UseQuizzesOptions = {}): UseQuizzesReturn {
       tab,
       page,
       pageSize,
+      search,
     ],
     queryFn: () =>
       getQuizzes(
@@ -73,6 +77,7 @@ export function useQuizzes(options: UseQuizzesOptions = {}): UseQuizzesReturn {
         selectedUser?.id ?? "",
         selectedCountry?.code ?? "",
         tab,
+        search,
       ),
   });
 
@@ -81,8 +86,14 @@ export function useQuizzes(options: UseQuizzesOptions = {}): UseQuizzesReturn {
   const totalPages = Math.ceil(total / pageSize);
 
   const setTab = (status: TabStatus) => {
-    navigate({ search: { status, page: 1 } });
+    navigate({ search: { status, page: 1, query: search } });
   };
+
+  const setSearch = (query: string) => {
+    navigate({ search: { status: tab, page: 1, query: query } });
+  };
+
+  const debounceSearch = _.debounce((q) => setSearch(q), 300);
 
   const setPage = (newPage: number) => {
     navigate({ search: (prev) => ({ ...prev, page: newPage }) });
@@ -106,5 +117,7 @@ export function useQuizzes(options: UseQuizzesOptions = {}): UseQuizzesReturn {
     isFetching,
     error,
     hasSelection: !!selectedUser && !!selectedCountry,
+    setSearch: debounceSearch,
+    search,
   };
 }

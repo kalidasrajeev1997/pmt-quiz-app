@@ -33,7 +33,12 @@ const Sidebar = () => {
         selectedUser && (
           <Link
             to="/home"
-            search={{ status: "all", page: 1 }}
+            search={(prev) => ({
+              ...prev,
+              status: prev.status ?? "all",
+              page: 1,
+              query: prev.query ?? "",
+            })}
             preload="render"
             activeOptions={{ includeSearch: false }}
             aria-label="Quizzes"

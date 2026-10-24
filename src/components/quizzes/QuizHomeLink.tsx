@@ -9,7 +9,16 @@ export default function QuizHomeLink() {
       nativeButton={false}
       className="min-h-11 justify-start rounded-md px-2 hover:bg-transparent hover:dark:bg-background hover:underline"
       render={
-        <Link to="/home" search={{ status: "all", page: 1 }} preload="render" />
+        <Link
+          to="/home"
+          search={(prev) => ({
+            ...prev,
+            status: prev.status ?? "all",
+            page: 1,
+            query: prev.query ?? "",
+          })}
+          preload="render"
+        />
       }
     >
       <ArrowLeft aria-hidden="true" />

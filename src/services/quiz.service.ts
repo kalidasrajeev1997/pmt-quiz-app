@@ -107,8 +107,9 @@ export const getQuizzes = async (
   userId: User["id"],
   country: Country["code"],
   status: TabStatus = "all",
+  search: string,
 ): Promise<QuizPageResult> => {
-  return await getQuizzesQuery(page, pageSize, userId, country, status);
+  return await getQuizzesQuery(page, pageSize, userId, country, status, search);
 };
 
 export const loadQuizSession = async (

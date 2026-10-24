@@ -145,6 +145,7 @@ export const getQuizzesQuery = async (
   userId: User["id"],
   country: Country["code"],
   status: "all" | QuizStatus = "all",
+  search: string,
 ): Promise<QuizPageResult> => {
   if (!Number.isSafeInteger(page) || page < 1) {
     throw new RangeError("page must be a positive integer");
@@ -173,14 +174,23 @@ export const getQuizzesQuery = async (
 
   const now = Date.now();
   const matchingQuizzes = quizzes
-    .filter((quiz) => quiz.countries.includes(country))
+    .filter((quiz) => {
+      if (country === "All") {
+        return quiz;
+      }
+      return quiz.countries.includes(country);
+    })
     .map((quiz) => {
       return {
         ...quiz,
         ...getQuizProgress(quiz, attemptsByQuiz.get(quiz.id) ?? [], now),
       };
     })
-    .filter((quiz) => status === "all" || quiz.status === status);
+    .filter(
+      (quiz) =>
+        (status === "all" || quiz.status === status) &&
+        quiz.title.toLowerCase().includes(search),
+    );
 
   const offset = (page - 1) * pageSize;
   await simulateDelay(1500); // Simulate a 1.5s delay before returning the results

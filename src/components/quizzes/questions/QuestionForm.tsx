@@ -169,7 +169,6 @@ export default function QuestionForm({
                 onBlur={field.onBlur}
                 onChange={(selectedOptionIds) => {
                   field.onChange(selectedOptionIds);
-                  sendAnswerCommand("draft", selectedOptionIds);
                 }}
               />
             )}

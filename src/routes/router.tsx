@@ -40,6 +40,7 @@ const SettingsContainer = lazyRouteComponent(
 export interface HomeSearch {
   status: TabStatus;
   page: number;
+  query: string;
 }
 
 const rootRoute = createRootRoute({
@@ -59,7 +60,10 @@ const indexRoute = createRoute({
   beforeLoad: async () => {
     if ((await getActiveUser())?.role === "admin")
       throw redirect({ to: "/admin" });
-    throw redirect({ to: "/home", search: { status: "all", page: 1 } });
+    throw redirect({
+      to: "/home",
+      search: { status: "all", page: 1, query: "" },
+    });
   },
 });
 
@@ -70,9 +74,11 @@ const homeRoute = createRoute({
   validateSearch: (search: Record<string, unknown>): HomeSearch => {
     const status = TAB_VALUES.find((value) => value === search.status);
     const page = Math.floor(Number(search.page));
+    const searchValue = (search.query as string).toString() ?? "";
     return {
       status: status ?? "all",
       page: Number.isFinite(page) && page > 0 ? page : 1,
+      query: searchValue,
     };
   },
   pendingComponent: () => (
