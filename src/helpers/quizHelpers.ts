@@ -14,6 +14,7 @@ import {
   QuizAttemptError,
   QuizEditedError,
 } from "@/types/quiz";
+import _ from "lodash";
 
 export function toPublicQuestion(question: Question): PublicQuestion {
   return {
@@ -247,9 +248,8 @@ export function recordAnswer(
 }
 
 export function hasQuizChanged(quiz: Quiz, saved: Attempt): boolean {
-  const quizSnapshot = JSON.stringify(quiz);
   return saved.quizSnapshot !== undefined
-    ? saved.quizSnapshot !== quizSnapshot
+    ? !_.isEqual(quiz, JSON.parse(saved.quizSnapshot ?? ""))
     : saved.totalQuestions !== quiz.questions.length ||
         saved.answers.some(
           (answer, index) => answer.questionId !== quiz.questions[index]?.id,

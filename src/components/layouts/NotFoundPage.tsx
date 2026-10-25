@@ -14,7 +14,7 @@ export default function NotFoundPage() {
       return;
     }
 
-    navigate({ to: "/home", search: { status: "all", page: 1 } });
+    navigate({ to: "/home", search: { status: "all", page: 1, query: "" } });
   }
 
   return (
